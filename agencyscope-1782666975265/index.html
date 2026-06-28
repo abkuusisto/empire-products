@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgencyScope – Agency Management Platform</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #253047;
+    --border: #334155;
+    --accent: #6366f1;
+    --accent2: #8b5cf6;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --blue: #3b82f6;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --sidebar-w: 240px;
+  }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; flex-shrink: 0; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100;
+  }
+  .logo { padding: 24px 20px; border-bottom: 1px solid var(--border); }
+  .logo span { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .logo small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+  nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+  nav .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); padding: 8px 8px 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px;
+    cursor: pointer; color: var(--muted); font-size: 14px; font-weight: 500; margin-bottom: 2px;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2)); color: var(--accent); border: 1px solid rgba(99,102,241,0.3); }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); }
+  .user-card { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .user-info small { color: var(--muted); font-size: 11px; display: block; }
+  .user-info span { font-size: 13px; font-weight: 600; }
+
+  /* MAIN */
+  #main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* TOPBAR */
+  #topbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 64px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  #page-title { font-size: 20px; font-weight: 700; }
+  #page-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .topbar-actions { display: flex; gap: 10px; align-items: center; }
+  .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-outline:hover { color: var(--text); border-color: var(--accent); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .btn-danger:hover { background: rgba(239,68,68,0.25); }
+  .btn-success { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .btn-success:hover { background: rgba(16,185,129,0.25); }
+
+  /* CONTENT */
+  #content { flex: 1; overflow-y: auto; padding: 28px; }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* METRIC CARDS */
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .metric-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .metric-card.c1::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .metric-card.c2::before { background: linear-gradient(90deg, var(--green), #34d399); }
+  .metric-card.c3::before { background: linear-gradient(90deg, var(--yellow), #fbbf24); }
+  .metric-card.c4::before { background: linear-gradient(90deg, var(--blue), #60a5fa); }
+  .metric-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .metric-value { font-size: 32px; font-weight: 800; line-height: 1; }
+  .metric-change { font-size: 12px; margin-top: 6px; }
+  .metric-change.up { color: var(--green); }
+  .metric-change.down { color: var(--red); }
+  .metric-icon { position: absolute; top: 20px; right: 20px; font-size: 28px; opacity: 0.15; }
+
+  /* TOOLBAR */
+  .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .search-box { flex: 1; min-width: 200px; position: relative; }
+  .search-box input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px 9px 36px; color: var(--text); font-size: 13px; outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-box input:focus { border-color: var(--accent); }
+  .search-box svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); width: 16px; }
+  select.filter-select {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px; color: var(--text); font-size: 13px; outline: none; cursor: pointer;
+  }
+
+  /* TABLE */
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface2); }
+  th { padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+  td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid rgba(51,65,85,0.5); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(99,102,241,0.04); }
+  .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .badge-purple { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .progress-bar { background: var(--surface2); border-radius: 4px; height: 6px; width: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .actions-cell { display: flex; gap: 6px; }
+  .client-name { font-weight: 600; }
+  .client-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000;
+    align-items: center; justify-content: center; backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5); animation: slideIn 0.2s ease;
+  }
+  @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-header { padding: 24px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+  .modal-header h3 { font-size: 18px; font-weight: 700; }
+  .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 22px; line-height: 1; padding: 4px; border-radius: 6px; }
+  .modal-close:hover { color: var(--text); background: var(--surface2); }
+  .modal-body { padding: 20px 24px 24px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; color: var(--text); font-size: 13px; outline: none; transition: border-color 0.15s; font-family: inherit;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .modal-footer { padding: 0 24px 24px; display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* PRICING */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 8px; }
+  .plan-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 28px; position: relative; transition: transform 0.2s;
+  }
+  .plan-card:hover { transform: translateY(-4px); }
+  .plan-card.featured { border-color: var(--accent); background: linear-gradient(180deg, rgba(99,102,241,0.08), var(--surface)); }
+  .plan-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 20px; white-space: nowrap; }
+  .plan-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .plan-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+  .plan-price { font-size: 40px; font-weight: 800; line-height: 1; }
+  .plan-price span { font-size: 16px; color: var(--muted); font-weight: 400; }
+  .plan-period { font-size: 12px; color: var(--muted); margin-bottom: 24px; margin-top: 4px; }
+  .plan-features { list-style: none; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .plan-features li { font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .plan-features li::before { content: '✓'; color: var(--green); font-weight: 700; }
+  .plan-features li.no::before { content: '✕'; color: var(--red); }
+
+  /* DASHBOARD CHARTS */
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .chart-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+  .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bar { width: 100%; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--accent), var(--accent2)); min-height: 4px; transition: opacity 0.2s; }
+  .bar:hover { opacity: 0.8; cursor: pointer; }
+  .bar-label { font-size: 10px; color: var(--muted); }
+  .donut-wrap { display: flex; gap: 20px; align-items: center; }
+  .donut { width: 100px; height: 100px; position: relative; flex-shrink: 0; }
+  .donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .donut-legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .activity-list { display: flex; flex-direction: column; gap: 12px; }
+  .activity-item { display: flex; gap: 12px; align-items: flex-start; }
+  .activity-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 4px; }
+  .activity-text { font-size: 13px; line-height: 1.4; }
+  .activity-time { font-size: 11px; color: var(--muted); }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 48px; color: var(--muted); }
+  .empty-state svg { width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.3; }
+  .empty-state p { font-size: 14px; }
+
+  /* SECTION HEADER */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .section-title { font-size: 16px; font-weight: 700; }
+  .section-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px; background: var(--green); color: white;
+    padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    transform: translateY(80px); opacity: 0; transition: all 0.3s; z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  @media (max-width: 1100px) {
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .charts-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="logo">
+    <span>AgencyScope</span>
+    <small>Agency Management Platform</small>
+  </div>
+  <nav>
+    <div class="section-label">Main</div>
+    <div class="nav-item active" data-view="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" data-view="clients">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Clients
+    </div>
+    <div class="nav-item" data-view="campaigns">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Campaigns
+    </div>
+    <div class="nav-item" data-view="reports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+      Reports
+    </div>
+    <div class="section-label" style="margin-top:12px">Finance</div>
+    <div class="nav-item" data-view="invoices">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Invoices
+    </div>
+    <div class="nav-item" data-view="pricing">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Pricing
+    </div>
+    <div class="section-label" style="margin-top:12px">Settings</div>
+    <div class="nav-item" data-view="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 12 2a10 10 0 0 0-7.07 2.93M4.93 19.07A10 10 0 0 0 12 22a10 10 0 0 0 7.07-2.93M4.93 4.93l14.14 14.14"/></svg>
+      Settings
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="avatar">JD</div>
+      <div class="user-info">
+        <span>Jamie Davis</span>
+        <small>Agency Owner</small>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div id="main">
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div>
+      <div id="page-title">Dashboard</div>
+      <div id="page-subtitle">Welcome back, Jamie • Tuesday, June 10, 2025</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline" id="refresh-btn">↻ Refresh</button>
+      <button class="btn btn-primary" id="main-action-btn" onclick="openModal('client')">+ Add Client</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- DASHBOARD VIEW -->
+    <div class="view active" id="view-dashboard">
+      <div class="metrics-grid" id="dash-metrics">
+        <div class="metric-card c1">
+          <div class="metric-icon">👥</div>
+          <div class="metric-label">Total Clients</div>
+          <div class="metric-value" id="m-clients">0</div>
+          <div class="metric-change up" id="m-clients-change">↑ +2 this month</div>
+        </div>
+        <div class="metric-card c2">
+          <div class="metric-icon">📈</div>
+          <div class="metric-label">Active Campaigns</div>
+          <div class="metric-value" id="m-campaigns">0</div>
+          <div class="metric-change up">↑ +5 this month</div>
+        </div>
+        <div class="metric-card c3">
+          <div class="metric-icon">💰</div>
+          <div class="metric-label">Monthly Revenue</div>
+          <div class="metric-value" id="m-revenue">$0</div>
+          <div class="metric-change up">↑ +12% vs last mo</div>
+        </div>
+        <div class="metric-card c4">
+          <div class="metric-icon">⭐</div>
+          <div class="metric-label">Avg. Satisfaction</div>
+          <div class="metric-value">4.8</div>
+          <div class="metric-change up">↑ +0.2 pts</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Monthly Revenue</div>
+          <div class="chart-sub">Last 6 months performance</div>
+          <div class="bar-chart" id="revenue-chart"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Campaign Status</div>
+          <div class="chart-sub">Distribution across all campaigns</div>
+          <div class="donut-wrap">
+            <div class="donut">
+              <svg viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#334155" stroke-width="3.5"/>
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#6366f1" stroke-width="3.5" stroke-dasharray="45 55" stroke-dashoffset="0"/>
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" stroke-width="3.5" stroke-dasharray="30 70" stroke-dashoffset="-45"/>
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-dasharray="15 85" stroke-dashoffset="-75"/>
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="10 90" stroke-dashoffset="-90"/>
+              </svg>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div><span>Active (45%)</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div><span>Completed (30%)</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span>Paused (15%)</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div><span>Draft (10%)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Recent Activity</div>
+          <div class="chart-sub">Latest updates across your agency</div>
+          <div class="activity-list" id="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot" style="background: var(--green)"></div>
+              <div><div class="activity-text">New client <strong>Apex Retail</strong> onboarded successfully</div><div class="activity-time">2 hours ago</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-</body></html>
