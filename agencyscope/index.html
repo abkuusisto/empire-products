@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgencyScope – Agency Analytics Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;display:flex;min-height:100vh;font-size:14px}
+a{color:inherit;text-decoration:none}
+
+/* SIDEBAR */
+#sidebar{width:240px;background:#1e293b;border-right:1px solid #334155;display:flex;flex-direction:column;padding:0;flex-shrink:0}
+#sidebar-logo{padding:24px 20px;border-bottom:1px solid #334155;font-size:20px;font-weight:700;color:#38bdf8;letter-spacing:-0.5px}
+#sidebar-logo span{color:#7dd3fc;font-size:12px;font-weight:400;display:block;margin-top:2px}
+#sidebar-nav{padding:16px 12px;flex:1}
+.nav-section{font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:1px;padding:12px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:#94a3b8;margin-bottom:2px;cursor:pointer;transition:all .15s}
+.nav-item:hover{background:#334155;color:#e2e8f0}
+.nav-item.active{background:#0f172a;color:#38bdf8;font-weight:600}
+.nav-icon{width:16px;text-align:center;font-size:15px}
+#sidebar-footer{padding:16px;border-top:1px solid #334155}
+.user-chip{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;background:#0f172a}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#38bdf8,#818cf8);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff}
+.user-info{font-size:13px;font-weight:600}
+.user-role{font-size:11px;color:#64748b}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow-y:auto}
+#topbar{background:#1e293b;border-bottom:1px solid #334155;padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
+#topbar h1{font-size:18px;font-weight:700}
+#topbar p{font-size:12px;color:#64748b;margin-top:2px}
+.topbar-actions{display:flex;gap:10px}
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:#38bdf8;color:#0f172a}
+.btn-ghost{background:#334155;color:#94a3b8}
+
+/* CONTENT */
+#content{padding:28px;flex:1}
+
+/* METRIC CARDS */
+#metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.metric-card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px}
+.metric-label{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.metric-value{font-size:28px;font-weight:800;color:#f1f5f9;margin-bottom:6px}
+.metric-change{font-size:12px;font-weight:600}
+.up{color:#34d399}.down{color:#f87171}
+.metric-bar{height:4px;background:#334155;border-radius:99px;margin-top:12px}
+.metric-fill{height:100%;border-radius:99px}
+
+/* TABLE */
+#table-section{background:#1e293b;border:1px solid #334155;border-radius:12px;margin-bottom:28px}
+.section-header{padding:18px 20px;border-bottom:1px solid #334155;display:flex;align-items:center;justify-content:space-between}
+.section-title{font-size:15px;font-weight:700}
+.badge{background:#334155;color:#94a3b8;font-size:11px;padding:3px 8px;border-radius:99px;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 20px;text-align:left;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #334155}
+td{padding:14px 20px;border-bottom:1px solid #1e293b;color:#cbd5e1;font-size:13px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#334155;transition:background .1s}
+.status{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.status-active{background:#064e3b;color:#34d399}
+.status-paused{background:#451a03;color:#fbbf24}
+.status-review{background:#1e1b4b;color:#a78bfa}
+.client-name{font-weight:600;color:#f1f5f9}
+.progress{height:6px;background:#334155;border-radius:99px;width:80px}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#38bdf8,#818cf8)}
+
+/* EMPTY STATE */
+#empty-state{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:48px 24px;text-align:center;margin-bottom:28px}
+#empty-state .empty-icon{font-size:40px;margin-bottom:12px}
+#empty-state h3{font-size:16px;font-weight:700;color:#f1f5f9;margin-bottom:6px}
+#empty-state p{color:#64748b;font-size:13px;max-width:320px;margin:0 auto 18px}
+
+/* PRICING */
+#pricing{padding:0 0 28px}
+.pricing-header{text-align:center;margin-bottom:24px}
+.pricing-header h2{font-size:22px;font-weight:800;margin-bottom:6px}
+.pricing-header p{color:#64748b;font-size:13px}
+#plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.plan{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:24px;position:relative}
+.plan.popular{border-color:#38bdf8}
+.popular-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#38bdf8;color:#0f172a;font-size:10px;font-weight:800;padding:3px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:.5px}
+.plan-name{font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.plan-price{font-size:32px;font-weight:800;color:#f1f5f9;margin-bottom:4px}
+.plan-price span{font-size:14px;font-weight:400;color:#64748b}
+.plan-desc{font-size:12px;color:#64748b;margin-bottom:20px}
+.plan-features{list-style:none;margin-bottom:24px}
+.plan-features li{font-size:13px;color:#94a3b8;padding:5px 0;display:flex;align-items:center;gap:8px}
+.plan-features li::before{content:"✓";color:#34d399;font-weight:700}
+.btn-plan{width:100%;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;text-align:center}
+.btn-plan-outline{background:transparent;color:#38bdf8;border:1px solid #38bdf8}
+.btn-plan-filled{background:#38bdf8;color:#0f172a}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div id="sidebar-logo">
+    AgencyScope
+    <span>Analytics Platform</span>
+  </div>
+  <nav id="sidebar-nav">
+    <div class="nav-section">Workspace</div>
+    <a class="nav-item active" id="nav-dashboard"><span class="nav-icon">📊</span>Dashboard</a>
+    <a class="nav-item" id="nav-clients"><span class="nav-icon">🏢</span>Clients</a>
+    <a class="nav-item" id="nav-campaigns"><span class="nav-icon">🚀</span>Campaigns</a>
+    <a class="nav-item" id="nav-reports"><span class="nav-icon">📄</span>Reports</a>
+    <div class="nav-section">Tools</div>
+    <a class="nav-item" id="nav-integrations"><span class="nav-icon">🔗</span>Integrations</a>
+    <a class="nav-item" id="nav-team"><span class="nav-icon">👥</span>Team</a>
+    <a class="nav-item" id="nav-billing"><span class="nav-icon">💳</span>Billing</a>
+    <div class="nav-section">Support</div>
+    <a class="nav-item" id="nav-docs"><span class="nav-icon">📚</span>Documentation</a>
+    <a class="nav-item" id="nav-settings"><span class="nav-icon">⚙️</span>Settings</a>
+  </nav>
+  <div id="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar">JD</div>
+      <div>
+        <div class="user-info">Jane Doe</div>
+        <div class="user-role">Admin • Pro Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+  <div id="topbar">
+    <div>
+      <h1>Overview Dashboard</h1>
+      <p>Last updated: June 14, 2025 · All clients</p>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" id="btn-export">📥 Export</button>
+      <button class="btn btn-primary" id="btn-add-client">+ Add Client</button>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- METRIC CARDS -->
+    <div id="metrics">
+      <div class="metric-card" id="card-revenue">
+        <div class="metric-label">Total MRR</div>
+        <div class="metric-value">$84,320</div>
+        <div class="metric-change up">▲ 12.4% vs last month</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:72%;background:linear-gradient(90deg,#38bdf8,#818cf8)"></div></div>
+      </div>
+      <div class="metric-card" id="card-clients">
+        <div class="metric-label">Active Clients</div>
+        <div class="metric-value">47</div>
+        <div class="metric-change up">▲ 3 new this month</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:58%;background:linear-gradient(90deg,#34d399,#06b6d4)"></div></div>
+      </div>
+      <div class="metric-card" id="card-campaigns">
+        <div class="metric-label">Live Campaigns</div>
+        <div class="metric-value">128</div>
+        <div class="metric-change down">▼ 4 paused this week</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:85%;background:linear-gradient(90deg,#fbbf24,#f87171)"></div></div>
+      </div>
+      <div class="metric-card" id="card-roi">
+        <div class="metric-label">Avg. Client ROI</div>
+        <div class="metric-value">3.8×</div>
+        <div class="metric-change up">▲ 0.3× improvement</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:65%;background:linear-gradient(90deg,#a78bfa,#ec4899)"></div></div>
+      </div>
+    </div>
+
+    <!-- DATA TABLE -->
+    <div id="table-section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Client Performance</div>
+        </div>
+        <span class="badge" id="table-count">47 clients</span>
+      </div>
+      <table id="clients-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Industry</th>
+            <th>Monthly Spend</th>
+            <th>ROI</th>
+            <th>Delivery</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="clients-tbody">
+          <tr>
+            <td><span class="client-name">Apex Retail Co.</span></td>
+            <td>E-commerce</td>
+            <td>$12,400</td>
+            <td>4.2×</td>
+            <td><div class="progress"><div class="progress-fill" style="width:88%"></div></div></td>
+            <td><span class="status status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><span class="client-name">Northstar SaaS</span></td>
+            <td>Software</td>
+            <td>$8,750</td>
+            <td>5.1×</td>
+            <td><div class="progress"><div class="progress-fill" style="width:95%"></div></div></td>
+            <td><span class="status status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><span class="client-name">Bright Health Clinic</span></td>
+            <td>Healthcare</td>
+            <td>$6,200</td>
+            <td>2.8×</td>
+            <td><div class="progress"><div class="progress-fill" style="width:60%"></div></div></td>
+            <td><span class="status status-paused">Paused</span></td>
+          </tr>
+          <tr>
+            <td><span class="client-name">Zenith Motors</span></td>
+            <td>Automotive</td>
+            <td>$15,000</td>
+            <td>3.6×</td>
+            <td><div class="progress"><div class="progress-fill" style="width:75%"></div></div></td>
+            <td><span class="status status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><span class="client-name">PureLeaf Organics</span></td>
+            <td>Food & Bev</td>
+            <td>$4,100</td>
+            <td>1.9×</td>
+            <td><div class="progress"><div class="progress-fill" style="width:40%"></div></div></td>
+            <td><span class="status status-review">In Review</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="empty-state">
+      <div class="empty-icon">📡</div>
+      <h3>No Integrations Connected</h3>
+      <p>Connect Google Ads, Meta, or HubSpot to start pulling live campaign data automatically.</p>
+      <button class="btn btn-primary" id="btn-connect">+ Connect Integration</button>
+    </div>
+
+    <!-- PRICING -->
+    <section id="pricing">
+      <div class="pricing-header">
+        <h2>Simple, Transparent Pricing</h2>
+        <p>Scale your agency without scaling your costs. All plans include a 14-day free trial.</p>
+      </div>
+      <div id="plans">
+        <div class="plan" id="plan-starter">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">$29<span>/month</span></div>
+          <div class="plan-desc">Perfect for freelancers & small agencies.</div>
+          <ul class="plan-features">
+            <li>Up to 5 clients</li>
+            <li>10 live campaigns</li>
+            <li>Basic reporting</li>
+            <li>Email support</li>
+          </ul>
+          <button class="btn-plan btn-plan-outline" id="btn-starter">Get Started</button>
+        </div>
+        <div class="plan popular" id="plan-pro">
+          <div class="popular-badge">Most Popular</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">$49<span>/month</span></div>
+          <div class="plan-desc">For growing agencies managing multiple clients.</div>
+          <ul class="plan-features">
+            <li>Up to 50 clients</li>
+            <li>Unlimited campaigns</li>
+            <li>Advanced analytics & ROI</li>
+            <li>3 integrations</li>
+            <li>Priority support</li>
+          </ul>
+          <button class="btn-plan btn-plan-filled" id="btn-pro">Start Free Trial</button>
+        </div>
+        <div class="plan" id="plan-agency">
+          <div class="plan-name">Agency</div>
+          <div class="plan-price">$149<span>/month</span></div>
+          <div class="plan-desc">Unlimited power for large-scale agencies.</div>
+          <ul class="plan-features">
+            <li>Unlimited clients</li>
+            <li>Unlimited campaigns</li>
+            <li>White-label reports</li>
+            <li>All integrations</li>
+            <li>Dedicated account manager</li>
+          </ul>
+          <button class="btn-plan btn-plan-outline" id="btn-agency">Contact Sales</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+// AgencyScope – Full JavaScript Implementation
+(function () {
+  // ─── Utilities ──────────────────────────────────────────────────────────────
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
+  const $ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+  const uid = () => Math.random().toString(36).slice(2, 10);
+  const fmt = (n) => Number(n).toLocaleString();
+  const fmtCur = (n) => '
+</html> + Number(n).toLocaleString('en-US', { minimumFractionDigits: 0 });
+  const now = () => new Date().toISOString().slice(0, 10);
+
+  // ─── Storage ─────────────────────────────────────────────────────────────────
+  const store = {
+    get: (k) => JSON.parse(localStorage.getItem('agencyscope_' + k) || 'null'),
+    set: (k, v) => localStorage.setItem('agencyscope_' + k, JSON.stringify(v)),
+  };
+
+  // ─── Sample Data ─────────────────────────────────────────────────────────────
+  function seedData() {
+    if (store.get('seeded')) return;
+
+    store.set('clients', [
+      { id: uid(), name: 'TechNova Inc.', industry: 'SaaS', status: 'Active', budget: 12000, spent: 8400, contact: 'Sara Lee', email: 'sara@technova.io', since: '2023-01-15', campaigns: ['c1', 'c2'] },
+      { id: uid(), name: 'GreenLeaf Co.', industry: 'E-Commerce', status: 'Active', budget: 7500, spent: 5200, contact: 'James Park', email: 'james@greenleaf.com', since: '2023-03-22', campaigns: ['c3'] },
+      { id: uid(), name: 'Apex Realty', industry: 'Real Estate', status: 'Paused', budget: 9000, spent: 9000, contact: 'Monica Cruz', email: 'monica@apexrealty.com', since: '2022-11-01', campaigns: ['c4'] },
+      { id: uid(), name: 'FitLife Brand', industry: 'Health & Wellness', status: 'Active', budget: 5000, spent: 2100, contact: 'Kevin Stone', email: 'kevin@fitlife.co', since: '2024-01-10', campaigns: [] },
+      { id: uid(), name: 'CloudMatrix', industry: 'B2B Tech', status: 'Active', budget: 18000, spent: 11300, contact: 'Diana Chen', email: 'diana@cloudmatrix.com', since: '2023-07-04', campaigns: ['c5'] },
+    ]);
+
+    store.set('campaigns', [
+      { id: 'c1', clientId: '', name: 'TechNova Q2 Launch', channel: 'Google Ads', status: 'Active', budget: 4000, spent: 3100, impressions: 284000, clicks: 9200, conversions: 420, startDate: '2024-04-01', endDate: '2024-06-30' },
+      { id: 'c2', clientId: '', name: 'TechNova Retargeting', channel: 'Meta Ads', status: 'Active', budget: 2500, spent: 1800, impressions: 142000, clicks: 5400, conversions: 210, startDate: '2024-04-15', endDate: '2024-06-30' },
+      { id: 'c3', clientId: '', name: 'GreenLeaf Summer Sale', channel: 'Google Ads', status: 'Active', budget: 3000, spent: 2100, impressions: 198000, clicks: 7800, conversions: 390, startDate: '2024-05-01', endDate: '2024-07-31' },
+      { id: 'c4', clientId: '', name: 'Apex Listings Push', channel: 'LinkedIn', status: 'Paused', budget: 4500, spent: 4500, impressions: 67000, clicks: 2100, conversions: 88, startDate: '2024-01-01', endDate: '2024-03-31' },
+      { id: 'c5', clientId: '', name: 'CloudMatrix ABM', channel: 'LinkedIn', status: 'Active', budget: 8000, spent: 5200, impressions: 95000, clicks: 3800, conversions: 195, startDate: '2024-03-01', endDate: '2024-08-31' },
+      { id: uid(), name: 'FitLife Awareness', channel: 'TikTok', status: 'Draft', budget: 2000, spent: 0, impressions: 0, clicks: 0, conversions: 0, startDate: '2024-07-01', endDate: '2024-08-31' },
+    ]);
+
+    store.set('reports', [
+      { id: uid(), name: 'Q1 2024 Performance Report', client: 'TechNova Inc.', type: 'Quarterly', created: '2024-04-02', status: 'Delivered' },
+      { id: uid(), name: 'April Monthly Digest', client: 'GreenLeaf Co.', type: 'Monthly', created: '2024-05-01', status: 'Delivered' },
+      { id: uid(), name: 'LinkedIn Campaign Audit', client: 'Apex Realty', type: 'Ad-hoc', created: '2024-04-18', status: 'Draft' },
+      { id: uid(), name: 'CloudMatrix ABM Results', client: 'CloudMatrix', type: 'Monthly', created: '2024-05-05', status: 'Delivered' },
+    ]);
+
+    store.set('tasks', [
+      { id: uid(), title: 'Review TechNova ad creatives', client: 'TechNova Inc.', due: '2024-06-15', priority: 'High', done: false },
+      { id: uid(), title: 'Send GreenLeaf monthly report', client: 'GreenLeaf Co.', due: '2024-06-01', priority: 'Medium', done: true },
+      { id: uid(), title: 'Reactivate Apex Realty campaign', client: 'Apex Realty', due: '2024-06-20', priority: 'High', done: false },
+      { id: uid(), title: 'Onboard FitLife Brand', client: 'FitLife Brand', due: '2024-06-10', priority: 'Medium', done: false },
+      { id: uid(), title: 'CloudMatrix Q2 planning call', client: 'CloudMatrix', due: '2024-06-08', priority: 'Low', done: false },
+      { id: uid(), title: 'Update billing for all clients', client: 'All', due: '2024-06-30', priority: 'Low', done: false },
+    ]);
+
+    store.set('team', [
+      { id: uid(), name: 'Alex Rivera', role: 'Account Manager', email: 'alex@agency.io', clients: 3, avatar: 'AR' },
+      { id: uid(), name: 'Priya Nair', role: 'PPC Specialist', email: 'priya@agency.io', clients: 4, avatar: 'PN' },
+      { id: uid(), name: 'Tom Walsh', role: 'Creative Director', email: 'tom@agency.io', clients: 2, avatar: 'TW' },
+      { id: uid(), name: 'Sofia Kim', role: 'SEO Analyst', email: 'sofia@agency.io', clients: 3, avatar: 'SK' },
+    ]);
+
+    store.set('seeded', true);
+  }
+
+  // ─── Page State ───────────────────────────────────────────────────────────────
+  let currentPage = 'dashboard';
+
+  // ─── Navigation ──────────────────────────────────────────────────────────────
+  function initNav() {
+    $('.nav-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        const page = item.dataset.page;
+        if (!page) return;
+        $('.nav-item').forEach((n) => n.classList.remove('active'));
+        item.classList.add('active');
+        currentPage = page;
+        renderPage(page);
+      });
+    });
+  }
+
+  // ─── Render Router ───────────────────────────────────────────────────────────
+  function renderPage(page) {
+    const content = $('#page-content');
+    if (!content) return;
+    const titleEl = $('#topbar-title');
+    const subEl = $('#topbar-sub');
+    const actionBtn = $('#topbar-action');
+
+    const pages = {
+      dashboard: { title: 'Dashboard', sub: 'Agency overview & KPIs', btn: null },
+      clients: { title: 'Clients', sub: 'Manage your client roster', btn: '+ Add Client' },
+      campaigns: { title: 'Campaigns', sub: 'Track all active & past campaigns', btn: '+ New Campaign' },
+      reports: { title: 'Reports', sub: 'Generated performance reports', btn: '+ Create Report' },
+      tasks: { title: 'Tasks', sub: 'Team tasks & to-dos', btn: '+ Add Task' },
+      team: { title: 'Team', sub: 'Agency team members', btn: '+ Add Member' },
+      settings: { title: 'Settings', sub: 'Account & preferences', btn: null },
+    };
+
+    const p = pages[page] || pages.dashboard;
+    if (titleEl) titleEl.textContent = p.title;
+    if (subEl) subEl.textContent = p.sub;
+    if (actionBtn) {
+      if (p.btn) {
+        actionBtn.textContent = p.btn;
+        actionBtn.style.display = 'inline-flex';
+        actionBtn.onclick = () => openAddModal(page);
+      } else {
+        actionBtn.style.display = 'none';
+      }
+    }
+
+    const renders = {
+      dashboard: renderDashboard,
+      clients: renderClients,
+      campaigns: renderCampaigns,
+      reports: renderReports,
+      tasks: renderTasks,
+      team: renderTeam,
+      settings: renderSettings,
+    };
+    (renders[page] || renderDashboard)(content);
+  }
+
+  // ─── Dashboard ───────────────────────────────────────────────────────────────
+  function renderDashboard(el) {
+    const clients = store.get('clients') || [];
+    const campaigns = store.get('campaigns') || [];
+    const tasks = store.get('tasks') || [];
+
+    const totalBudget = clients.reduce((s, c) => s + c.budget, 0);
+    const totalSpent = clients.reduce((s, c) => s + c.spent, 0);
+    const activeClients = clients.filter((c) => c.status === 'Active').length;
+    const activeCampaigns = campaigns.filter((c) => c.status === 'Active').length;
+    const totalImpressions = campaigns.reduce((s, c) => s + c.impressions, 0);
+    const totalConversions = campaigns.reduce((s, c) => s + c.conversions, 0);
+    const pendingTasks = tasks.filter((t) => !t.done).length;
+    const roi = totalSpent > 0 ? (((totalConversions * 85 - totalSpent) / totalSpent) * 100).toFixed(1) : 0;
+
+    el.innerHTML = `
+      <div style="padding:28px">
+        <!-- KPI Cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px">
+          ${kpiCard('👥', 'Active Clients', activeClients, `${clients.length} total`, '#38bdf8')}
+          ${kpiCard('📢', 'Live Campaigns', activeCampaigns, `${campaigns.length} total`, '#a78bfa')}
+          ${kpiCard('💰', 'Total Budget', fmtCur(totalBudget), `${fmtCur(totalSpent)} spent`, '#34d399')}
+          ${kpiCard('🎯', 'Conversions', fmt(totalConversions), `ROI ${roi}%`, '#f472b6')}
+        </div>
+
+        <!-- Charts Row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px">
+          <div style="background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155">
+            <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:#94a3b8">BUDGET UTILIZATION BY CLIENT</div>
+            ${clients.map((c) => budgetBar(c)).join('')}
+          </div>
+          <div style="background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155">
+            <div style="font-size:13px;font-weight:600;margin-bottom:16px;color:#94a3b8">CAMPAIGN PERFORMANCE</div>
+            ${campaigns.filter((c) => c.status === 'Active').slice(0, 5).map((c) => perfBar(c)).join('')}
+          </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          <div style="background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155">
+            <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:#94a3b8">CHANNEL MIX</div>
+            ${channelBreakdown(campaigns)}
+          </div>
+          <div style="background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155;grid-column:span 2">
+            <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:#94a3b8">PENDING TASKS (${pendingTasks})</div>
+            ${tasks.filter((t) => !t.done).slice(0, 5).map((t) => taskRow(t)).join('')}
+            ${pendingTasks === 0 ? '<div style="color:#64748b;font-size:13px;text-align:center;padding:20px">All tasks complete 🎉</div>' : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function kpiCard(icon, label, value, sub, color) {
+    return `
+      <div style="background:#1e293b;border-radius:12px;padding:20px;border:1px solid #334155">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <span style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.8px">${label}</span>
+          <span style="font-size:20px">${icon}</span>
+        </div>
+        <div style="font-size:26px;font-weight:700;color:${color};margin-bottom:4px
+</script>
+</body>
+</html>
