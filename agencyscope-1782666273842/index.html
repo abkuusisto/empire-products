@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgencyScope – Agency Analytics Dashboard</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0f172a;--sidebar:#1e293b;--card:#1e293b;--border:#334155;
+    --accent:#6366f1;--accent2:#22d3ee;--text:#f1f5f9;--muted:#94a3b8;
+    --green:#10b981;--yellow:#f59e0b;--red:#ef4444;
+  }
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+  /* SIDEBAR */
+  #sidebar{width:240px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0;flex-shrink:0}
+  .logo{padding:24px 20px;font-size:1.3rem;font-weight:700;color:var(--accent);border-bottom:1px solid var(--border);letter-spacing:-0.5px}
+  .logo span{color:var(--accent2)}
+  nav{padding:16px 0;flex:1}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;color:var(--muted);font-size:.9rem;cursor:pointer;border-left:3px solid transparent;transition:all .2s}
+  .nav-item:hover{color:var(--text);background:rgba(99,102,241,.08)}
+  .nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(99,102,241,.12)}
+  .nav-icon{font-size:1.1rem;width:20px;text-align:center}
+  .nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:.7rem;padding:2px 7px;border-radius:999px}
+  .sidebar-footer{padding:16px 20px;border-top:1px solid var(--border)}
+  .user-pill{display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
+  .user-info{font-size:.8rem}.user-info .name{color:var(--text);font-weight:600}.user-info .role{color:var(--muted)}
+  /* MAIN */
+  #main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+  .topbar{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);position:sticky;top:0;z-index:10}
+  .topbar h1{font-size:1.2rem;font-weight:700}
+  .topbar-actions{display:flex;gap:10px}
+  .btn{padding:8px 16px;border-radius:8px;border:none;font-size:.85rem;font-weight:600;cursor:pointer}
+  .btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+  .btn-primary{background:var(--accent);color:#fff}
+  .content{padding:28px;display:flex;flex-direction:column;gap:28px}
+  /* METRIC CARDS */
+  #metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .metric-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+  .metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .metric-card.c1::before{background:var(--accent)}
+  .metric-card.c2::before{background:var(--accent2)}
+  .metric-card.c3::before{background:var(--green)}
+  .metric-card.c4::before{background:var(--yellow)}
+  .metric-label{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  .metric-value{font-size:1.9rem;font-weight:800;margin-bottom:6px}
+  .metric-delta{font-size:.78rem;display:flex;align-items:center;gap:4px}
+  .delta-up{color:var(--green)}.delta-down{color:var(--red)}
+  /* TABLE */
+  #table-section{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .section-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .section-title{font-size:1rem;font-weight:700}
+  .badge{padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600}
+  .badge-muted{background:rgba(148,163,184,.12);color:var(--muted)}
+  table{width:100%;border-collapse:collapse}
+  th{padding:12px 22px;text-align:left;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+  td{padding:14px 22px;font-size:.875rem;border-bottom:1px solid rgba(51,65,85,.5)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(99,102,241,.04)}
+  .status{padding:3px 10px;border-radius:999px;font-size:.73rem;font-weight:600}
+  .status.active{background:rgba(16,185,129,.15);color:var(--green)}
+  .status.paused{background:rgba(245,158,11,.15);color:var(--yellow)}
+  .status.ended{background:rgba(239,68,68,.15);color:var(--red)}
+  .progress-bar{background:var(--border);border-radius:999px;height:6px;width:100px}
+  .progress-fill{height:100%;border-radius:999px;background:var(--accent)}
+  /* EMPTY STATE */
+  #empty-state{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:56px 28px;text-align:center}
+  .empty-icon{font-size:3rem;margin-bottom:16px;opacity:.4}
+  .empty-title{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+  .empty-sub{color:var(--muted);font-size:.875rem;margin-bottom:20px}
+  /* PRICING */
+  #pricing{padding:40px 28px;border-top:1px solid var(--border);background:rgba(30,41,59,.3)}
+  .pricing-header{text-align:center;margin-bottom:32px}
+  .pricing-header h2{font-size:1.6rem;font-weight:800;margin-bottom:8px}
+  .pricing-header p{color:var(--muted);font-size:.9rem}
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto}
+  .plan{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative}
+  .plan.popular{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;padding:4px 14px;border-radius:999px;letter-spacing:.05em}
+  .plan-name{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+  .plan-price{font-size:2.4rem;font-weight:800;margin-bottom:4px}
+  .plan-price span{font-size:1rem;font-weight:400;color:var(--muted)}
+  .plan-desc{color:var(--muted);font-size:.82rem;margin-bottom:22px}
+  .plan-features{list-style:none;margin-bottom:24px}
+  .plan-features li{font-size:.84rem;padding:6px 0;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .plan-features li::before{content:'✓';color:var(--green);font-weight:700;font-size:.9rem}
+  .btn-plan{width:100%;padding:11px;border-radius:8px;font-weight:700;font-size:.875rem;cursor:pointer;border:none}
+  .btn-plan.outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+  .btn-plan.filled{background:var(--accent);color:#fff}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="logo">Agency<span>Scope</span></div>
+  <nav id="sidebar-nav">
+    <div class="nav-item active"><span class="nav-icon">📊</span> Dashboard</div>
+    <div class="nav-item"><span class="nav-icon">👥</span> Clients <span class="nav-badge">12</span></div>
+    <div class="nav-item"><span class="nav-icon">🚀</span> Campaigns</div>
+    <div class="nav-item"><span class="nav-icon">📈</span> Reports</div>
+    <div class="nav-item"><span class="nav-icon">⏱️</span> Time Tracking</div>
+    <div class="nav-item"><span class="nav-icon">💰</span> Revenue</div>
+    <div class="nav-item"><span class="nav-icon">🔔</span> Alerts <span class="nav-badge">3</span></div>
+    <div class="nav-item"><span class="nav-icon">⚙️</span> Settings</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="avatar">JS</div>
+      <div class="user-info">
+        <div class="name">Jamie Solis</div>
+        <div class="role">Admin · Pro Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN AREA -->
+<main id="main">
+  <div class="topbar">
+    <h1>Dashboard Overview</h1>
+    <div class="topbar-actions">
+      <button class="btn btn-outline">Export CSV</button>
+      <button class="btn btn-primary">+ New Campaign</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- METRIC CARDS -->
+    <section id="metrics">
+      <div class="metric-card c1" id="metric-revenue">
+        <div class="metric-label">Monthly Revenue</div>
+        <div class="metric-value">$84,320</div>
+        <div class="metric-delta delta-up">▲ 12.4% vs last month</div>
+      </div>
+      <div class="metric-card c2" id="metric-clients">
+        <div class="metric-label">Active Clients</div>
+        <div class="metric-value">47</div>
+        <div class="metric-delta delta-up">▲ 3 new this month</div>
+      </div>
+      <div class="metric-card c3" id="metric-campaigns">
+        <div class="metric-label">Live Campaigns</div>
+        <div class="metric-value">128</div>
+        <div class="metric-delta delta-down">▼ 2 paused today</div>
+      </div>
+      <div class="metric-card c4" id="metric-utilization">
+        <div class="metric-label">Team Utilization</div>
+        <div class="metric-value">78%</div>
+        <div class="metric-delta delta-up">▲ On target (75% goal)</div>
+      </div>
+    </section>
+
+    <!-- DATA TABLE -->
+    <section id="table-section">
+      <div class="section-header">
+        <div class="section-title">Active Campaigns</div>
+        <span class="badge badge-muted">Showing 5 of 128</span>
+      </div>
+      <table id="campaigns-table">
+        <thead>
+          <tr>
+            <th>Campaign</th>
+            <th>Client</th>
+            <th>Channel</th>
+            <th>Budget Used</th>
+            <th>ROAS</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Spring Sale Push</strong></td>
+            <td>Luma Retail Co.</td>
+            <td>Google Ads</td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+              <small style="color:var(--muted)">72% of $12,000</small>
+            </td>
+            <td style="color:var(--green);font-weight:700">4.2x</td>
+            <td><span class="status active">Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>Brand Awareness Q2</strong></td>
+            <td>Northfield Bank</td>
+            <td>Meta Ads</td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+              <small style="color:var(--muted)">45% of $8,500</small>
+            </td>
+            <td style="color:var(--green);font-weight:700">2.8x</td>
+            <td><span class="status active">Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>Summer Relaunch</strong></td>
+            <td>Velo Sports Inc.</td>
+            <td>TikTok</td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:91%"></div></div>
+              <small style="color:var(--muted)">91% of $6,000</small>
+            </td>
+            <td style="color:var(--yellow);font-weight:700">1.9x</td>
+            <td><span class="status paused">Paused</span></td>
+          </tr>
+          <tr>
+            <td><strong>Lead Gen Funnel</strong></td>
+            <td>Apex Legal Group</td>
+            <td>LinkedIn</td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+              <small style="color:var(--muted)">33% of $15,000</small>
+            </td>
+            <td style="color:var(--green);font-weight:700">5.1x</td>
+            <td><span class="status active">Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>Holiday Clearance</strong></td>
+            <td>Mosaic Home Goods</td>
+            <td>Google Ads</td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+              <small style="color:var(--muted)">100% of $9,200</small>
+            </td>
+            <td style="color:var(--muted);font-weight:700">3.3x</td>
+            <td><span class="status ended">Ended</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- EMPTY STATE -->
+    <section id="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">No Reports Generated Yet</div>
+      <div class="empty-sub">Run your first automated report to share performance insights directly with clients.</div>
+      <button class="btn btn-primary">Generate First Report</button>
+    </section>
+
+  </div>
+
+  <!-- PRICING SECTION -->
+  <section id="pricing">
+    <div class="pricing-header">
+      <h2>Simple, Transparent Pricing</h2>
+      <p>Scale AgencyScope as your client roster grows. Cancel anytime.</p>
+    </div>
+    <div class="plans" id="pricing-plans">
+
+      <div class="plan" id="plan-starter">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$29<span>/mo</span></div>
+        <div class="plan-desc">Perfect for freelancers managing a handful of clients.</div>
+        <ul class="plan-features">
+          <li>Up to 5 clients</li>
+          <li>20 active campaigns</li>
+          <li>Basic reporting</li>
+          <li>Email support</li>
+          <li>1 team seat</li>
+        </ul>
+        <button class="btn-plan outline">Get Started</button>
+      </div>
+
+      <div class="plan popular" id="plan-pro">
+        <div class="popular-tag">MOST POPULAR</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$49<span>/mo</span></div>
+        <div class="plan-desc">Everything growing agencies need to manage clients at scale.</div>
+        <ul class="plan-features">
+          <li>Up to 50 clients</li>
+          <li>Unlimited campaigns</li>
+          <li>Advanced analytics</li>
+          <li>White-label reports</li>
+          <li>5 team seats</li>
+        </ul>
+        <button class="btn-plan filled">Start Free Trial</button>
+      </div>
+
+      <div class="plan" id="plan-agency">
+        <div class="plan-name">Agency</div>
+        <div class="plan-price">$149<span>/mo</span></div>
+        <div class="plan-desc">Full power for large agencies with complex client operations.</div>
+        <ul class="plan-features">
+          <li>Unlimited clients</li>
+          <li>Unlimited campaigns</li>
+          <li>Custom dashboards</li>
+          <li>API access</li>
+          <li>Unlimited seats</li>
+        </ul>
+        <button class="btn-plan outline">Contact Sales</button>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+const STORAGE_KEY = 'agencyscope_data';
+
+const SEED = {
+  clients: [
+    { id: 1, name: 'Apex Creative', contact: 'sara@apex.io', budget: '$12,000', status: 'Active', joined: '2024-01-10' },
+    { id: 2, name: 'BlueSky Media', contact: 'tom@bluesky.com', budget: '$8,500', status: 'Active', joined: '2024-02-14' },
+    { id: 3, name: 'Nova Brands', contact: 'lena@nova.co', budget: '$21,000', status: 'Paused', joined: '2024-03-01' },
+    { id: 4, name: 'Orbit Digital', contact: 'raj@orbit.io', budget: '$5,000', status: 'Active', joined: '2024-03-22' },
+    { id: 5, name: 'Pulse Agency', contact: 'nina@pulse.net', budget: '$15,500', status: 'Inactive', joined: '2024-04-05' },
+    { id: 6, name: 'Zenith Corp', contact: 'jake@zenith.com', budget: '$30,000', status: 'Active', joined: '2024-04-18' }
+  ],
+  campaigns: [
+    { id: 1, name: 'Spring Launch 2024', client: 'Apex Creative', channel: 'Social', spend: '$4,200', status: 'Running', start: '2024-03-01' },
+    { id: 2, name: 'Brand Awareness Q2', client: 'BlueSky Media', channel: 'Display', spend: '$2,800', status: 'Completed', start: '2024-04-01' },
+    { id: 3, name: 'Lead Gen Drive', client: 'Nova Brands', channel: 'Search', spend: '$7,100', status: 'Running', start: '2024-04-10' },
+    { id: 4, name: 'Retargeting Push', client: 'Orbit Digital', channel: 'Social', spend: '$1,500', status: 'Paused', start: '2024-05-01' },
+    { id: 5, name: 'Email Nurture Series', client: 'Zenith Corp', channel: 'Email', spend: '$900', status: 'Running', start: '2024-05-15' }
+  ],
+  reports: [
+    { id: 1, title: 'Q1 Performance Summary', client: 'Apex Creative', type: 'Quarterly', created: '2024-04-01', status: 'Published' },
+    { id: 2, title: 'Social ROI Report', client: 'BlueSky Media', type: 'Custom', created: '2024-04-10', status: 'Draft' },
+    { id: 3, title: 'Monthly KPIs – March', client: 'Nova Brands', type: 'Monthly', created: '2024-04-05', status: 'Published' },
+    { id: 4, title: 'Campaign Attribution', client: 'Zenith Corp', type: 'Custom', created: '2024-05-01', status: 'Published' },
+    { id: 5, title: 'Lead Funnel Analysis', client: 'Orbit Digital', type: 'Monthly', created: '2024-05-10', status: 'Draft' }
+  ]
+};
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) { localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED)); return JSON.parse(JSON.stringify(SEED)); }
+  return JSON.parse(raw);
+}
+
+function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+let appData = loadData();
+let currentSection = 'dashboard';
+
+const navItems = document.querySelectorAll('.nav-item');
+const mainContent = document.querySelector('.content') || createContent();
+
+function createContent() {
+  const c = document.createElement('div');
+  c.className = 'content';
+  c.style.cssText = 'padding:28px;display:flex;flex-direction:column;gap:28px';
+  document.querySelector('#main').appendChild(c);
+  return c;
+}
+
+const sections = {
+  dashboard: renderDashboard,
+  clients: () => renderTable('clients'),
+  campaigns: () => renderTable('campaigns'),
+  reports: () => renderTable('reports'),
+  settings: renderSettings,
+  pricing: renderPricing
+};
+
+function getNavKey(item) {
+  const txt = item.querySelector('span:last-child, .nav-label') || item;
+  const label = (txt.textContent || item.textContent).trim().toLowerCase().replace(/\s+/g,'');
+  if (label.includes('dashboard') || label.includes('overview')) return 'dashboard';
+  if (label.includes('client')) return 'clients';
+  if (label.includes('campaign')) return 'campaigns';
+  if (label.includes('report')) return 'reports';
+  if (label.includes('setting')) return 'settings';
+  if (label.includes('pric') || label.includes('billing')) return 'pricing';
+  return 'dashboard';
+}
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    navItems.forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    currentSection = getNavKey(item);
+    renderSection();
+  });
+});
+
+function renderSection() {
+  const fn = sections[currentSection] || renderDashboard;
+  fn();
+}
+
+function renderDashboard() {
+  mainContent.innerHTML = '';
+  updateTopbar('Dashboard', false);
+  const metrics = document.getElementById('metrics');
+  if (metrics) {
+    const cards = metrics.querySelectorAll('.metric-card');
+    const vals = [
+      { label: 'Total Clients', val: appData.clients.length, sub: '+2 this month' },
+      { label: 'Active Campaigns', val: appData.campaigns.filter(c=>c.status==='Running').length, sub: 'Across all clients' },
+      { label: 'Reports Generated', val: appData.reports.length, sub: 'This quarter' },
+      { label: 'Avg Budget', val: '
+</html> + Math.round(appData.clients.reduce((a,c)=>a+parseInt(c.budget.replace(/\D/g,'')),0)/appData.clients.length).toLocaleString(), sub: 'Per client' }
+    ];
+    cards.forEach((card, i) => {
+      if (!vals[i]) return;
+      const existing = card.querySelector('.metric-val');
+      if (existing) { existing.textContent = vals[i].val; return; }
+      card.innerHTML += `<div style="color:var(--muted);font-size:.8rem;margin-bottom:8px">${vals[i].label}</div><div class="metric-val" style="font-size:1.8rem;font-weight:700">${vals[i].val}</div><div style="color:var(--green);font-size:.78rem;margin-top:4px">${vals[i].sub}</div>`;
+    });
+  }
+  const html = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
+      <h3 style="margin-bottom:16px;font-size:1rem">Recent Clients</h3>
+      ${buildTableHTML(appData.clients.slice(0,3), 'clients', true)}
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
+      <h3 style="margin-bottom:16px;font-size:1rem">Active Campaigns</h3>
+      ${buildTableHTML(appData.campaigns.filter(c=>c.status==='Running').slice(0,3), 'campaigns', true)}
+    </div>`;
+  mainContent.innerHTML = html;
+  attachTableEvents();
+}
+
+function renderTable(type) {
+  mainContent.innerHTML = '';
+  const labels = { clients: 'Clients', campaigns: 'Campaigns', reports: 'Reports' };
+  updateTopbar(labels[type], true, type);
+  const searchId = `search-${type}`;
+  mainContent.innerHTML = `
+    <div style="display:flex;gap:12px;align-items:center">
+      <input id="${searchId}" placeholder="Search ${labels[type]}..." style="flex:1;padding:9px 14px;border-radius:8px;border:1px solid var(--border);background:var(--sidebar);color:var(--text);font-size:.875rem">
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px" id="table-wrap-${type}">
+      ${buildTableHTML(appData[type], type, false)}
+    </div>`;
+  document.getElementById(searchId).addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll(`#table-wrap-${type} tbody tr`);
+    rows.forEach(row => { row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+  });
+  attachTableEvents();
+}
+
+function buildTableHTML(rows, type, mini) {
+  const cols = {
+    clients: ['Name','Contact','Budget','Status','Joined'],
+    campaigns: ['Name','Client','Channel','Spend','Status','Start'],
+    reports: ['Title','Client','Type','Created','Status']
+  };
+  const keys = {
+    clients: ['name','contact','budget','status','joined'],
+    campaigns: ['name','client','channel','spend','status','start'],
+    reports: ['title','client','type','created','status']
+  };
+  const c = cols[type]; const k = keys[type];
+  let th = c.map(h=>`<th style="text-align:left;padding:10px 12px;font-size:.78rem;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border)">${h}</th>`).join('');
+  if (!mini) th += `<th style="border-bottom:1px solid var(--border)"></th>`;
+  let tb = rows.map(row => {
+    let cells = k.map(key => {
+      const v = row[key] || '';
+      const isStatus = key === 'status';
+      const color = isStatus ? (v==='Active'||v==='Running'||v==='Published'?'var(--green)':v==='Paused'?'var(--yellow)':'var(--muted)') : 'inherit';
+      const style = isStatus ? `style="color:${color};font-weight:600"` : '';
+      return `<td style="padding:10px 12px;font-size:.85rem;border-bottom:1px solid var(--border)" ${style}>${v}</td>`;
+    }).join('');
+    if (!mini) cells += `<td style="padding:10px 12px;border-bottom:1px solid var(--border);text-align:right">
+      <button class="btn btn-outline edit-btn" data-id="${row.id}" data-type="${type}" style="margin-right:6px;padding:4px 10px;font-size:.75rem">Edit</button>
+      <button class="btn" data-id="${row.id}" data-type="${type}" class="del-btn" style="background:rgba(239,68,68,.15);color:var(--red);border:none;padding:4px 10px;font-size:.75rem;border-radius:8px;cursor:pointer" onclick="this.closest('tr').remove(); window._delRow('${type}',${row.id})">Delete</button>
+    </td>`;
+    return `<tr>${cells}</tr>`;
+  }).join('');
+  if (!rows.length) tb = `<tr><td colspan="${c.length + (mini?0:1)}" style="padding:24px;text-align:center;color:var(--muted)">No records found</td></tr>`;
+  return `<table style="width:100%;border-collapse:collapse"><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table>`;
+}
+
+window._delRow = function(type, id) {
+  appData[type] = appData[type].filter(r => r.id !== id);
+  saveData(appData);
+};
+
+function attachTableEvents() {
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const type = btn.dataset.type;
+      const id = parseInt(btn.dataset.id);
+      const record = appData[type].find(r => r.id === id);
+      if (record) openModal(type, record);
+    });
+  });
+}
+
+function updateTopbar(title, showAdd, type) {
+  const h1 = document.querySelector('.topbar h1');
+  if (h1) h1.textContent = title;
+  const actions = document.querySelector('.topbar-actions');
+  if (actions && showAdd) {
+    const existing = actions.querySelector('.add-main-btn');
+    if (!existing) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-primary add-main-btn';
+      btn.textContent = '+ Add New';
+      btn.addEventListener('click', () => openModal(type));
+      actions.prepend(btn);
+    } else {
+      existing.onclick = () => openModal(type);
+    }
+  } else if (actions) {
+    const eb = actions.querySelector('.add-main-btn');
+    if (eb) eb.remove();
+  }
+  const exportBtn = document.querySelector('.topbar-actions .btn-outline');
+  if (exportBtn) exportBtn.addEventListener('click', () => alert('Export feature coming soon!'));
+}
+
+function renderSettings() {
+  mainContent.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:520px">
+    <h3 style="margin-bottom:20px">Agency Settings</h3>
+    <label style="display:block;margin-bottom:6px;font-size:.85rem;color:var(--muted)">Agency Name</label>
+    <input id="set-name" value="My Agency" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-bottom:16px">
+    <label style="display:block;margin-bottom:6px;font-size:.85rem;color:var(--muted)">Contact Email</label>
+    <input id="set-email" value="admin@agency.com" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-bottom:20px">
+    <button class="btn btn-primary" id="save-settings">Save Settings</button>
+  </div>`;
+  updateTopbar('Settings', false);
+  document.getElementById('save-settings').addEventListener('click', () => {
+    alert('Settings saved!');
+  });
+}
+
+function renderPricing() {
+  mainContent.innerHTML = `<div style="text-align:center;padding:40px 20px">
+    <h2 style="margin-bottom:12px">Upgrade Your Plan</h2>
+    <p style="color:var(
+</script>
+</body>
+</html>
