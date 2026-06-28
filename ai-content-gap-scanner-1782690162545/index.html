@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GapScanner AI — Find Content Gaps Your Competitors Are Hiding</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a0e1a;--card:#111827;--border:#1f2937;--accent:#6366f1;
+    --accent-glow:rgba(99,102,241,0.3);--text:#f1f5f9;--muted:#94a3b8;
+    --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+  }
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+  
+  /* NAV */
+  nav{position:sticky;top:0;z-index:100;background:rgba(10,14,26,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px}
+  .logo{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;display:flex;align-items:center;gap:8px}
+  .logo span{background:linear-gradient(135deg,#818cf8,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .logo-icon{width:28px;height:28px;background:linear-gradient(135deg,#6366f1,#818cf8);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .nav-tabs{display:flex;gap:4px}
+  .nav-tab{background:none;border:none;color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;white-space:nowrap}
+  .nav-tab:hover{color:var(--text);background:rgba(99,102,241,0.1)}
+  .nav-tab.active{color:var(--accent);background:rgba(99,102,241,0.15)}
+  .beta-badge{background:linear-gradient(135deg,#6366f1,#818cf8);color:white;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:1px}
+  
+  /* SECTIONS */
+  .section{display:none;padding:32px 24px;max-width:1100px;margin:0 auto}
+  .section.active{display:block}
+
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:all 0.2s}
+  .card:hover{border-color:rgba(99,102,241,0.3)}
+  
+  /* BUTTONS */
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;text-decoration:none}
+  .btn-primary{background:linear-gradient(135deg,#6366f1,#818cf8);color:white;box-shadow:0 0 24px var(--accent-glow)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 36px rgba(99,102,241,0.5)}
+  .btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .btn-outline:hover{background:rgba(99,102,241,0.1)}
+  .btn-sm{padding:8px 16px;font-size:12px;border-radius:8px}
+  
+  /* INPUTS */
+  .form-group{margin-bottom:18px}
+  .form-group label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+  .form-group input,.form-group select,.form-group textarea{width:100%;background:#0d1321;border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:10px;font-size:14px;font-family:inherit;transition:all 0.2s}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  
+  /* GRID */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+  .grid-6{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+  /* HERO */
+  .hero{text-align:center;padding:80px 24px 60px}
+  .hero h1{font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.15;margin-bottom:20px}
+  .grad-text{background:linear-gradient(135deg,#818cf8,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{font-size:18px;color:var(--muted);max-width:560px;margin:0 auto 36px}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  /* METRIC CARDS */
+  .metric-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+  .metric-num{font-size:32px;font-weight:800;color:var(--accent)}
+  .metric-label{font-size:12px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+  
+  /* TABLE */
+  .data-table{width:100%;border-collapse:collapse;font-size:13px}
+  .data-table th{background:rgba(99,102,241,0.1);color:var(--muted);font-weight:600;padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border)}
+  .data-table td{padding:12px 14px;border-bottom:1px solid rgba(31,41,55,0.5);vertical-align:middle}
+  .data-table tr:hover td{background:rgba(99,102,241,0.05)}
+  .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+  .badge-green{background:rgba(16,185,129,0.15);color:#10b981}
+  .badge-yellow{background:rgba(245,158,11,0.15);color:#f59e0b}
+  .badge-red{background:rgba(239,68,68,0.15);color:#ef4444}
+  .badge-blue{background:rgba(99,102,241,0.15);color:#818cf8}
+  
+  /* SECTION HEADERS */
+  .section-header{margin-bottom:32px}
+  .section-header h2{font-size:28px;font-weight:800;margin-bottom:8px}
+  .section-header p{color:var(--muted);font-size:15px}
+  .tag{display:inline-block;background:rgba(99,102,241,0.15);color:var(--accent);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.5px;margin-bottom:12px;text-transform:uppercase}
+  
+  /* LOADING */
+  .loading-bar{height:3px;background:linear-gradient(90deg,var(--accent),#818cf8);border-radius:2px;animation:loading 1.5s ease-in-out}
+  @keyframes loading{from{width:0}to{width:100%}}
+  .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  
+  /* FAQ */
+  .faq-item{border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+  .faq-q{padding:18px 20px;cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;transition:background 0.2s}
+  .faq-q:hover{background:rgba(99,102,241,0.05)}
+  .faq-a{padding:0 20px;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;color:var(--muted);font-size:14px}
+  .faq-item.open .faq-a{max-height:200px;padding:0 20px 18px}
+  .faq-arrow{transition:transform 0.3s;font-size:18px;color:var(--accent)}
+  .faq-item.open .faq-arrow{transform:rotate(45deg)}
+
+  /* PRICING */
+  .pricing-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;transition:all 0.2s}
+  .pricing-card:hover{border-color:rgba(99,102,241,0.4);transform:translateY(-2px)}
+  .pricing-card.featured{border-color:var(--accent);box-shadow:0 0 32px var(--accent-glow)}
+  .popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#6366f1,#818cf8);color:white;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;white-space:nowrap}
+  .price{font-size:40px;font-weight:800;color:var(--text)}
+  .price-period{font-size:14px;color:var(--muted);font-weight:400}
+  .feature-list{list-style:none;margin:20px 0;display:flex;flex-direction:column;gap:10px}
+  .feature-list li{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:8px}
+  .feature-list li::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0;margin-top:1px}
+
+  /* TESTIMONIALS */
+  .testimonial{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative}
+  .testimonial::before{content:'"';font-size:60px;color:var(--accent);opacity:0.3;position:absolute;top:10px;left:20px;line-height:1;font-weight:800}
+  .testimonial p{font-style:italic;color:var(--muted);font-size:14px;padding-top:20px;line-height:1.7}
+  .testimonial-author{margin-top:16px;display:flex;align-items:center;gap:12px}
+  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#818cf8);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+  .author-name{font-weight:600;font-size:14px}
+  .author-title{font-size:12px;color:var(--muted)}
+  
+  /* STEPS */
+  .step{display:flex;gap:20px;margin-bottom:28px}
+  .step-num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#818cf8);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;box-shadow:0 0 16px var(--accent-glow)}
+  .step-content h3{font-size:16px;font-weight:700;margin-bottom:6px}
+  .step-content p{color:var(--muted);font-size:14px}
+  
+  /* EMAIL TEMPLATES */
+  .email-box{background:#0d1321;border:1px solid var(--border);border-radius:12px;padding:20px;font-size:13px;color:var(--muted);line-height:1.8;white-space:pre-wrap;font-family:'Courier New',monospace;position:relative;max-height:280px;overflow-y:auto}
+  .copy-btn{position:absolute;top:12px;right:12px;background:rgba(99,102,241,0.2);border:1px solid var(--accent);color:var(--accent);padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s}
+  .copy-btn:hover{background:rgba(99,102,241,0.35)}
+  .email-label{font-weight:700;color:var(--text);font-size:14px;margin-bottom:10px}
+  
+  /* OBJECTION HANDLERS */
+  .objection{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px}
+  .objection-q{font-weight:700;color:var(--warning);margin-bottom:10px;font-size:14px}
+  .objection-a{color:var(--muted);font-size:13px;line-height:1.7}
+  
+  /* SCORE */
+  .score-ring{width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--accent) 0deg,rgba(99,102,241,0.15) 0deg);display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;margin:0 auto}
+  .score-ring-inner{width:104px;height:104px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;flex-direction:column}
+  .score-num{font-size:36px;font-weight:800;color:var(--text)}
+  .score-label{font-size:11px;color:var(--muted);font-weight:600}
+  .dim-bar-wrap{margin-bottom:14px}
+  .dim-label{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;font-weight:600}
+  .dim-track{height:8px;background:rgba(31,41,55,0.8);border-radius:4px;overflow:hidden}
+  .dim-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#6366f1,#818cf8);width:0;transition:width 1s ease}
+  .verdict{text-align:center;padding:20px;border-radius:12px;margin-bottom:24px;font-weight:700;font-size:18px}
+  .verdict.approve{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#10b981}
+  .verdict.fix{background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b}
+  .verdict.kill{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444}
+  
+  /* UTILITY */
+  .hidden{display:none!important}
+  .mt-8{margin-top:8px}
+  .mt-16{margin-top:16px}
+  .mt-24{margin-top:24px}
+  .mt-32{margin-top:32px}
+  .mb-8{margin-bottom:8px}
+  .mb-16{margin-bottom:16px}
+  .mb-24{margin-bottom:24px}
+  .divider{height:1px;background:var(--border);margin:32px 0}
+  .text-accent{color:var(--accent)}
+  .text-muted{color:var(--muted)}
+  .text-success{color:var(--success)}
+  .text-warning{color:var(--warning)}
+  .text-danger{color:var(--danger)}
+  .fw-700{font-weight:700}
+  .fs-13{font-size:13px}
+  .fs-12{font-size:12px}
+  .pain-icon{font-size:28px;margin-bottom:12px}
+  .feat-icon{font-size:24px;margin-bottom:10px}
+  .timeline-item{display:flex;gap:16px;margin-bottom:20px;align-items:flex-start}
+  .timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px;box-shadow:0 0 8px var(--accent-glow)}
+  
+  @media(max-width:768px){
+    .form-row{grid-template-columns:1fr}
+    .grid-2,.grid-3,.grid-6{grid-template-columns:1fr}
+    .nav-tabs{gap:2px}
+    .nav-tab{padding:6px 8px;font-size:11px}
+    .hero{padding:40px 16px 32px}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">🔍</div>
+    <span>GapScanner AI</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('tool')">Product Tool</button>
+    <button class="nav-tab" onclick="showTab('landing')">Landing Page</button>
+    <button class="nav-tab" onclick="showTab('sales')">Sales Pack</button>
+    <button class="nav-tab" onclick="showTab('fulfillment')">Fulfillment</button>
+    <button class="nav-tab" onclick="showTab('readiness')">Readiness Score</button>
+  </div>
+  <div class="beta-badge">BETA</div>
+</nav>
+
+<!-- ===================== TAB 1: TOOL ===================== -->
+<div id="tab-tool" class="section active">
+  <div class="section-header">
+    <div class="tag">⚡ Live Demo</div>
+    <h2>AI Content Gap Scanner</h2>
+    <p>Enter your domain and up to 3 competitors. We'll find the content gaps costing you rankings.</p>
+  </div>
+  
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Your Domain</label>
+        <input type="text" id="inp-domain" placeholder="yourblog.com" />
+      </div>
+      <div class="form-group">
+        <label>Your Niche / Industry</label>
+        <input type="text" id="inp-niche" placeholder="e.g. B2B SaaS marketing" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Competitor 1 Domain</label>
+        <input type="text" id="inp-comp1" placeholder="competitor1.com" />
+      </div>
+      <div class="form-group">
+        <label>Competitor 2 Domain</label>
+        <input type="text" id="inp-comp2" placeholder="competitor2.com" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Competitor 3 Domain (optional)</label>
+      <input type="text" id="inp-comp3" placeholder="competitor3.com" />
+    </div>
+    <button class="btn btn-primary" id="scan-btn" onclick="runScan()" style="width:100%;justify-content:center;padding:16px;font-size:16px">
+      🚀 Run Content Gap Scan
+    </button>
+  </div>
+
+  <!-- OUTPUT SECTION -->
+  <div id="output-section" class="hidden mt-32">
+    
+    <!-- Loading bar placeholder -->
+    <div id="scan-meta" class="card mb-24" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div class="fw-700" id="meta-domain" style="font-size:16px"></div>
+        <div class="text-muted fs-13" id="meta-time"></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-outline" onclick="exportNotion()">📄 Export to Notion</button>
+        <button class="btn btn-sm btn-outline" onclick="exportDocs()">📊 Export to Google Docs</button>
+      </div>
+    </div>
+
+    <!-- Metrics Row -->
+    <div class="grid-3 mb-24" id="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-num" id="m-gaps">—</div>
+        <div class="metric-label">Content Gaps Found</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num" id="m-volume">—</div>
+        <div class="metric-label">Total Monthly Traffic at Stake</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num" id="m-easy">—</div>
+        <div class="metric-label">Easy-Win Topics (KD &lt; 30)</div>
+      </div>
+    </div>
+
+    <!-- Priority Matrix -->
+    <div class="card mb-24">
+      <h3 style="font-size:17px;font-weight:700;margin-bottom:6px">🎯 Top 20 Topic Briefs — Priority Ranked</h3>
+      <p class="text-muted fs-13 mb-16">Sorted by ROI Score (Traffic Opportunity ÷ Competition Level). Green = Act immediately.</p>
+      <div style="overflow-x:auto">
+        <table class="data-table" id="topics-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Target Keyword</th>
+              <th>Search Vol/mo</th>
+              <th>KD Score</th>
+              <th>Rec. Word Count</th>
+              <th>ROI Score</th>
+              <th>Competitor URL to Beat</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody id="topics-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AI Findings + H2 Outline -->
+    <div class="grid-2 mb-24">
+      <div class="card">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">🤖 AI Findings Summary</h3>
+        <div id="ai-findings" style="font-size:14px;color:var(--muted);line-height:1.8"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">📝 #1 Topic Brief — Suggested H2 Outline</h3>
+        <div id="h2-outline" style="font-size:13px;color:var(--muted);line-height:2"></div>
+      </div>
+    </div>
+
+    <!-- Trend Alerts -->
+    <div class="card" style="border-color:rgba(99,102,241,0.3);box-shadow:0 0 24px rgba(99,102,241,0.1)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <span style="font-size:20px">📈</span>
+        <h3 style="font-size:16px;font-weight:700">Monthly Trend Alerts — 3 Emerging Topics Gaining Momentum</h3>
+      </div>
+      <div class="grid-3" id="trend-alerts"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== TAB 2: LANDING ===================== -->
+<div id="tab-landing" class="section">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="tag">🚀 AI-Powered Content Intelligence</div>
+    <h1>Stop Guessing.<br/><span class="grad-text">Find Every Content Gap</span><br/>Your Competitors Are Hiding.</h1>
+    <p>GapScanner AI analyzes your competitors' top-ranking content and delivers 20 ready-to-write topic briefs every month — with keyword data, difficulty scores, and priority rankings — so you always know exactly what to publish next.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" style="font-size:16px;padding:14px 32px" onclick="alert('Redirecting to Stripe checkout...')">Start Free 14-Day Trial →</button>
+      <button class="btn btn-outline" style="font-size:16px;padding:14px 32px" onclick="showTab('tool')">Try Live Demo</button>
+    </div>
+    <p class="text-muted fs-12 mt-16">No credit card required · Cancel anytime · Setup in 5 minutes</p>
+  </div>
+
+  <!-- Social Proof Bar -->
+  <div class="card mb-24" style="text-align:center;padding:16px">
+    <div class="text-muted fs-13">Trusted by <strong style="color:var(--text)">147 content teams</strong> during beta · Average <strong style="color:var(--accent)">3.8x increase</strong> in organic traffic within 90 days</div>
+  </div>
+
+  <!-- Pain Points -->
+  <div class="section-header mt-32">
+    <div class="tag">😤 The Problem</div>
+    <h2>You're Bleeding Traffic — And You Don't Know Why</h2>
+  </div>
+  <div class="grid-3 mb-32">
+    <div class="card" style="text-align:center">
+      <div class="pain-icon">💸</div>
+      <h3 style="font-weight:700;margin-bottom:8px">You Can't Afford $400/mo Tools</h3>
+      <p class="text-muted fs-13">Ahrefs and SEMrush are built for enterprise agencies. The learning curve alone costs you 10+ hours/month — time you don't have.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="pain-icon">🎯</div>
+      <h3 style="font-weight:700;margin-bottom:8px">You're Writing the Wrong Topics</h3>
+      <p class="text-muted fs-13">Without keyword gap data, your blog is a coin flip. Competitors are quietly stealing 50K+ monthly visits on topics you've never even considered.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="pain-icon">⏰</div>
+      <h3 style="font-weight:700;margin-bottom:8px">Research Takes All Day</h3>
+      <p class="text-muted fs-13">Manual competitor research means 4-6 hours per content calendar. That's time stolen from actually writing, promoting, and growing your business.</p>
+    </div>
+  </div>
+
+  <!-- How It Works -->
+  <div class="section-header">
+    <div class="tag">⚙️ How It Works</div>
+    <h2>Your Monthly Content Intelligence Report, On Autopilot</h2>
+  </div>
+  <div class="card mb-32">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>You Tell Us Your World (5 minutes)</h3>
+        <p>Enter your domain, up to 5 competitor domains, and your target niche keywords. That's it. We handle everything else — forever.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>AI Does The Heavy Lifting</h3>
+        <p>Our system pulls live keyword ranking data via DataForSEO, identifies every gap topic your competitors rank for that you don't, then GPT-4 generates structured topic briefs with H2 outlines, word count recommendations, and priority scores.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Your Report Lands In Your Inbox Monthly
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  window.showTab=function(n){
+    document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+    var el=document.getElementById('tab-'+n);
+    if(el)el.style.display='block';
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    var at=document.querySelector('[onclick*="'+n+'"]');
+    if(at)at.classList.add('active');
+  };
+  showTab('tool');
+  document.querySelectorAll('.faq-item,.faq-q,[class*=faq]').forEach(f=>{
+    f.style.cursor='pointer';
+    f.addEventListener('click',function(){this.closest('[class*=faq]').classList.toggle('open');});
+  });
+  document.querySelectorAll('button').forEach(b=>{
+    if(b.textContent.includes('Start')||b.textContent.includes('Trial')||b.textContent.includes('Get Started')){
+      b.addEventListener('click',function(){alert('Redirecting to Stripe checkout...');});
+    }
+  });
+});
+</script></body>
+</html>
