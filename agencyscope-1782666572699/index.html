@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgencyScope – Agency Analytics Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f172a;--sidebar:#1e293b;--card:#1e293b;--border:#334155;
+  --accent:#6366f1;--accent2:#22d3ee;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--radius:10px
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+/* SIDEBAR */
+#sidebar{width:240px;min-height:100vh;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0;flex-shrink:0}
+.logo{padding:24px 20px;font-size:1.3rem;font-weight:700;color:var(--text);border-bottom:1px solid var(--border);letter-spacing:-0.5px}
+.logo span{color:var(--accent)}
+nav{flex:1;padding:16px 0}
+nav a{display:flex;align-items:center;gap:12px;padding:11px 20px;color:var(--muted);text-decoration:none;font-size:.9rem;transition:all .2s;border-left:3px solid transparent}
+nav a:hover{color:var(--text);background:rgba(99,102,241,.08)}
+nav a.active{color:var(--accent);background:rgba(99,102,241,.12);border-left-color:var(--accent)}
+nav a .icon{font-size:1.1rem;width:20px;text-align:center}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow-x:hidden}
+#topbar{background:var(--sidebar);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
+#topbar h1{font-size:1.1rem;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.badge{background:var(--accent);color:#fff;font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+#content{padding:28px;flex:1}
+/* METRICS */
+#metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:28px}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.metric-card.c1::before{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.metric-card.c2::before{background:linear-gradient(90deg,var(--green),#86efac)}
+.metric-card.c3::before{background:linear-gradient(90deg,var(--yellow),#fde68a)}
+.metric-card.c4::before{background:linear-gradient(90deg,var(--red),#fca5a5)}
+.metric-label{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.metric-value{font-size:2rem;font-weight:700;line-height:1}
+.metric-sub{font-size:.8rem;color:var(--muted);margin-top:8px}
+.metric-sub .up{color:var(--green)}
+.metric-sub .down{color:var(--red)}
+/* TABLE SECTION */
+#table-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:28px}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+.section-header h2{font-size:1rem;font-weight:600}
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:.82rem;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:6px;font-size:.82rem;cursor:pointer}
+#data-table{width:100%;border-collapse:collapse}
+#data-table th{padding:11px 22px;text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:500}
+#data-table td{padding:13px 22px;font-size:.88rem;border-bottom:1px solid rgba(51,65,85,.5)}
+#data-table tr:last-child td{border-bottom:none}
+#data-table tr:hover td{background:rgba(99,102,241,.05)}
+.status-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.74rem;font-weight:600}
+.status-active{background:rgba(34,197,94,.15);color:var(--green)}
+.status-paused{background:rgba(245,158,11,.15);color:var(--yellow)}
+.status-ended{background:rgba(239,68,68,.15);color:var(--red)}
+.progress-bar{background:var(--border);border-radius:4px;height:6px;width:100px}
+.progress-fill{height:6px;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+/* EMPTY STATE */
+#empty-state{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:52px;text-align:center;margin-bottom:28px;display:none}
+#empty-state .empty-icon{font-size:3rem;margin-bottom:16px;opacity:.4}
+#empty-state h3{font-size:1.1rem;margin-bottom:8px;color:var(--muted)}
+#empty-state p{font-size:.87rem;color:var(--muted);margin-bottom:20px}
+/* PRICING */
+#pricing{padding:28px 0 0}
+#pricing h2{font-size:1.3rem;font-weight:700;margin-bottom:6px}
+#pricing p{color:var(--muted);font-size:.9rem;margin-bottom:24px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.plan{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;position:relative}
+.plan.popular{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.72rem;padding:4px 14px;border-radius:20px;font-weight:700;white-space:nowrap}
+.plan-name{font-size:.85rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.plan-price{font-size:2.2rem;font-weight:800;margin-bottom:4px}
+.plan-price span{font-size:.9rem;font-weight:400;color:var(--muted)}
+.plan-desc{font-size:.82rem;color:var(--muted);margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.plan-features{list-style:none;margin-bottom:24px}
+.plan-features li{font-size:.85rem;color:var(--muted);padding:5px 0;display:flex;align-items:center;gap:8px}
+.plan-features li::before{content:'✓';color:var(--green);font-weight:700}
+.plan .btn{width:100%;text-align:center;padding:11px}
+.plan.popular .btn{background:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="logo">Agency<span>Scope</span></div>
+  <nav>
+    <a href="#" class="active"><span class="icon">📊</span> Dashboard</a>
+    <a href="#"><span class="icon">👥</span> Clients</a>
+    <a href="#"><span class="icon">📣</span> Campaigns</a>
+    <a href="#"><span class="icon">💰</span> Budgets</a>
+    <a href="#"><span class="icon">📈</span> Reports</a>
+    <a href="#"><span class="icon">🔗</span> Integrations</a>
+    <a href="#"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sidebar-footer">v1.0 · AgencyScope Pro</div>
+</aside>
+
+<!-- MAIN AREA -->
+<main id="main">
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <h1>Dashboard Overview</h1>
+    <div class="topbar-right">
+      <span class="badge">PRO</span>
+      <div class="avatar">JD</div>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- METRIC CARDS -->
+    <div id="metrics">
+      <div class="metric-card c1" id="metric-clients">
+        <div class="metric-label">Active Clients</div>
+        <div class="metric-value">24</div>
+        <div class="metric-sub"><span class="up">↑ 3</span> this month</div>
+      </div>
+      <div class="metric-card c2" id="metric-revenue">
+        <div class="metric-label">Total Ad Spend</div>
+        <div class="metric-value">$148k</div>
+        <div class="metric-sub"><span class="up">↑ 12%</span> vs last month</div>
+      </div>
+      <div class="metric-card c3" id="metric-campaigns">
+        <div class="metric-label">Live Campaigns</div>
+        <div class="metric-value">61</div>
+        <div class="metric-sub"><span class="down">↓ 4</span> paused this week</div>
+      </div>
+      <div class="metric-card c4" id="metric-roi">
+        <div class="metric-label">Avg. ROAS</div>
+        <div class="metric-value">3.8×</div>
+        <div class="metric-sub"><span class="up">↑ 0.3</span> improvement</div>
+      </div>
+    </div>
+
+    <!-- DATA TABLE -->
+    <div id="table-section">
+      <div class="section-header">
+        <h2>Client Campaigns</h2>
+        <div style="display:flex;gap:10px">
+          <button class="btn-outline">Filter</button>
+          <a href="#" class="btn">+ Add Campaign</a>
+        </div>
+      </div>
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Campaign</th>
+            <th>Budget</th>
+            <th>Spent</th>
+            <th>ROAS</th>
+            <th>Progress</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr>
+            <td><strong>Nexus Retail</strong></td>
+            <td>Summer Sale – Google</td>
+            <td>$12,000</td>
+            <td>$8,420</td>
+            <td>4.2×</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div></td>
+            <td><span class="status-pill status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>BlueWave SaaS</strong></td>
+            <td>Lead Gen – Meta Ads</td>
+            <td>$8,500</td>
+            <td>$8,500</td>
+            <td>2.9×</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></td>
+            <td><span class="status-pill status-ended">Ended</span></td>
+          </tr>
+          <tr>
+            <td><strong>Orbit Fitness</strong></td>
+            <td>Brand Awareness – YouTube</td>
+            <td>$5,000</td>
+            <td>$1,850</td>
+            <td>3.1×</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:37%"></div></div></td>
+            <td><span class="status-pill status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>Pinnacle Law</strong></td>
+            <td>Retargeting – Google</td>
+            <td>$3,200</td>
+            <td>$1,100</td>
+            <td>5.6×</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:34%"></div></div></td>
+            <td><span class="status-pill status-paused">Paused</span></td>
+          </tr>
+          <tr>
+            <td><strong>UrbanEats Co.</strong></td>
+            <td>App Install – TikTok</td>
+            <td>$6,700</td>
+            <td>$4,010</td>
+            <td>2.4×</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div></td>
+            <td><span class="status-pill status-active">Active</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- EMPTY STATE (hidden by default, shown via JS when no data) -->
+    <div id="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No campaigns found</h3>
+      <p>Add your first client campaign to start tracking performance across all channels.</p>
+      <a href="#" class="btn">+ Add First Campaign</a>
+    </div>
+
+    <!-- PRICING SECTION -->
+    <div id="pricing">
+      <h2>Choose Your Plan</h2>
+      <p>Scale your agency with the right tools. Upgrade or downgrade anytime.</p>
+      <div class="plans">
+
+        <div class="plan" id="plan-starter">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">$19<span>/month</span></div>
+          <div class="plan-desc">Perfect for freelancers managing a handful of clients.</div>
+          <ul class="plan-features">
+            <li>Up to 5 clients</li>
+            <li>10 active campaigns</li>
+            <li>Google & Meta integrations</li>
+            <li>Monthly PDF reports</li>
+            <li>Email support</li>
+          </ul>
+          <a href="#" class="btn" style="background:var(--border);color:var(--text)">Get Started</a>
+        </div>
+
+        <div class="plan popular" id="plan-pro">
+          <div class="plan-badge">⭐ Most Popular</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">$49<span>/month</span></div>
+          <div class="plan-desc">For growing agencies tracking multiple clients and channels.</div>
+          <ul class="plan-features">
+            <li>Up to 25 clients</li>
+            <li>Unlimited campaigns</li>
+            <li>All platform integrations</li>
+            <li>Real-time dashboards</li>
+            <li>White-label reports</li>
+            <li>Priority support</li>
+          </ul>
+          <a href="#" class="btn">Start Free Trial</a>
+        </div>
+
+        <div class="plan" id="plan-agency">
+          <div class="plan-name">Agency</div>
+          <div class="plan-price">$129<span>/month</span></div>
+          <div class="plan-desc">Enterprise-grade control for large agencies and teams.</div>
+          <ul class="plan-features">
+            <li>Unlimited clients</li>
+            <li>Unlimited campaigns</li>
+            <li>Custom integrations</li>
+            <li>Team permissions & roles</li>
+            <li>API access</li>
+            <li>Dedicated account manager</li>
+          </ul>
+          <a href="#" class="btn" style="background:var(--border);color:var(--text)">Contact Sales</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // 1. SAMPLE DATA - 6 realistic records
+  var data = [
+    { name: 'Bright Digital Co.', contact: 'Sarah Mitchell', budget: '$12,500', status: 'Active', campaigns: 8, industry: 'E-commerce' },
+    { name: 'Apex Marketing Group', contact: 'James Thornton', budget: '$28,000', status: 'Active', campaigns: 14, industry: 'Finance' },
+    { name: 'Nova Creative Studio', contact: 'Priya Kapoor', budget: '$7,200', status: 'Pending', campaigns: 3, industry: 'Media' },
+    { name: 'Silverline Agency', contact: 'Derek Owens', budget: '$45,000', status: 'Active', campaigns: 21, industry: 'Healthcare' },
+    { name: 'BlueSky Consulting', contact: 'Megan Foster', budget: '$5,800', status: 'Inactive', campaigns: 1, industry: 'Real Estate' },
+    { name: 'Redwood Strategies', contact: 'Carlos Vega', budget: '$19,300', status: 'Active', campaigns: 11, industry: 'Technology' }
+  ];
+
+  // 2. RENDER TABLE - populate table-body with data rows
+  function renderTable() {
+    var tbody = document.getElementById('table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    data.forEach(function(record, index) {
+      var tr = document.createElement('tr');
+      tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; transition: background 0.15s;';
+      tr.addEventListener('mouseenter', function() { this.style.background = '#f8fafc'; });
+      tr.addEventListener('mouseleave', function() { this.style.background = ''; });
+
+      var statusColor = '#22c55e';
+      var statusBg = '#dcfce7';
+      if (record.status === 'Pending') { statusColor = '#f59e0b'; statusBg = '#fef3c7'; }
+      if (record.status === 'Inactive') { statusColor = '#ef4444'; statusBg = '#fee2e2'; }
+
+      var badgeHTML = '<span style="display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; color:' + statusColor + '; background:' + statusBg + ';">' + record.status + '</span>';
+
+      var actionsHTML = '<button onclick="editRecord(' + index + ')" style="background:#eff6ff; color:#3b82f6; border:none; border-radius:6px; padding:5px 10px; font-size:12px; font-weight:500; cursor:pointer; margin-right:4px;">Edit</button>' +
+        '<button onclick="deleteRecord(' + index + ')" style="background:#fff1f2; color:#ef4444; border:none; border-radius:6px; padding:5px 10px; font-size:12px; font-weight:500; cursor:pointer;">Remove</button>';
+
+      tr.innerHTML =
+        '<td style="padding:14px 16px; font-weight:600; color:#1e293b; font-size:14px;">' + record.name + '</td>' +
+        '<td style="padding:14px 16px; color:#64748b; font-size:13px;">' + record.contact + '</td>' +
+        '<td style="padding:14px 16px; color:#64748b; font-size:13px;">' + record.industry + '</td>' +
+        '<td style="padding:14px 16px; color:#1e293b; font-size:13px; font-weight:500;">' + record.budget + '</td>' +
+        '<td style="padding:14px 16px; color:#64748b; font-size:13px; text-align:center;">' + record.campaigns + '</td>' +
+        '<td style="padding:14px 16px;">' + badgeHTML + '</td>' +
+        '<td style="padding:14px 16px;">' + actionsHTML + '</td>';
+
+      tbody.appendChild(tr);
+    });
+
+    if (data.length === 0) {
+      var emptyRow = document.createElement('tr');
+      emptyRow.innerHTML = '<td colspan="7" style="padding:40px; text-align:center; color:#94a3b8; font-size:14px;">No clients found. Add your first client to get started.</td>';
+      tbody.appendChild(emptyRow);
+    }
+  }
+
+  window.editRecord = function(index) {
+    var record = data[index];
+    var newName = prompt('Edit client name:', record.name);
+    if (newName && newName.trim()) {
+      data[index].name = newName.trim();
+      renderTable();
+    }
+  };
+
+  window.deleteRecord = function(index) {
+    if (confirm('Remove ' + data[index].name + ' from your client list?')) {
+      data.splice(index, 1);
+      renderTable();
+    }
+  };
+
+  // 3. NAV CLICKS - each nav-item click updates topbar title and shows relevant content
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      this.classList.add('active');
+      var title = this.textContent.trim();
+      var h1 = document.querySelector('h1');
+      if (h1) h1.textContent = title;
+    });
+  });
+
+  // 4. ADD BUTTON - show simple prompt or inline form
+  document.querySelectorAll('[id^="btn"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var name = prompt('Enter client name:');
+      if (name && name.trim()) {
+        var contact = prompt('Enter contact person:') || 'Unassigned';
+        var budget = prompt('Enter monthly budget (e.g. $5,000):') || '$0';
+        var industry = prompt('Enter industry:') || 'General';
+        data.push({
+          name: name.trim(),
+          contact: contact,
+          budget: budget,
+          status: 'Pending',
+          campaigns: 0,
+          industry: industry
+        });
+        renderTable();
+      }
+    });
+  });
+
+  // 5. SEARCH
+  var searchInput = document.querySelector('input[type="text"]');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('#table-body tr').forEach(function(tr) {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  // 6. PRICING BUTTONS
+  document.querySelectorAll('.btn-plan, .plan-btn, [class*="plan"] button').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      alert('Stripe checkout coming soon!');
+    });
+  });
+
+  renderTable();
+});
+</script>
+</body>
+</html>
