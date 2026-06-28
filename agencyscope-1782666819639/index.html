@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgencyScope – Agency Analytics Dashboard</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0f172a;--sidebar:#1e293b;--card:#1e293b;--border:#334155;
+    --accent:#6366f1;--accent2:#22d3ee;--text:#f1f5f9;--muted:#94a3b8;
+    --green:#22c55e;--red:#ef4444;--yellow:#f59e0b
+  }
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+  /* SIDEBAR */
+  #sidebar{width:220px;min-height:100vh;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;position:fixed;top:0;left:0}
+  .logo{padding:0 20px 28px;font-size:1.3rem;font-weight:700;color:var(--accent);letter-spacing:-0.5px}
+  .logo span{color:var(--accent2)}
+  nav a{display:flex;align-items:center;gap:10px;padding:11px 20px;color:var(--muted);text-decoration:none;font-size:.9rem;transition:all .2s;border-left:3px solid transparent}
+  nav a:hover,nav a.active{color:var(--text);background:rgba(99,102,241,.1);border-left-color:var(--accent)}
+  nav a .icon{font-size:1rem;width:18px;text-align:center}
+  .sidebar-footer{margin-top:auto;padding:20px;border-top:1px solid var(--border)}
+  .user-info{display:flex;align-items:center;gap:10px}
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+  .user-name{font-size:.85rem;color:var(--text)}
+  .user-role{font-size:.75rem;color:var(--muted)}
+  /* MAIN */
+  #main{margin-left:220px;flex:1;padding:32px;min-height:100vh}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+  .topbar h1{font-size:1.5rem;font-weight:700}
+  .topbar p{color:var(--muted);font-size:.9rem;margin-top:2px}
+  .btn{padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-size:.875rem;font-weight:600}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
+  /* METRIC CARDS */
+  #metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+  .metric-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+  .metric-card .label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+  .metric-card .value{font-size:1.8rem;font-weight:700;margin-bottom:6px}
+  .metric-card .change{font-size:.8rem;display:flex;align-items:center;gap:4px}
+  .up{color:var(--green)}.down{color:var(--red)}
+  .metric-card .bar{height:3px;border-radius:2px;background:var(--border);margin-top:14px}
+  .metric-card .bar-fill{height:100%;border-radius:2px}
+  /* TABLE */
+  #table-section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:28px}
+  .section-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)}
+  .section-header h2{font-size:1rem;font-weight:600}
+  table{width:100%;border-collapse:collapse}
+  thead th{padding:12px 24px;text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border)}
+  tbody td{padding:14px 24px;font-size:.875rem;border-bottom:1px solid var(--border)}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:rgba(255,255,255,.02)}
+  .badge{padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+  .badge-green{background:rgba(34,197,94,.15);color:var(--green)}
+  .badge-yellow{background:rgba(245,158,11,.15);color:var(--yellow)}
+  .badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+  .progress-wrap{width:100px;height:6px;background:var(--border);border-radius:3px}
+  .progress-fill{height:100%;border-radius:3px;background:var(--accent)}
+  /* EMPTY STATE */
+  #empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--muted);text-align:center}
+  #empty-state .empty-icon{font-size:2.5rem;margin-bottom:12px}
+  #empty-state h3{font-size:1rem;color:var(--text);margin-bottom:6px}
+  #empty-state p{font-size:.875rem;max-width:300px}
+  /* PRICING */
+  #pricing{margin-bottom:12px}
+  #pricing h2{font-size:1.25rem;font-weight:700;margin-bottom:6px}
+  #pricing p{color:var(--muted);font-size:.875rem;margin-bottom:24px}
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .plan{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative}
+  .plan.popular{border-color:var(--accent)}
+  .popular-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:20px;white-space:nowrap}
+  .plan-name{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+  .plan-price{font-size:2rem;font-weight:700;margin-bottom:4px}
+  .plan-price span{font-size:.9rem;color:var(--muted);font-weight:400}
+  .plan-desc{font-size:.8rem;color:var(--muted);margin-bottom:18px}
+  .plan-features{list-style:none;margin-bottom:20px}
+  .plan-features li{font-size:.83rem;padding:5px 0;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .plan-features li::before{content:'✓';color:var(--accent);font-weight:700}
+  .btn-plan{width:100%;padding:10px;border-radius:8px;font-weight:600;font-size:.875rem;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text);transition:all .2s}
+  .plan.popular .btn-plan{background:var(--accent);border-color:var(--accent);color:#fff}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="logo">Agency<span>Scope</span></div>
+  <nav id="sidebar-nav">
+    <a href="#" class="active"><span class="icon">📊</span> Dashboard</a>
+    <a href="#"><span class="icon">👥</span> Clients</a>
+    <a href="#"><span class="icon">📁</span> Campaigns</a>
+    <a href="#"><span class="icon">🧑‍💼</span> Team</a>
+    <a href="#"><span class="icon">💰</span> Revenue</a>
+    <a href="#"><span class="icon">📈</span> Reports</a>
+    <a href="#"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="avatar">JD</div>
+      <div>
+        <div class="user-name">Jane Doe</div>
+        <div class="user-role">Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div>
+      <h1 id="page-title">Dashboard Overview</h1>
+      <p id="page-subtitle">Welcome back, Jane. Here's what's happening today.</p>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline" id="btn-export">⬇ Export</button>
+      <button class="btn btn-primary" id="btn-new-client">+ New Client</button>
+    </div>
+  </div>
+
+  <!-- METRIC CARDS -->
+  <div id="metrics">
+    <div class="metric-card" id="card-revenue">
+      <div class="label">Monthly Revenue</div>
+      <div class="value">$84,320</div>
+      <div class="change up">▲ 12.4% vs last month</div>
+      <div class="bar"><div class="bar-fill" style="width:72%;background:var(--accent)"></div></div>
+    </div>
+    <div class="metric-card" id="card-clients">
+      <div class="label">Active Clients</div>
+      <div class="value">38</div>
+      <div class="change up">▲ 3 new this month</div>
+      <div class="bar"><div class="bar-fill" style="width:58%;background:var(--accent2)"></div></div>
+    </div>
+    <div class="metric-card" id="card-utilization">
+      <div class="label">Team Utilization</div>
+      <div class="value">76%</div>
+      <div class="change down">▼ 4% vs last month</div>
+      <div class="bar"><div class="bar-fill" style="width:76%;background:var(--yellow)"></div></div>
+    </div>
+    <div class="metric-card" id="card-campaigns">
+      <div class="label">Live Campaigns</div>
+      <div class="value">21</div>
+      <div class="change up">▲ 5 launched this week</div>
+      <div class="bar"><div class="bar-fill" style="width:45%;background:var(--green)"></div></div>
+    </div>
+  </div>
+
+  <!-- DATA TABLE -->
+  <div id="table-section">
+    <div class="section-header">
+      <h2 id="table-title">Client Campaign Performance</h2>
+      <button class="btn btn-outline" style="font-size:.8rem;padding:7px 14px" id="btn-view-all">View All →</button>
+    </div>
+    <table id="campaigns-table">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Campaign</th>
+          <th>Budget Used</th>
+          <th>Leads</th>
+          <th>ROAS</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr>
+          <td><strong>Apex Retail</strong></td>
+          <td>Summer Sale 2024</td>
+          <td><div class="progress-wrap"><div class="progress-fill" style="width:82%"></div></div></td>
+          <td>1,284</td>
+          <td>4.2×</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+        <tr>
+          <td><strong>NovaTech</strong></td>
+          <td>B2B Lead Gen Q3</td>
+          <td><div class="progress-wrap"><div class="progress-fill" style="width:55%"></div></div></td>
+          <td>342</td>
+          <td>2.8×</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+        <tr>
+          <td><strong>Bloom Beauty</strong></td>
+          <td>Influencer Launch</td>
+          <td><div class="progress-wrap"><div class="progress-fill" style="width:91%"></div></div></td>
+          <td>876</td>
+          <td>5.1×</td>
+          <td><span class="badge badge-yellow">Paused</span></td>
+        </tr>
+        <tr>
+          <td><strong>GreenPath</strong></td>
+          <td>Brand Awareness</td>
+          <td><div class="progress-wrap"><div class="progress-fill" style="width:30%"></div></div></td>
+          <td>98</td>
+          <td>1.4×</td>
+          <td><span class="badge badge-red">At Risk</span></td>
+        </tr>
+        <tr>
+          <td><strong>VaultFin</strong></td>
+          <td>PPC – Finance</td>
+          <td><div class="progress-wrap"><div class="progress-fill" style="width:67%"></div></div></td>
+          <td>519</td>
+          <td>3.6×</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- EMPTY STATE (shown when no data) -->
+  <div id="empty-state" style="display:none">
+    <div class="empty-icon">📭</div>
+    <h3>No campaigns found</h3>
+    <p>Add your first client and launch a campaign to start tracking performance here.</p>
+  </div>
+
+  <!-- PRICING SECTION -->
+  <section id="pricing">
+    <h2>Simple, Transparent Pricing</h2>
+    <p>Start free. Scale as your agency grows. No hidden fees.</p>
+    <div class="plans" id="pricing-plans">
+
+      <div class="plan" id="plan-starter">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$19<span>/mo</span></div>
+        <div class="plan-desc">Perfect for freelancers & small teams</div>
+        <ul class="plan-features">
+          <li>Up to 5 clients</li>
+          <li>10 campaigns</li>
+          <li>Basic reporting</li>
+          <li>Email support</li>
+        </ul>
+        <button class="btn-plan" id="btn-starter">Get Started</button>
+      </div>
+
+      <div class="plan popular" id="plan-pro">
+        <div class="popular-badge">Most Popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$49<span>/mo</span></div>
+        <div class="plan-desc">Best for growing agencies</div>
+        <ul class="plan-features">
+          <li>Up to 25 clients</li>
+          <li>Unlimited campaigns</li>
+          <li>Advanced analytics</li>
+          <li>Team utilization tracking</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="btn-plan" id="btn-pro">Start Free Trial</button>
+      </div>
+
+      <div class="plan" id="plan-agency">
+        <div class="plan-name">Agency</div>
+        <div class="plan-price">$129<span>/mo</span></div>
+        <div class="plan-desc">For large agencies & enterprises</div>
+        <ul class="plan-features">
+          <li>Unlimited clients</li>
+          <li>Unlimited campaigns</li>
+          <li>White-label reports</li>
+          <li>API access</li>
+          <li>Dedicated account manager</li>
+        </ul>
+        <button class="btn-plan" id="btn-agency">Contact Sales</button>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // 1. SAMPLE DATA - 6 realistic records
+  var data = [
+    { name: 'Horizon Media Group', contact: 'Sarah Mitchell', status: 'Active', budget: '$12,500', campaigns: 8, joined: '2024-01-15' },
+    { name: 'BluePeak Digital', contact: 'James Thornton', status: 'Active', budget: '$8,200', campaigns: 5, joined: '2024-02-03' },
+    { name: 'Vantage Creative Co.', contact: 'Priya Nair', status: 'Paused', budget: '$4,750', campaigns: 3, joined: '2024-03-22' },
+    { name: 'Redwood Branding', contact: 'Marcus Lee', status: 'Active', budget: '$19,000', campaigns: 12, joined: '2023-11-08' },
+    { name: 'Stellar Ads Inc.', contact: 'Olivia Chen', status: 'Inactive', budget: '$1,300', campaigns: 1, joined: '2024-04-10' },
+    { name: 'Pinnacle Growth Labs', contact: 'Derek Walsh', status: 'Active', budget: '$31,400', campaigns: 20, joined: '2023-09-30' }
+  ];
+
+  // 2. RENDER TABLE - populate table-body with data rows
+  function renderTable() {
+    var tbody = document.getElementById('table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    data.forEach(function(client, index) {
+      var tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid #f1f5f9';
+      tr.style.transition = 'background 0.15s';
+      tr.addEventListener('mouseenter', function() { this.style.background = '#f8fafc'; });
+      tr.addEventListener('mouseleave', function() { this.style.background = ''; });
+
+      var statusColor = '#22c55e';
+      var statusBg = '#dcfce7';
+      if (client.status === 'Paused') { statusColor = '#f59e0b'; statusBg = '#fef3c7'; }
+      if (client.status === 'Inactive') { statusColor = '#ef4444'; statusBg = '#fee2e2'; }
+
+      tr.innerHTML =
+        '<td style="padding:14px 16px;font-weight:600;color:#1e293b;">' +
+          '<div style="display:flex;align-items:center;gap:10px;">' +
+            '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;">' +
+              client.name.charAt(0) +
+            '</div>' +
+            '<span>' + client.name + '</span>' +
+          '</div>' +
+        '</td>' +
+        '<td style="padding:14px 16px;color:#64748b;font-size:14px;">' + client.contact + '</td>' +
+        '<td style="padding:14px 16px;">' +
+          '<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;background:' + statusBg + ';color:' + statusColor + ';">' +
+            '<span style="width:6px;height:6px;border-radius:50%;background:' + statusColor + ';display:inline-block;"></span>' +
+            client.status +
+          '</span>' +
+        '</td>' +
+        '<td style="padding:14px 16px;color:#1e293b;font-weight:600;">' + client.budget + '</td>' +
+        '<td style="padding:14px 16px;color:#64748b;font-size:14px;">' + client.campaigns + ' campaigns</td>' +
+        '<td style="padding:14px 16px;color:#94a3b8;font-size:13px;">' + client.joined + '</td>' +
+        '<td style="padding:14px 16px;">' +
+          '<div style="display:flex;gap:8px;">' +
+            '<button onclick="alert(\'Viewing ' + client.name + '\')" style="padding:5px 12px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;color:#6366f1;font-size:12px;font-weight:600;cursor:pointer;">View</button>' +
+            '<button onclick="handleDelete(' + index + ')" style="padding:5px 12px;border-radius:6px;border:1px solid #fee2e2;background:#fff;color:#ef4444;font-size:12px;font-weight:600;cursor:pointer;">Remove</button>' +
+          '</div>' +
+        '</td>';
+
+      tbody.appendChild(tr);
+    });
+
+    if (data.length === 0) {
+      var emptyRow = document.createElement('tr');
+      emptyRow.innerHTML = '<td colspan="7" style="padding:48px;text-align:center;color:#94a3b8;font-size:15px;">No clients found. Add your first client to get started.</td>';
+      tbody.appendChild(emptyRow);
+    }
+  }
+
+  window.handleDelete = function(index) {
+    if (confirm('Remove ' + data[index].name + ' from AgencyScope?')) {
+      data.splice(index, 1);
+      renderTable();
+    }
+  };
+
+  // 3. NAV CLICKS - each nav-item click updates topbar title and shows relevant content
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      this.classList.add('active');
+      var title = this.textContent.trim();
+      var h1 = document.querySelector('h1');
+      if (h1) h1.textContent = title;
+    });
+  });
+
+  // 4. BUTTON HANDLERS
+  document.querySelectorAll('[id^="btn"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var btnId = this.id;
+
+      if (btnId === 'btn-export') {
+        var csv = 'Name,Contact,Status,Budget,Campaigns,Joined\n';
+        data.forEach(function(c) {
+          csv += [c.name, c.contact, c.status, c.budget, c.campaigns, c.joined].join(',') + '\n';
+        });
+        var blob = new Blob([csv], { type: 'text/csv' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'agencyscope-clients.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
+      }
+
+      if (btnId === 'btn-view-all') {
+        var h1 = document.querySelector('h1');
+        if (h1) h1.textContent = 'All Clients';
+        document.querySelectorAll('#table-body tr').forEach(function(tr) {
+          tr.style.display = '';
+        });
+        return;
+      }
+
+      if (btnId === 'btn-starter') {
+        alert('Starter Plan - $49/mo\nStripe checkout coming soon!');
+        return;
+      }
+
+      if (btnId === 'btn-pro') {
+        alert('Pro Plan - $99/mo\nStripe checkout coming soon!');
+        return;
+      }
+
+      if (btnId === 'btn-agency') {
+        alert('Agency Plan - $199/mo\nStripe checkout coming soon!');
+        return;
+      }
+
+      if (btnId === 'btn-new-client') {
+        var name = prompt('Client name:');
+        if (!name) return;
+        var contact = prompt('Contact person:');
+        if (!contact) return;
+        var budget = prompt('Monthly budget (e.g. $5,000):');
+        if (!budget) return;
+        data.push({
+          name: name,
+          contact: contact,
+          status: 'Active',
+          budget: budget,
+          campaigns: 0,
+          joined: new Date().toISOString().split('T')[0]
+        });
+        renderTable();
+        alert(name + ' has been added to AgencyScope!');
+      }
+    });
+  });
+
+  // 5. SEARCH
+  var searchInput = document.querySelector('input[type="text"]');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('#table-body tr').forEach(function(tr) {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  // 6. PRICING BUTTONS
+  document.querySelectorAll('.btn-plan, .plan-btn, [class*="plan"] button').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      alert('Stripe checkout coming soon!');
+    });
+  });
+
+  renderTable();
+});
+</script>
+</body>
+</html>
