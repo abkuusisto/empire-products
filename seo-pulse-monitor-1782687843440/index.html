@@ -1,0 +1,670 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEO Pulse Monitor — Weekly AI SEO Audits for B2B SaaS Teams</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #243044;
+    --accent: #6366f1;
+    --accent2: #818cf8;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #334155;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  /* NAV */
+  .top-nav { background: #0a1120; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0; padding: 0 16px; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; }
+  .nav-brand { font-weight: 800; font-size: 1.1rem; color: var(--accent2); padding: 14px 20px 14px 0; border-right: 1px solid var(--border); margin-right: 8px; white-space: nowrap; }
+  .nav-brand span { color: var(--green); }
+  .nav-tab { padding: 14px 16px; cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent2); border-bottom-color: var(--accent); }
+  .beta-badge { margin-left: auto; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-size: 0.7rem; font-weight: 800; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em; }
+
+  /* SECTIONS */
+  .section { display: none; padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .card-sm { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media(max-width: 768px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.875rem; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #4f46e5; }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-green:hover { background: #059669; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+  .btn-lg { padding: 14px 32px; font-size: 1rem; }
+  .btn-full { width: 100%; justify-content: center; }
+
+  /* FORM ELEMENTS */
+  input, select, textarea { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 8px; font-size: 0.875rem; width: 100%; outline: none; transition: border-color 0.2s; font-family: inherit; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  label { display: block; margin-bottom: 6px; font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+  .form-group { margin-bottom: 16px; }
+
+  /* BADGES */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  .badge-blue { background: rgba(99,102,241,0.15); color: var(--accent2); }
+  .badge-gray { background: rgba(148,163,184,0.15); color: var(--muted); }
+
+  /* ALERTS */
+  .alert { padding: 12px 16px; border-radius: 8px; font-size: 0.875rem; margin-bottom: 12px; border-left: 3px solid; }
+  .alert-red { background: rgba(239,68,68,0.08); border-color: var(--red); color: #fca5a5; }
+  .alert-green { background: rgba(16,185,129,0.08); border-color: var(--green); color: #6ee7b7; }
+  .alert-yellow { background: rgba(245,158,11,0.08); border-color: var(--yellow); color: #fcd34d; }
+  .alert-blue { background: rgba(99,102,241,0.08); border-color: var(--accent); color: var(--accent2); }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; padding: 10px 12px; color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid rgba(51,65,85,0.5); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* TOOL SPECIFIC */
+  .metric-box { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .metric-num { font-size: 2rem; font-weight: 800; color: var(--accent2); }
+  .metric-num.red { color: var(--red); }
+  .metric-num.green { color: var(--green); }
+  .metric-num.yellow { color: var(--yellow); }
+  .metric-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+  .progress-bar { background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+  .bar-green { background: var(--green); }
+  .bar-red { background: var(--red); }
+  .bar-yellow { background: var(--yellow); }
+  .bar-blue { background: var(--accent); }
+
+  .issue-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: var(--card2); border-radius: 8px; margin-bottom: 8px; border-left: 3px solid; }
+  .issue-critical { border-color: var(--red); }
+  .issue-warning { border-color: var(--yellow); }
+  .issue-info { border-color: var(--accent); }
+  .issue-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+  .issue-desc { font-size: 0.8rem; color: var(--muted); }
+  .issue-fix { font-size: 0.8rem; color: var(--green); margin-top: 6px; }
+
+  .sparkline { display: flex; align-items: flex-end; gap: 3px; height: 40px; }
+  .spark-bar { background: var(--accent); border-radius: 2px 2px 0 0; flex: 1; min-width: 6px; transition: height 0.3s; }
+  .spark-bar.down { background: var(--red); }
+  .spark-bar.neutral { background: var(--muted); }
+
+  /* LANDING PAGE */
+  .lp-hero { text-align: center; padding: 60px 20px 40px; }
+  .lp-headline { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .lp-sub { font-size: 1.1rem; color: var(--muted); max-width: 600px; margin: 0 auto 32px; line-height: 1.7; }
+  .gradient-text { background: linear-gradient(135deg, #818cf8, #a78bfa, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .section-title { font-size: 1.8rem; font-weight: 800; text-align: center; margin-bottom: 12px; }
+  .section-sub { text-align: center; color: var(--muted); margin-bottom: 40px; font-size: 0.95rem; }
+  .lp-divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .price-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; text-align: center; position: relative; }
+  .price-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 20px 40px rgba(99,102,241,0.15); }
+  .price-card .popular { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 3px 14px; border-radius: 99px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .price-amount { font-size: 2.5rem; font-weight: 900; color: var(--text); }
+  .price-period { color: var(--muted); font-size: 0.85rem; }
+  .price-features { list-style: none; text-align: left; margin: 20px 0; }
+  .price-features li { padding: 6px 0; font-size: 0.85rem; color: var(--muted); border-bottom: 1px solid rgba(51,65,85,0.4); display: flex; align-items: flex-start; gap: 8px; }
+  .price-features li span { color: var(--green); flex-shrink: 0; }
+  .faq-item { border-bottom: 1px solid var(--border); padding: 20px 0; }
+  .faq-q { font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .faq-a { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-top: 12px; display: none; }
+  .faq-a.open { display: block; }
+  .testimonial { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; position: relative; }
+  .testimonial::before { content: '"'; font-size: 4rem; color: var(--accent); position: absolute; top: 8px; left: 16px; line-height: 1; opacity: 0.4; }
+  .testimonial-text { margin-top: 16px; color: var(--muted); font-style: italic; line-height: 1.7; font-size: 0.9rem; }
+  .testimonial-author { margin-top: 16px; font-weight: 700; font-size: 0.85rem; }
+  .testimonial-role { color: var(--muted); font-size: 0.8rem; }
+  .problem-card { background: var(--card2); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 24px; }
+  .problem-icon { font-size: 2rem; margin-bottom: 12px; }
+  .solution-card { background: var(--card2); border: 1px solid rgba(16,185,129,0.2); border-radius: 12px; padding: 24px; }
+  .step-num { width: 40px; height: 40px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; margin: 0 auto 16px; }
+  .benefit-row { display: flex; align-items: flex-start; gap: 16px; padding: 16px; background: var(--card2); border-radius: 10px; margin-bottom: 10px; }
+  .benefit-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .hero-cta-wrap { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+  .risk-reversal { background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(16,185,129,0.1)); border: 1px solid var(--border); border-radius: 16px; padding: 40px; text-align: center; }
+
+  /* SALES PACK */
+  .copy-box { background: #0a1120; border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-size: 0.82rem; line-height: 1.8; color: #cbd5e1; font-family: 'Courier New', monospace; white-space: pre-wrap; position: relative; max-height: 280px; overflow-y: auto; }
+  .copy-btn { position: absolute; top: 10px; right: 10px; }
+
+  /* FULFILLMENT */
+  .step-flow { display: flex; flex-direction: column; gap: 0; }
+  .flow-step { display: flex; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--border); }
+  .flow-step:last-child { border-bottom: none; }
+  .flow-num { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; margin-top: 2px; }
+  .flow-content h4 { font-weight: 700; margin-bottom: 6px; }
+  .flow-content p { color: var(--muted); font-size: 0.875rem; line-height: 1.6; }
+  .flow-content .timing { display: inline-flex; align-items: center; gap: 4px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: var(--accent2); font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-top: 8px; }
+
+  /* ETHICS */
+  .ethics-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: var(--card2); border-radius: 8px; margin-bottom: 8px; }
+  .ethics-check { width: 22px; height: 22px; background: var(--green); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.8rem; font-weight: 800; }
+  .ethics-text h4 { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+  .ethics-text p { font-size: 0.8rem; color: var(--muted); }
+
+  /* SCORE */
+  .score-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(51,65,85,0.4); }
+  .score-label { flex: 1; font-size: 0.875rem; }
+  .score-val { font-weight: 800; font-size: 1rem; width: 28px; text-align: right; flex-shrink: 0; }
+  .score-bar-wrap { flex: 2; }
+  .big-score { font-size: 5rem; font-weight: 900; text-align: center; line-height: 1; }
+  .approve-banner { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05)); border: 2px solid var(--green); border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 24px; }
+  .approve-banner h2 { color: var(--green); font-size: 2rem; margin-bottom: 8px; }
+
+  /* TOOL ANIMATIONS */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .pulsing { animation: pulse 2s infinite; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .slide-in { animation: slideIn 0.4s ease; }
+
+  /* COMPETITOR */
+  .comp-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--card2); border-radius: 8px; margin-bottom: 6px; font-size: 0.85rem; }
+  .comp-domain { font-weight: 600; flex: 1; }
+  .comp-kw { color: var(--muted); font-size: 0.8rem; }
+
+  /* AUDIT OUTPUT */
+  .audit-section { border-left: 3px solid var(--accent); padding-left: 16px; margin-bottom: 24px; }
+  .audit-section h4 { font-weight: 700; color: var(--accent2); margin-bottom: 10px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .recommendation-box { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); border-radius: 8px; padding: 14px; font-size: 0.875rem; line-height: 1.7; }
+  .ai-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-bottom: 10px; }
+
+  .hidden { display: none !important; }
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+  .text-muted { color: var(--muted); }
+  .fw-bold { font-weight: 700; }
+  .mt-8 { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mb-8 { margin-bottom: 8px; }
+  .mb-16 { margin-bottom: 16px; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .gap-16 { gap: 16px; }
+  .justify-between { justify-content: space-between; }
+  .w-full { width: 100%; }
+  .relative { position: relative; }
+  hr.dashed { border: none; border-top: 1px dashed var(--border); margin: 16px 0; }
+  .section-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent2); margin-bottom: 8px; }
+  .logo-mark { display: inline-flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 10px; height: 10px; background: var(--green); border-radius: 50%; }
+  .tag { display: inline-block; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); color: var(--accent2); font-size: 0.75rem; padding: 2px 10px; border-radius: 99px; margin: 2px; }
+  .mrr-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(51,65,85,0.3); font-size: 0.875rem; }
+  .tab-content-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent2); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- HIDDEN PRODUCT SPEC JSON -->
+<script id="product-spec" type="application/json">
+{
+  "product_name": "SEO Pulse Monitor",
+  "version": "1.0.0-beta",
+  "target_buyer": {
+    "title": "Founder, Head of Marketing, Growth Manager",
+    "industry": "B2B SaaS",
+    "company_size": "5-50 employees",
+    "arr_range": "$500K - $5M ARR",
+    "country": "US, CA, UK, AU",
+    "tech_stack_signals": ["Google Search Console", "HubSpot", "Slack", "Notion", "Linear"],
+    "pain_triggers": ["No dedicated SEO hire", "Burned by surprise ranking drop", "Publishes content but doesn't track impact"]
+  },
+  "pain": "Ranking drops happen silently for weeks before showing up in GA traffic data. By then, pipeline damage is already done.",
+  "why_recurring": "Google algorithm updates, competitor content cadence, backlink decay, and technical drift mean the SEO landscape changes every single week.",
+  "what_customer_buys": "A weekly AI-generated SEO audit delivered every Monday morning — ranking deltas, competitor gap alerts, technical issue flags, and prioritized fixes in plain English.",
+  "what_customer_gets": {
+    "format": "Branded HTML email + optional Slack alert",
+    "frequency": "Weekly (every Monday 8am local time)",
+    "content": ["Top 5 ranking drops with diagnosis", "Top 5 ranking gains", "Competitor gap alerts (keywords they rank for, you don't)", "Technical issue flags", "Monthly score trend", "AI-generated fix recommendations with effort/impact scores"]
+  },
+  "why_pay_monthly": "SEO changes every week. Competitor content keeps publishing. Algorithm updates hit without warning. The Monday audit becomes a team ritual — canceling it means going blind again.",
+  "delivery_model": "Fully automated. Customer connects GSC via OAuth, inputs competitor URLs, selects email + timezone. Cron job runs Sunday night, GPT-4o generates audit, SendGrid delivers by Monday 8am. Zero human touch per cycle.",
+  "risk_level": "low",
+  "mrr_potential": {
+    "tam": "$2.4B (SMB SEO tools market)",
+    "icp_pool": "~180,000 B2B SaaS companies globally fitting profile",
+    "conversion_target": "0.01% = 1800 customers",
+    "arr_at_target": "$3.2M ARR"
+  },
+  "churn_risk": "low",
+  "churn_reasons": ["Historical score data creates data lock-in after 90 days", "Monday audit becomes team ritual", "Canceling = flying blind, known outcome is worse"],
+  "upsells": [
+    "Backlink Monitor Add-on: $49/month — Weekly alerts for lost/gained referring domains + toxic link detection",
+    "Content Brief Generator: $79/month — AI generates SEO-optimized content briefs for your top keyword gaps, delivered weekly",
+    "Agency White-Label Plan: $399/month — Resell audits under your brand to up to 10 client domains"
+  ]
+}
+</script>
+
+<!-- TOP NAVIGATION -->
+<nav class="top-nav">
+  <div class="nav-brand"><span>●</span> SEO Pulse Monitor</div>
+  <div class="nav-tab active" onclick="showTab('tool')">🔍 Product Tool</div>
+  <div class="nav-tab" onclick="showTab('landing')">🏠 Landing Page</div>
+  <div class="nav-tab" onclick="showTab('sales')">📧 Sales Pack</div>
+  <div class="nav-tab" onclick="showTab('fulfillment')">⚙️ Fulfillment</div>
+  <div class="nav-tab" onclick="showTab('score')">📊 Readiness Score</div>
+  <div class="beta-badge">BETA</div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- COMPONENT 3: FUNCTIONAL PRODUCT TOOL -->
+<!-- ============================================================ -->
+<div id="tab-tool" class="section active">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <div class="section-label">Live Demo — SEO Pulse Monitor</div>
+      <h1 style="font-size:1.5rem; font-weight:800;">Weekly AI SEO Audit Dashboard</h1>
+      <p class="text-muted" style="font-size:0.875rem; margin-top:4px;">Connect your domain and run your first audit. Data persists in localStorage.</p>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn btn-outline btn-sm" onclick="loadDemoData()">📂 Load Demo Data</button>
+      <button class="btn btn-primary btn-sm" onclick="runAudit()">⚡ Run AI Audit</button>
+    </div>
+  </div>
+
+  <!-- ONBOARDING FORM (shows if no domain set) -->
+  <div id="onboarding-form" class="card">
+    <div class="card-title">🚀 Quick Setup — Connect Your Domain</div>
+    <div class="grid-2">
+      <div>
+        <div class="form-group">
+          <label>Your Domain URL</label>
+          <input type="url" id="domain-url" placeholder="https://yourapp.com" />
+        </div>
+        <div class="form-group">
+          <label>Primary Keyword Focus (comma-separated)</label>
+          <input type="text" id="keywords" placeholder="project management software, team collaboration tool, task management app" />
+        </div>
+        <div class="form-group">
+          <label>Competitor Domain 1</label>
+          <input type="url" id="comp1" placeholder="https://competitor1.com" />
+        </div>
+        <div class="form-group">
+          <label>Competitor Domain 2</label>
+          <input type="url" id="comp2" placeholder="https://competitor2.com" />
+        </div>
+        <div class="form-group">
+          <label>Competitor Domain 3</label>
+          <input type="url" id="comp3" placeholder="https://competitor3.com" />
+        </div>
+      </div>
+      <div>
+        <div class="<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ============================================================
+  // TAB NAVIGATION
+  // ============================================================
+  const navTabs = document.querySelectorAll('.nav-tab');
+  const sections = document.querySelectorAll('.section');
+
+  function showSection(tabId) {
+    sections.forEach(function(s) { s.classList.remove('active'); });
+    navTabs.forEach(function(t) { t.classList.remove('active'); });
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+    const activeTab = document.querySelector('[data-tab="' + tabId + '"]');
+    if (activeTab) activeTab.classList.add('active');
+  }
+
+  navTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      const tabId = this.getAttribute('data-tab');
+      if (tabId) showSection(tabId);
+    });
+  });
+
+  // Show first section by default
+  const firstTab = document.querySelector('.nav-tab');
+  if (firstTab) {
+    const firstTabId = firstTab.getAttribute('data-tab');
+    if (firstTabId) showSection(firstTabId);
+    else {
+      if (sections.length > 0) sections[0].classList.add('active');
+    }
+  } else {
+    if (sections.length > 0) sections[0].classList.add('active');
+  }
+
+  // ============================================================
+  // UTILITY FUNCTIONS
+  // ============================================================
+  function showLoading(btn, originalText) {
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;animation:spin 1s linear infinite;margin-right:6px;">⟳</span> Analyzing...';
+    return originalText;
+  }
+
+  function resetBtn(btn, text) {
+    btn.disabled = false;
+    btn.innerHTML = text;
+  }
+
+  function createSpinner() {
+    const style = document.getElementById('spinner-style');
+    if (!style) {
+      const s = document.createElement('style');
+      s.id = 'spinner-style';
+      s.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+      document.head.appendChild(s);
+    }
+  }
+  createSpinner();
+
+  function showToast(message, type) {
+    type = type || 'success';
+    let toast = document.getElementById('global-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'global-toast';
+      toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 24px;border-radius:10px;font-weight:600;font-size:0.9rem;color:#fff;max-width:340px;box-shadow:0 4px 24px rgba(0,0,0,0.4);transition:opacity 0.3s;';
+      document.body.appendChild(toast);
+    }
+    toast.style.background = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#6366f1';
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function() { toast.style.opacity = '0'; }, 3000);
+  }
+
+  function saveToLocalStorage(key, data) {
+    try {
+      let existing = JSON.parse(localStorage.getItem(key) || '[]');
+      if (!Array.isArray(existing)) existing = [];
+      existing.push(data);
+      localStorage.setItem(key, JSON.stringify(existing));
+    } catch(e) {}
+  }
+
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+  }
+
+  // ============================================================
+  // COPY BUTTONS
+  // ============================================================
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-copy], .copy-btn, [id*="copy"]');
+    if (!btn) return;
+    const targetId = btn.getAttribute('data-copy') || btn.getAttribute('data-target');
+    let text = '';
+    if (targetId) {
+      const el = document.getElementById(targetId);
+      if (el) text = el.textContent || el.value || '';
+    } else {
+      const parent = btn.closest('.card, .card-sm, [class*="output"]');
+      if (parent) {
+        const output = parent.querySelector('pre, textarea, [class*="output"], p');
+        if (output) text = output.textContent || output.value || '';
+      }
+    }
+    if (!text) {
+      const pre = btn.parentElement.querySelector('pre');
+      if (pre) text = pre.textContent;
+    }
+    if (text) {
+      navigator.clipboard.writeText(text.trim()).then(function() {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(function() { btn.innerHTML = orig; }, 2000);
+        showToast('Copied to clipboard!');
+      }).catch(function() {
+        showToast('Copy failed', 'error');
+      });
+    }
+  });
+
+  // ============================================================
+  // FAQ TOGGLE
+  // ============================================================
+  document.addEventListener('click', function(e) {
+    const faqItem = e.target.closest('.faq-item, [class*="faq"]');
+    if (!faqItem) return;
+    const question = e.target.closest('.faq-question, [class*="faq-q"], h3, h4');
+    if (!question) return;
+    const answer = faqItem.querySelector('.faq-answer, [class*="faq-a"], p, .faq-body');
+    if (!answer) return;
+    const isOpen = faqItem.classList.contains('open');
+    document.querySelectorAll('.faq-item, [class*="faq"]').forEach(function(item) {
+      item.classList.remove('open');
+      const ans = item.querySelector('.faq-answer, [class*="faq-a"], .faq-body');
+      if (ans) ans.style.display = 'none';
+    });
+    if (!isOpen) {
+      faqItem.classList.add('open');
+      answer.style.display = 'block';
+    }
+  });
+
+  // Initialize FAQ answers as hidden
+  document.querySelectorAll('.faq-answer, [class*="faq-a"], .faq-body').forEach(function(ans) {
+    ans.style.display = 'none';
+  });
+
+  // ============================================================
+  // PRICING BUTTONS
+  // ============================================================
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[class*="pricing"], [data-plan], .plan-btn');
+    if (!btn) return;
+    if (btn.tagName === 'BUTTON' || btn.tagName === 'A') {
+      const text = btn.textContent.toLowerCase();
+      if (text.includes('start') || text.includes('subscribe') || text.includes('get') || text.includes('upgrade') || text.includes('plan') || text.includes('choose') || text.includes('select') || btn.getAttribute('data-plan')) {
+        alert('Redirecting to Stripe checkout...');
+      }
+    }
+  });
+
+  // ============================================================
+  // MODALS
+  // ============================================================
+  document.addEventListener('click', function(e) {
+    const openBtn = e.target.closest('[data-modal-open], [data-open-modal]');
+    if (openBtn) {
+      const modalId = openBtn.getAttribute('data-modal-open') || openBtn.getAttribute('data-open-modal');
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.style.position = 'fixed';
+        modal.style.inset = '0';
+        modal.style.background = 'rgba(0,0,0,0.7)';
+        modal.style.zIndex = '1000';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+      }
+    }
+    const closeBtn = e.target.closest('[data-modal-close], [data-close-modal], .modal-close');
+    if (closeBtn) {
+      const modal = closeBtn.closest('.modal, [class*="modal"]');
+      if (modal) modal.style.display = 'none';
+    }
+    if (e.target.classList.contains('modal') || e.target.getAttribute('data-backdrop') === 'true') {
+      e.target.style.display = 'none';
+    }
+  });
+
+  // ============================================================
+  // DROPDOWNS
+  // ============================================================
+  document.addEventListener('click', function(e) {
+    const toggleBtn = e.target.closest('[data-dropdown]');
+    if (toggleBtn) {
+      const dropId = toggleBtn.getAttribute('data-dropdown');
+      const drop = document.getElementById(dropId);
+      if (drop) {
+        const isOpen = drop.style.display === 'block';
+        document.querySelectorAll('[class*="dropdown-menu"], [class*="drop-menu"]').forEach(function(d) {
+          d.style.display = 'none';
+        });
+        drop.style.display = isOpen ? 'none' : 'block';
+      }
+      return;
+    }
+    if (!e.target.closest('[data-dropdown], [class*="dropdown"]')) {
+      document.querySelectorAll('[class*="dropdown-menu"], [class*="drop-menu"]').forEach(function(d) {
+        d.style.display = 'none';
+      });
+    }
+  });
+
+  // ============================================================
+  // SEARCH / FILTER TABLE ROWS
+  // ============================================================
+  document.addEventListener('input', function(e) {
+    const input = e.target;
+    if (input.type === 'search' || input.getAttribute('data-search') || input.placeholder && input.placeholder.toLowerCase().includes('search')) {
+      const tableId = input.getAttribute('data-search-table');
+      let table = tableId ? document.getElementById(tableId) : input.closest('.card, section').querySelector('table');
+      if (!table) table = document.querySelector('table');
+      if (!table) return;
+      const query = input.value.toLowerCase().trim();
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(function(row) {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+  });
+
+  // ============================================================
+  // DELETE BUTTONS (table rows)
+  // ============================================================
+  document.addEventListener('click', function(e) {
+    const deleteBtn = e.target.closest('.btn-red, [data-delete], [class*="delete-btn"]');
+    if (!deleteBtn) return;
+    if (deleteBtn.textContent.trim().toLowerCase().includes('delete') ||
+        deleteBtn.textContent.trim().toLowerCase().includes('remove') ||
+        deleteBtn.getAttribute('data-delete') ||
+        deleteBtn.innerHTML.includes('🗑') || deleteBtn.innerHTML.includes('✕')) {
+      const row = deleteBtn.closest('tr');
+      if (row) {
+        row.style.transition = 'opacity 0.3s';
+        row.style.opacity = '0';
+        setTimeout(function() { row.remove(); }, 300);
+        showToast('Row deleted');
+      }
+    }
+  });
+
+  // ============================================================
+  // FORM SUBMISSIONS - Save to localStorage
+  // ============================================================
+  document.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = {};
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(function(input) {
+      if (input.name) formData[input.name] = input.value;
+    });
+    formData._timestamp = new Date().toISOString();
+    const key = form.id || form.getAttribute('data-form-key') || 'seo_pulse_form';
+    saveToLocalStorage(key, formData);
+    showToast('Settings saved successfully!');
+
+    const submitBtn = form.querySelector('[type="submit"], .btn-primary');
+    if (submitBtn) {
+      const orig = submitBtn.innerHTML;
+      submitBtn.innerHTML = '✓ Saved!';
+      setTimeout(function() { submitBtn.innerHTML = orig; }, 2000);
+    }
+  });
+
+  // ============================================================
+  // DASHBOARD SECTION
+  // ============================================================
+  function initDashboard() {
+    const dashSection = document.getElementById('dashboard') || document.querySelector('[data-tab="dashboard"]');
+
+    // Animate stat numbers
+    document.querySelectorAll('[data-stat-value], .stat-value, .metric-value').forEach(function(el) {
+      const target = parseInt(el.textContent.replace(/[^0-9]/g, ''));
+      if (!isNaN(target) && target > 0) {
+        let current = 0;
+        const step = Math.ceil(target / 40);
+        const interval = setInterval(function() {
+          current = Math.min(current + step, target);
+          el.textContent = el.textContent.replace(/[0-9,]+/, current.toLocaleString());
+          if (current >= target) clearInterval(interval);
+        }, 30);
+      }
+    });
+
+    // Refresh Dashboard button
+    const refreshBtns = document.querySelectorAll('[id*="refresh"], [class*="refresh-btn"], button[data-action="refresh"]');
+    refreshBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const orig = this.innerHTML;
+        this.innerHTML = '⟳ Refreshing...';
+        this.disabled = true;
+        const self = this;
+        setTimeout(function() {
+          self.innerHTML = orig;
+          self.disabled = false;
+          showToast('Dashboard refreshed!');
+        }, 1500);
+      });
+    });
+  }
+  initDashboard();
+
+  // ============================================================
+  // AUDIT SECTION
+  // ============================================================
+  function initAudit() {
+    const auditOutputs = [
+      {
+        score: 78,
+        issues: [
+          { type: 'error', msg: 'Missing meta descriptions on 12 pages' },
+          { type: 'warning', msg: '34 images missing alt text' },
+          { type: 'warning', msg: 'Page speed score: 61/100 (mobile)' },
+          { type: 'error', msg: '3 broken internal links detected' },
+          { type: 'info', msg: 'Core Web Vitals: LCP 3.2s (needs improvement)' },
+          { type: 'success', msg: 'SSL certificate valid — expires in 247 days' },
+          { type: 'success', msg: 'XML sitemap found and indexed' },
+          { type: 'warning', msg: 'Duplicate H1 tags on 5 pages' },
+          { type: 'error', msg: 'robots.txt blocking /blog/ section' },
+          { type: 'success', msg: 'Schema markup detected on product pages' }
+        ],
+        recommendations: [
+          'Add unique meta descriptions to all pages (estimated +8 ranking positions)',
+          'Compress images using WebP format to improve page speed',
+          'Fix broken links in footer navigation',
+          'Update robots.txt to allow blog indexing',
+          'Implement lazy loading for below-fold images'
+        ]
+      }
+    ];
+
+    const runAuditBtns = document.querySelectorAll('[id*="run-audit"], [id*="
+</script>
+</body>
+</html>
