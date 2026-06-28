@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgencyScope – Agency Analytics Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f172a;--sidebar:#1e293b;--card:#1e293b;--border:#334155;
+  --accent:#6366f1;--accent2:#22d3ee;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#10b981;--yellow:#f59e0b;--red:#ef4444;
+}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+/* SIDEBAR */
+#sidebar{width:240px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;position:fixed;height:100vh}
+.logo{padding:0 24px 28px;font-size:1.3rem;font-weight:700;color:var(--accent)}
+.logo span{color:var(--accent2)}
+.nav-section{padding:0 12px;margin-bottom:8px}
+.nav-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:0 12px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:var(--muted);font-size:.875rem;cursor:pointer;transition:all .2s}
+.nav-item:hover,.nav-item.active{background:rgba(99,102,241,.15);color:var(--text)}
+.nav-item.active{color:var(--accent)}
+.nav-icon{width:16px;text-align:center;font-size:.9rem}
+.sidebar-footer{margin-top:auto;padding:16px 24px;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;margin-right:8px}
+
+/* MAIN */
+#main{margin-left:240px;flex:1;padding:32px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.page-title{font-size:1.5rem;font-weight:700}
+.page-sub{color:var(--muted);font-size:.875rem;margin-top:2px}
+.btn{padding:9px 18px;border-radius:8px;font-size:.875rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#4f46e5}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+
+/* METRIC CARDS */
+#metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.metric-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.metric-value{font-size:1.75rem;font-weight:700;margin-bottom:6px}
+.metric-delta{font-size:.78rem;display:flex;align-items:center;gap:4px}
+.delta-up{color:var(--green)}
+.delta-down{color:var(--red)}
+.metric-bar{height:4px;background:var(--border);border-radius:4px;margin-top:14px;overflow:hidden}
+.metric-bar-fill{height:100%;border-radius:4px}
+
+/* TABLE SECTION */
+#clients-section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:28px;overflow:hidden}
+.section-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)}
+.section-title{font-size:1rem;font-weight:600}
+.badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--yellow)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:12px 24px;border-bottom:1px solid var(--border)}
+td{padding:14px 24px;font-size:.875rem;border-bottom:1px solid rgba(51,65,85,.5)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.client-name{font-weight:600}
+.client-sub{font-size:.75rem;color:var(--muted);margin-top:2px}
+.progress{height:6px;background:var(--border);border-radius:4px;width:100px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;background:var(--accent)}
+
+/* EMPTY STATE */
+#empty-state{text-align:center;padding:56px 24px;display:none}
+.empty-icon{font-size:3rem;margin-bottom:16px;opacity:.4}
+.empty-title{font-size:1.1rem;font-weight:600;margin-bottom:8px}
+.empty-text{color:var(--muted);font-size:.875rem}
+
+/* PRICING */
+#pricing{margin-top:8px}
+.pricing-header{text-align:center;margin-bottom:32px}
+.pricing-header h2{font-size:1.75rem;font-weight:700;margin-bottom:8px}
+.pricing-header p{color:var(--muted)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.plan{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative}
+.plan.popular{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;padding:3px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em}
+.plan-name{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.plan-price{font-size:2.2rem;font-weight:800;margin-bottom:4px}
+.plan-price span{font-size:.9rem;font-weight:400;color:var(--muted)}
+.plan-desc{font-size:.8rem;color:var(--muted);margin-bottom:20px}
+.plan-features{list-style:none;margin-bottom:24px}
+.plan-features li{font-size:.85rem;padding:7px 0;border-bottom:1px solid rgba(51,65,85,.4);display:flex;align-items:center;gap:8px}
+.plan-features li:last-child{border:none}
+.check{color:var(--green)}
+.plan .btn{width:100%;text-align:center;display:block;padding:11px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="logo">Agency<span>Scope</span></div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item active" id="nav-dashboard">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+    <a class="nav-item" id="nav-clients">
+      <span class="nav-icon">🏢</span> Clients
+    </a>
+    <a class="nav-item" id="nav-campaigns">
+      <span class="nav-icon">📣</span> Campaigns
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Analytics</div>
+    <a class="nav-item" id="nav-reports">
+      <span class="nav-icon">📈</span> Reports
+    </a>
+    <a class="nav-item" id="nav-budgets">
+      <span class="nav-icon">💰</span> Budgets
+    </a>
+    <a class="nav-item" id="nav-roi">
+      <span class="nav-icon">🎯</span> ROI Tracker
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Settings</div>
+    <a class="nav-item" id="nav-integrations">
+      <span class="nav-icon">🔗</span> Integrations
+    </a>
+    <a class="nav-item" id="nav-settings">
+      <span class="nav-icon">⚙️</span> Settings
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div style="display:flex;align-items:center">
+      <div class="avatar">JD</div>
+      <div>
+        <div style="font-weight:600;color:var(--text);font-size:.82rem">Jane Doe</div>
+        <div style="font-size:.72rem">Pro Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Monday, July 14 2025 · All Clients</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline" id="btn-export">⬇ Export</button>
+      <button class="btn btn-primary" id="btn-add-client">+ Add Client</button>
+    </div>
+  </div>
+
+  <!-- METRIC CARDS -->
+  <div id="metrics">
+
+    <div class="metric-card" id="card-revenue">
+      <div class="metric-label">Total Client Revenue</div>
+      <div class="metric-value">$284,320</div>
+      <div class="metric-delta delta-up">▲ 12.4% vs last month</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:72%;background:var(--green)"></div></div>
+    </div>
+
+    <div class="metric-card" id="card-clients">
+      <div class="metric-label">Active Clients</div>
+      <div class="metric-value">34</div>
+      <div class="metric-delta delta-up">▲ 3 new this month</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:85%;background:var(--accent)"></div></div>
+    </div>
+
+    <div class="metric-card" id="card-campaigns">
+      <div class="metric-label">Live Campaigns</div>
+      <div class="metric-value">127</div>
+      <div class="metric-delta delta-down">▼ 4 paused this week</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:60%;background:var(--yellow)"></div></div>
+    </div>
+
+    <div class="metric-card" id="card-roi">
+      <div class="metric-label">Avg. Client ROI</div>
+      <div class="metric-value">3.8x</div>
+      <div class="metric-delta delta-up">▲ 0.4x improvement</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:78%;background:var(--accent2)"></div></div>
+    </div>
+
+  </div>
+
+  <!-- CLIENT TABLE -->
+  <div id="clients-section">
+    <div class="section-header">
+      <div class="section-title">Client Performance</div>
+      <button class="btn btn-outline" style="font-size:.8rem;padding:7px 14px">Filter ▾</button>
+    </div>
+
+    <table id="clients-table">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Budget Used</th>
+          <th>Spend</th>
+          <th>Revenue</th>
+          <th>ROI</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="clients-tbody">
+        <tr>
+          <td><div class="client-name">Acme Corp</div><div class="client-sub">E-Commerce · 12 campaigns</div></td>
+          <td><div class="progress"><div class="progress-fill" style="width:78%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:4px">$39k / $50k</div></td>
+          <td>$39,200</td><td>$148,000</td><td style="color:var(--green);font-weight:600">3.8x</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+        <tr>
+          <td><div class="client-name">BlueWave Media</div><div class="client-sub">SaaS · 8 campaigns</div></td>
+          <td><div class="progress"><div class="progress-fill" style="width:95%;background:var(--yellow)"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:4px">$28.5k / $30k</div></td>
+          <td>$28,500</td><td>$91,200</td><td style="color:var(--green);font-weight:600">3.2x</td>
+          <td><span class="badge badge-yellow">At Limit</span></td>
+        </tr>
+        <tr>
+          <td><div class="client-name">NovaTech Inc</div><div class="client-sub">B2B · 5 campaigns</div></td>
+          <td><div class="progress"><div class="progress-fill" style="width:42%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:4px">$10.5k / $25k</div></td>
+          <td>$10,500</td><td>$44,800</td><td style="color:var(--green);font-weight:600">4.3x</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+        <tr>
+          <td><div class="client-name">Pinnacle Retail</div><div class="client-sub">Retail · 9 campaigns</div></td>
+          <td><div class="progress"><div class="progress-fill" style="width:55%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:4px">$22k / $40k</div></td>
+          <td>$22,000</td><td>$52,400</td><td style="color:var(--yellow);font-weight:600">2.4x</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+        <tr>
+          <td><div class="client-name">CloudBase Solutions</div><div class="client-sub">SaaS · 3 campaigns</div></td>
+          <td><div class="progress"><div class="progress-fill" style="width:20%;background:var(--red)"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:4px">$4k / $20k</div></td>
+          <td>$4,000</td><td>$5,200</td><td style="color:var(--red);font-weight:600">1.3x</td>
+          <td><span class="badge badge-red">Underperforming</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- EMPTY STATE (hidden by default, shown via JS) -->
+    <div id="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">No clients yet</div>
+      <div class="empty-text">Add your first client to start tracking performance across campaigns.</div>
+    </div>
+
+  </div>
+
+  <!-- PRICING -->
+  <div id="pricing">
+    <div class="pricing-header">
+      <h2>Simple, Transparent Pricing</h2>
+      <p>Scale as your agency grows. Cancel anytime.</p>
+    </div>
+
+    <div class="plans">
+
+      <div class="plan" id="plan-starter">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$19<span>/mo</span></div>
+        <div class="plan-desc">Perfect for freelancers managing a few clients.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Up to 5 clients</li>
+          <li><span class="check">✓</span> 20 campaigns</li>
+          <li><span class="check">✓</span> Basic analytics</li>
+          <li><span class="check">✓</span> CSV exports</li>
+          <li style="color:var(--muted)">✗ White-label reports</li>
+          <li style="color:var(--muted)">✗ API access</li>
+        </ul>
+        <a href="#" class="btn btn-outline" id="btn-starter">Get Started</a>
+      </div>
+
+      <div class="plan popular" id="plan-pro">
+        <div class="popular-tag">Most Popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$49<span>/mo</span></div>
+        <div class="plan-desc">For growing agencies with multiple clients.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Up to 35 clients</li>
+          <li><span class="check">✓</span> Unlimited campaigns</li>
+          <li><span class="check">✓</span> Advanced analytics</li>
+          <li><span class="check">✓</span> CSV + PDF exports</li>
+          <li><span class="check">✓</span> White-label reports</li>
+          <li style="color:var(--muted)">✗ API access</li>
+        </ul>
+        <a href="#" class="btn btn-primary" id="btn-pro">Start Free Trial</a>
+      </div>
+
+      <div class="plan" id="plan-agency">
+        <div class="plan-name">Agency</div>
+        <div class="plan-price">$149<span>/mo</span></div>
+        <div class="plan-desc">Enterprise-grade for large agencies & teams.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Unlimited clients</li>
+          <li><span class="check">✓</span> Unlimited campaigns</li>
+          <li><span class="check">✓</span> Full analytics suite</li>
+          <li><span class="check">✓</span> All export formats</li>
+          <li><span class="check">✓</span> White-label reports</li>
+          <li><span class="check">✓</span> Full API access</li>
+        </ul>
+        <a href="#" class="btn btn-outline" id="btn-agency">Contact Sales</a>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+<script>
+(function () {
+  // ── Utility ──────────────────────────────────────────────────────────────
+  const $ = (s, ctx = document) => ctx.querySelector(s);
+  const $ = (s, ctx = document) => [...ctx.querySelectorAll(s)];
+  const ls = {
+    get: k => JSON.parse(localStorage.getItem(k)),
+    set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+  };
+
+  // ── Sample Data ───────────────────────────────────────────────────────────
+  function initSampleData() {
+    if (!ls.get('as_initialized')) {
+      ls.set('as_clients', [
+        { id: 1, name: 'Horizon Tech', industry: 'SaaS', status: 'Active', revenue: 18400, contact: 'Sara Lin', email: 'sara@horizontech.io', since: '2022-03' },
+        { id: 2, name: 'Nova Retail', industry: 'E-Commerce', status: 'Active', revenue: 12200, contact: 'Jake Patel', email: 'jake@novaretail.com', since: '2021-11' },
+        { id: 3, name: 'BluePeak Finance', industry: 'FinTech', status: 'Active', revenue: 22500, contact: 'Amy Torres', email: 'amy@bluepeak.com', since: '2020-06' },
+        { id: 4, name: 'Verde Health', industry: 'Healthcare', status: 'Inactive', revenue: 7800, contact: 'Leo Marsh', email: 'leo@verdehealth.org', since: '2023-01' },
+        { id: 5, name: 'Orbit Media', industry: 'Marketing', status: 'Active', revenue: 9600, contact: 'Nia Brown', email: 'nia@orbitmedia.com', since: '2022-09' },
+      ]);
+      ls.set('as_projects', [
+        { id: 1, clientId: 1, name: 'SEO Overhaul', status: 'In Progress', budget: 8000, spent: 4200, due: '2025-08-15', lead: 'Marcus R.' },
+        { id: 2, clientId: 2, name: 'PPC Campaign Q3', status: 'In Progress', budget: 5500, spent: 1800, due: '2025-09-01', lead: 'Ella V.' },
+        { id: 3, clientId: 3, name: 'Brand Refresh', status: 'Completed', budget: 12000, spent: 11800, due: '2025-06-30', lead: 'Dana K.' },
+        { id: 4, clientId: 4, name: 'Social Strategy', status: 'On Hold', budget: 3200, spent: 900, due: '2025-10-01', lead: 'Sam T.' },
+        { id: 5, clientId: 1, name: 'Content Pipeline', status: 'In Progress', budget: 6000, spent: 2100, due: '2025-08-30', lead: 'Marcus R.' },
+        { id: 6, clientId: 5, name: 'Email Automation', status: 'Review', budget: 4400, spent: 3900, due: '2025-07-20', lead: 'Ella V.' },
+      ]);
+      ls.set('as_tasks', [
+        { id: 1, projectId: 1, title: 'Keyword Research', assignee: 'Marcus R.', priority: 'High', status: 'Done', due: '2025-07-10' },
+        { id: 2, projectId: 1, title: 'On-page Audit', assignee: 'Marcus R.', priority: 'High', status: 'In Progress', due: '2025-07-25' },
+        { id: 3, projectId: 2, title: 'Ad Copy Drafts', assignee: 'Ella V.', priority: 'Medium', status: 'In Progress', due: '2025-07-28' },
+        { id: 4, projectId: 5, title: 'Editorial Calendar', assignee: 'Dana K.', priority: 'Medium', status: 'To Do', due: '2025-08-05' },
+        { id: 5, projectId: 6, title: 'Sequence Build', assignee: 'Ella V.', priority: 'High', status: 'Review', due: '2025-07-18' },
+        { id: 6, projectId: 3, title: 'Final Delivery', assignee: 'Dana K.', priority: 'Low', status: 'Done', due: '2025-06-28' },
+      ]);
+      ls.set('as_team', [
+        { id: 1, name: 'Marcus R.', role: 'SEO Specialist', email: 'marcus@agency.io', utilization: 85, projects: 2 },
+        { id: 2, name: 'Ella V.', role: 'PPC Manager', email: 'ella@agency.io', utilization: 72, projects: 2 },
+        { id: 3, name: 'Dana K.', role: 'Creative Lead', email: 'dana@agency.io', utilization: 60, projects: 1 },
+        { id: 4, name: 'Sam T.', role: 'Social Strategist', email: 'sam@agency.io', utilization: 45, projects: 1 },
+        { id: 5, name: 'Nia B.', role: 'Content Writer', email: 'nia@agency.io', utilization: 90, projects: 1 },
+      ]);
+      ls.set('as_reports', [
+        { id: 1, title: 'Q1 2025 Performance', client: 'BluePeak Finance', type: 'Quarterly', date: '2025-04-01', status: 'Published' },
+        { id: 2, title: 'SEO Progress – June', client: 'Horizon Tech', type: 'Monthly', date: '2025-07-01', status: 'Draft' },
+        { id: 3, title: 'PPC Weekly #22', client: 'Nova Retail', type: 'Weekly', date: '2025-07-07', status: 'Published' },
+      ]);
+      ls.set('as_invoices', [
+        { id: 1, client: 'BluePeak Finance', amount: 7500, due: '2025-07-31', status: 'Paid', issued: '2025-07-01' },
+        { id: 2, client: 'Horizon Tech', amount: 4200, due: '2025-08-05', status: 'Pending', issued: '2025-07-05' },
+        { id: 3, client: 'Nova Retail', amount: 2800, due: '2025-07-20', status: 'Overdue', issued: '2025-06-20' },
+        { id: 4, client: 'Orbit Media', amount: 3200, due: '2025-08-15', status: 'Draft', issued: '2025-07-10' },
+      ]);
+      ls.set('as_initialized', true);
+    }
+  }
+
+  // ── Page Registry ─────────────────────────────────────────────────────────
+  const pages = {};
+  let currentPage = 'dashboard';
+
+  function registerPage(id, renderFn) { pages[id] = renderFn; }
+
+  function navigate(id) {
+    currentPage = id;
+    $('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+    const main = $('#main');
+    const content = $('#page-content');
+    if (content) content.remove();
+    const div = document.createElement('div');
+    div.id = 'page-content';
+    main.appendChild(div);
+    (pages[id] || pages['dashboard'])();
+    updateTopbar();
+  }
+
+  function updateTopbar() {
+    const titles = {
+      dashboard: ['Dashboard', 'Welcome back — here\'s what\'s happening today.'],
+      clients: ['Clients', 'Manage your client accounts.'],
+      projects: ['Projects', 'Track all active and completed projects.'],
+      tasks: ['Tasks', 'Your team\'s task board.'],
+      reports: ['Reports', 'Generate and view client reports.'],
+      billing: ['Billing & Invoices', 'Track payments and invoices.'],
+      team: ['Team', 'Manage team members and workloads.'],
+      settings: ['Settings', 'Configure your agency workspace.'],
+    };
+    const [title, sub] = titles[currentPage] || ['Dashboard', ''];
+    const t = $('.page-title');
+    const s = $('.page-sub');
+    if (t) t.textContent = title;
+    if (s) s.textContent = sub;
+  }
+
+  // ── Modal System ──────────────────────────────────────────────────────────
+  function openModal({ title, body, onSave, saveLabel = 'Save' }) {
+    closeModal();
+    const overlay = document.createElement('div');
+    overlay.id = 'modal-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px';
+    overlay.innerHTML = `
+      <div id="modal-box" style="background:#1e293b;border:1px solid #334155;border-radius:12px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:28px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <h2 style="font-size:1.1rem;font-weight:700">${title}</h2>
+          <button id="modal-close" style="background:none;border:none;color:#94a3b8;font-size:1.4rem;cursor:pointer">&times;</button>
+        </div>
+        <div id="modal-body">${body}</div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px">
+          <button id="modal-cancel" class="btn btn-ghost">Cancel</button>
+          <button id="modal-save" class="btn btn-primary">${saveLabel}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const close = () => closeModal();
+    $('#modal-close', overlay).addEventListener('click', close);
+    $('#modal-cancel', overlay).addEventListener('click', close);
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+    if (onSave) $('#modal-save', overlay).addEventListener('click', () => onSave($('#modal-box', overlay)));
+  }
+
+  function openInfoModal({ title, body }) {
+    openModal({ title, body, saveLabel: 'Close', onSave: () => closeModal() });
+    const cancelBtn = $('#modal-cancel');
+    if (cancelBtn) cancelBtn.style.display = 'none';
+  }
+
+  function closeModal() {
+    const o = $('#modal-overlay');
+    if (o) o.remove();
+  }
+
+  // ── Form Helpers ──────────────────────────────────────────────────────────
+  function fv(box, sel) { return $(sel, box)?.value?.trim() || ''; }
+
+  const statusBadge = (status, map = {}) => {
+    const colors = {
+      'Active': 'var(--green)', 'Inactive': 'var(--red)', 'In Progress': 'var(--accent)',
+      'Completed': 'var(--green)', 'On Hold': 'var(--yellow)', 'Review': 'var(--accent2)',
+      'Done': 'var(--green)', 'To Do': 'var(--muted)', 'Pending': 'var(--yellow)',
+      'Paid': 'var(--green)', 'Overdue': 'var(--red)', 'Draft': 'var(--muted)',
+      'Published': 'var(--green)', 'High': 'var(--red)', 'Medium': 'var(--yellow)', 'Low': 'var(--green)',
+    };
+    const c = map[status] || colors[status] || 'var(--muted)';
+    return `<span style="background:${c}22;color:${c};padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600">${status}</span>`;
+  };
+
+  const fmt = n => '
+</html> + Number(n).toLocaleString();
+
+  // ── Inject Global Styles ──────────────────────────────────────────────────
+  function injectStyles() {
+    const s = document.createElement('style');
+    s.textContent = `
+      .btn{padding:9px 18px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+      .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#4f46e5}
+      .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-ghost:hover{background:var(--border)}
+      .btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#dc2626}
+      .btn-sm{padding:5px 12px;font-size:.75rem}
+      .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+      .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+      .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+      .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+      .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+      .stat-val{font-size:2rem;font-weight:700;margin:6px 0}
+      .stat-label{color:var(--muted);font-size:.8rem}
+      .stat-delta{font-size:.78rem;margin-top:4px}
+      .table-wrap{overflow-x:auto}
+      table{width:100%;border-collapse:collapse}
+      th{text-align:left;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;padding:10px 14px;border-bottom:1px solid var(--border)}
+      td{padding:12px 14px;border-bottom:1px solid #1e293b;font-size:.85rem;vertical-align:middle}
+      tr:hover td{background:rgba(255,255,255,.02)}
+      .form-group{margin-bottom:14px}
+      .form-group label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:5px}
+      .form-group input,.form-group select,.form-group textarea{width:100%;background:#0f172a;border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:.85rem;
+</script>
+</body>
+</html>
