@@ -389,7 +389,7 @@ td { padding: 11px 14px; color: var(--text); vertical-align: middle; }
 
   <div class="wrap">
     <div class="lp-section">
-      <div class="lp-header"><div class="lp-eye">Who it's for</div><div class="lp-title">Built for teams like yours</div><div class="lp-sub">See how ecommerce teams use this to protect their revenue.</div></div>
+      <div class="lp-header"><div class="lp-eye">Who it's for</div><div class="lp-title">Built for teams like yours</div><div class="lp-sub">See how teams just like yours solve this problem.</div></div>
       <div class="grid-3" id="lp-testis"></div>
     </div>
     <div class="lp-section">
@@ -678,8 +678,8 @@ function renderLanding() {
 
   var te = document.getElementById('lp-testis');
   if(te)te.innerHTML=(lp.social_proof||lp.testimonials||[]).map(function(sp){
-    var init=(t.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2);
-    return '<div class="testi"><div class="testi-stars">★★★★★</div><div class="testi-quote">"'+esc(t.quote)+'"</div><div class="testi-author"><div class="testi-avatar">'+init+'</div><div><div class="testi-name">'+esc(t.name)+'<span class="beta-tag">Beta</span></div><div class="testi-role">'+esc(t.role)+'</div></div></div></div>';
+    var init=(sp.name||sp.author||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2);
+    return '<div class="testi"><div class="testi-stars">★★★★★</div><div class="testi-quote">"'+esc(sp.quote||sp.text||'')+'"</div><div class="testi-author"><div class="testi-avatar">'+init+'</div><div><div class="testi-name">'+esc(sp.name||sp.author||'Beta User')+'<span class="beta-tag">Beta</span></div><div class="testi-role">'+esc(sp.role||sp.company||'Early adopter')+'</div></div></div></div>';
   }).join('');
 
   var pe = document.getElementById('lp-probs');
