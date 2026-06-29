@@ -1,0 +1,797 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08090a;
+  --s1: #0e1012;
+  --s2: #141618;
+  --s3: #1a1d20;
+  --border: #232629;
+  --border-soft: #1c1f22;
+  --border-bright: #2e3338;
+  --muted: #404549;
+  --dim: #5c6370;
+  --soft: #8b949e;
+  --text: #b2bcc6;
+  --bright: #d8e2ec;
+  --white: #eef4f9;
+  --blue: #3b82f6;
+  --blue-h: #60a5fa;
+  --blue-glow: rgba(59,130,246,.2);
+  --blue-dim: rgba(59,130,246,.08);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.08);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.08);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.08);
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+::selection { background: rgba(59,130,246,.2); color: var(--white); }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+/* ── NAV (proper website navigation) ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(8,9,10,.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  gap: 32px;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; flex-shrink: 0; text-decoration: none;
+}
+.nav-logo {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: #fff;
+  box-shadow: 0 0 20px rgba(59,130,246,.25);
+  flex-shrink: 0;
+}
+.nav-brand-name {
+  font-size: 15.5px; font-weight: 800; color: var(--white);
+  letter-spacing: -.4px; white-space: nowrap;
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis;
+}
+.nav-links {
+  display: flex; align-items: center; gap: 2px; flex: 1;
+  justify-content: center; overflow-x: auto; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-link {
+  height: 36px; padding: 0 14px;
+  background: none; border: none; border-radius: 8px;
+  color: var(--soft); font-size: 14px; font-weight: 500;
+  font-family: var(--sans); cursor: pointer; white-space: nowrap;
+  transition: color .15s, background .15s;
+  display: flex; align-items: center;
+}
+.nav-link:hover { color: var(--white); background: rgba(255,255,255,.06); }
+.nav-link.active { color: var(--white); font-weight: 600; background: rgba(255,255,255,.07); }
+.nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.nav-sign-in {
+  height: 36px; padding: 0 14px;
+  background: none; border: 1px solid var(--border);
+  border-radius: 8px; color: var(--soft);
+  font-size: 13.5px; font-weight: 500; font-family: var(--sans);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.nav-sign-in:hover { color: var(--white); border-color: var(--border-bright); }
+.nav-cta {
+  height: 36px; padding: 0 18px;
+  background: var(--blue); color: #fff; border: none;
+  border-radius: 8px; font-size: 13.5px; font-weight: 700;
+  font-family: var(--sans); cursor: pointer; white-space: nowrap;
+  transition: all .15s;
+  box-shadow: 0 0 20px rgba(59,130,246,.18);
+}
+.nav-cta:hover { background: var(--blue-h); box-shadow: 0 0 30px rgba(59,130,246,.32); transform: translateY(-1px); }
+.nav-cta:active { transform: translateY(0); }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; animation: fadein .15s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── LAYOUT ── */
+.wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px; }
+
+/* ── TYPE ── */
+.eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--blue-h); letter-spacing: .08em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.eyebrow::before { content: ''; width: 18px; height: 1.5px; background: var(--blue); display: block; border-radius: 1px; }
+.gradient { background: linear-gradient(135deg, var(--white) 0%, var(--blue-h) 55%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* ── CARDS ── */
+.card { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; }
+.card-head { padding: 12px 18px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 12px; font-weight: 600; color: var(--bright); display: flex; align-items: center; gap: 7px; }
+.card-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.card-body { padding: 18px; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: none; border-radius: 8px; font-family: var(--sans); font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; letter-spacing: -.1px; }
+.btn:disabled { opacity: .4; pointer-events: none; }
+.btn-primary { background: var(--blue); color: #fff; padding: 10px 20px; font-size: 13.5px; box-shadow: 0 1px 3px rgba(0,0,0,.5), 0 0 0 1px rgba(59,130,246,.4); }
+.btn-primary:hover { background: var(--blue-h); box-shadow: 0 4px 20px rgba(59,130,246,.3), 0 0 0 1px rgba(96,165,250,.5); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-ghost { background: rgba(255,255,255,.05); color: var(--bright); padding: 10px 20px; font-size: 13.5px; border: 1px solid var(--border); }
+.btn-ghost:hover { background: rgba(255,255,255,.09); border-color: var(--border-bright); color: var(--white); }
+.btn-sm { padding: 6px 13px; font-size: 12px; border-radius: 6px; }
+.btn-lg { padding: 13px 28px; font-size: 15px; border-radius: 10px; }
+.btn-full { width: 100%; }
+
+/* ── INPUTS ── */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .07em; font-family: var(--mono); }
+.form-input { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 13px; color: var(--white); font-size: 13px; font-family: var(--sans); outline: none; width: 100%; transition: border-color .15s, box-shadow .15s; }
+.form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+.form-input::placeholder { color: var(--muted); }
+.form-input option { background: var(--s2); }
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* ── METRICS ── */
+.metric { background: var(--s1); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; position: relative; overflow: hidden; }
+.metric::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--m-color, var(--blue)); }
+.metric-label { font-size: 10px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; font-family: var(--mono); }
+.metric-value { font-size: 26px; font-weight: 800; color: var(--white); letter-spacing: -.8px; line-height: 1; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+.metric-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead tr { border-bottom: 1px solid var(--border); }
+th { padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; font-family: var(--mono); }
+tbody tr { border-bottom: 1px solid var(--border-soft); transition: background .1s; }
+tbody tr:hover { background: rgba(255,255,255,.02); }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 11px 14px; color: var(--text); vertical-align: middle; }
+
+/* ── PILLS ── */
+.pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: var(--mono); letter-spacing: .03em; }
+.pill-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,.15); }
+.pill-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,.15); }
+.pill-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,.15); }
+.pill-blue { background: var(--blue-dim); color: var(--blue-h); border: 1px solid rgba(59,130,246,.15); }
+
+/* ── FINDINGS ── */
+.finding { border-left: 2px solid; padding: 12px 14px; border-radius: 0 8px 8px 0; margin-bottom: 8px; }
+.finding-crit { border-color: var(--red); background: var(--red-dim); }
+.finding-warn { border-color: var(--amber); background: var(--amber-dim); }
+.finding-good { border-color: var(--green); background: var(--green-dim); }
+.finding-title { font-size: 12.5px; font-weight: 700; color: var(--bright); margin-bottom: 5px; display: flex; align-items: center; gap: 7px; }
+.finding-body { font-size: 12px; color: var(--soft); line-height: 1.65; }
+.finding-action { margin-top: 9px; padding: 7px 11px; background: rgba(255,255,255,.04); border-left: 2px solid var(--blue); border-radius: 4px; font-size: 11.5px; color: var(--text); line-height: 1.5; }
+.finding-action strong { color: var(--blue-h); }
+
+/* ── ALERTS ── */
+.alert { display: flex; gap: 10px; align-items: flex-start; padding: 12px 15px; border-radius: 8px; font-size: 12.5px; line-height: 1.55; }
+.alert-info { background: var(--blue-dim); border: 1px solid rgba(59,130,246,.18); color: var(--blue-h); }
+.alert-success { background: var(--green-dim); border: 1px solid rgba(34,197,94,.18); color: var(--green); }
+.alert-warn { background: var(--amber-dim); border: 1px solid rgba(245,158,11,.18); color: var(--amber); }
+
+/* ── SPINNER ── */
+.spin { width: 13px; height: 13px; border-radius: 50%; border: 2px solid rgba(255,255,255,.15); border-top-color: #fff; animation: spinning .6s linear infinite; flex-shrink: 0; }
+@keyframes spinning { to { transform: rotate(360deg); } }
+
+/* ── HERO ── */
+.hero { position: relative; overflow: hidden; padding: 100px 28px 80px; text-align: center; }
+.hero-glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 80% 70% at 50% -5%, rgba(59,130,246,.11) 0%, transparent 60%), radial-gradient(ellipse 40% 30% at 15% 100%, rgba(59,130,246,.05) 0%, transparent 55%), radial-gradient(ellipse 40% 30% at 85% 100%, rgba(96,165,250,.05) 0%, transparent 55%); }
+.hero-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+.hero-kicker { display: inline-flex; align-items: center; gap: 7px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.18); color: var(--blue-h); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 100px; margin-bottom: 28px; }
+.hero-kicker-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; flex-shrink: 0; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.hero-h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 1.05; letter-spacing: -1.5px; color: var(--white); margin-bottom: 18px; }
+.hero-sub { font-size: 16px; color: var(--soft); max-width: 560px; margin: 0 auto 36px; line-height: 1.7; }
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+.hero-trust { display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap; }
+.trust-item { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.trust-check { color: var(--green); }
+
+/* ── LP SECTIONS ── */
+.lp-section { padding: 64px 0; border-top: 1px solid var(--border-soft); }
+.lp-header { text-align: center; margin-bottom: 40px; }
+.lp-eye { font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--blue-h); margin-bottom: 12px; }
+.lp-title { font-size: clamp(20px, 3vw, 28px); font-weight: 800; letter-spacing: -.6px; color: var(--white); margin-bottom: 10px; }
+.lp-sub { font-size: 13.5px; color: var(--soft); max-width: 480px; margin: 0 auto; line-height: 1.65; }
+
+/* ── TESTIMONIALS ── */
+.testi { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.testi-stars { color: var(--amber); font-size: 12px; letter-spacing: 2px; }
+.testi-quote { font-size: 13px; color: var(--bright); line-height: 1.7; font-style: italic; }
+.testi-author { display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border-soft); }
+.testi-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), #818cf8); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.testi-name { font-size: 12.5px; font-weight: 700; color: var(--bright); }
+.testi-role { font-size: 11px; color: var(--muted); }
+.beta-tag { font-size: 9px; font-weight: 700; font-family: var(--mono); background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,.18); padding: 1px 5px; border-radius: 3px; letter-spacing: .05em; margin-left: 5px; text-transform: uppercase; }
+
+/* ── PROBLEM / FEATURE CARDS ── */
+.prob-card, .feat-card { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+.prob-icon, .feat-icon { font-size: 22px; margin-bottom: 12px; }
+.prob-title, .feat-title { font-size: 13.5px; font-weight: 700; color: var(--bright); margin-bottom: 7px; }
+.prob-desc, .feat-desc { font-size: 12.5px; color: var(--soft); line-height: 1.65; }
+
+/* ── HOW IT WORKS ── */
+.how-step { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border-soft); }
+.how-step:last-child { border-bottom: none; }
+.how-num { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; background: var(--blue-dim); border: 1px solid rgba(59,130,246,.25); color: var(--blue-h); font-family: var(--mono); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.how-title { font-size: 13px; font-weight: 700; color: var(--bright); margin-bottom: 4px; }
+.how-desc { font-size: 12.5px; color: var(--soft); line-height: 1.65; }
+
+/* ── PRICING ── */
+.plan { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 26px; display: flex; flex-direction: column; gap: 16px; position: relative; transition: border-color .2s, transform .2s; }
+.plan:hover { transform: translateY(-2px); }
+.plan.featured { border-color: rgba(59,130,246,.4); background: linear-gradient(180deg, rgba(59,130,246,.06) 0%, var(--s1) 100%); }
+.plan-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--blue); color: #fff; font-size: 10px; font-weight: 700; font-family: var(--mono); letter-spacing: .06em; padding: 3px 12px; border-radius: 100px; white-space: nowrap; }
+.plan-tier { font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: var(--dim); letter-spacing: .1em; text-transform: uppercase; }
+.plan-price { display: flex; align-items: baseline; gap: 3px; }
+.plan-amount { font-size: 32px; font-weight: 900; color: var(--white); letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.plan-period { font-size: 13px; color: var(--muted); }
+.plan-desc { font-size: 12.5px; color: var(--soft); line-height: 1.5; }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.plan-features li { font-size: 12.5px; color: var(--soft); display: flex; align-items: flex-start; gap: 8px; line-height: 1.45; }
+.plan-check { color: var(--green); flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+
+/* ── FAQ ── */
+.faq-item { border-bottom: 1px solid var(--border-soft); cursor: pointer; }
+.faq-item:last-child { border-bottom: none; }
+.faq-q { padding: 15px 0; font-size: 13.5px; font-weight: 600; color: var(--text); display: flex; justify-content: space-between; align-items: center; gap: 16px; user-select: none; transition: color .15s; }
+.faq-q:hover { color: var(--blue-h); }
+.faq-chevron { color: var(--muted); font-size: 16px; transition: transform .25s; flex-shrink: 0; }
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+.faq-a { font-size: 13px; color: var(--soft); line-height: 1.7; display: none; padding-bottom: 15px; }
+.faq-item.open .faq-a { display: block; }
+.faq-item.open .faq-q { color: var(--blue-h); }
+
+/* ── CTA BOX ── */
+.cta-box { background: linear-gradient(135deg, rgba(59,130,246,.1) 0%, rgba(129,140,248,.04) 100%); border: 1px solid rgba(59,130,246,.2); border-radius: 16px; padding: 64px 48px; text-align: center; }
+
+/* ── COPY BOX ── */
+.cbox { margin-bottom: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.cbox-head { display: flex; align-items: center; justify-content: space-between; padding: 9px 16px; background: var(--s2); border-bottom: 1px solid var(--border-soft); }
+.cbox-label { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; }
+.cbox-sub { font-size: 10px; color: var(--muted); }
+.cbox-body { background: var(--s1); padding: 16px; }
+.cbox-body pre { white-space: pre-wrap; font-size: 12.5px; color: var(--text); font-family: var(--sans); line-height: 1.75; margin: 0; }
+.copy-btn { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--dim); background: var(--s3); border: 1px solid var(--border); border-radius: 5px; padding: 4px 10px; cursor: pointer; transition: all .15s; letter-spacing: .04em; }
+.copy-btn:hover { color: var(--blue-h); border-color: rgba(59,130,246,.4); }
+.copy-btn.copied { color: var(--green); border-color: rgba(34,197,94,.3); }
+
+/* ── SCORE BARS ── */
+.sbar { display: grid; grid-template-columns: 170px 1fr 36px; gap: 12px; align-items: center; margin-bottom: 10px; }
+.sbar-label { font-size: 12.5px; color: var(--soft); }
+.sbar-track { height: 4px; background: var(--border-bright); border-radius: 2px; overflow: hidden; }
+.sbar-fill { height: 100%; border-radius: 2px; transition: width .9s cubic-bezier(.4,0,.2,1); width: 0%; }
+.sbar-val { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--soft); text-align: right; }
+
+/* ── READINESS BANNER ── */
+.r-banner { border-radius: 10px; padding: 28px; text-align: center; margin-bottom: 20px; }
+.r-approve { background: var(--green-dim); border: 1px solid rgba(34,197,94,.18); }
+.r-fix { background: var(--amber-dim); border: 1px solid rgba(245,158,11,.18); }
+.r-kill { background: var(--red-dim); border: 1px solid rgba(239,68,68,.18); }
+.r-verdict { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+.r-score { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin: 6px 0; font-variant-numeric: tabular-nums; }
+.r-summary { font-size: 13px; color: var(--soft); max-width: 500px; margin: 0 auto; line-height: 1.65; }
+
+/* ── FLOW STEPS ── */
+.flow-step { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-soft); }
+.flow-step:last-child { border-bottom: none; }
+.flow-num { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; background: var(--blue); color: #fff; font-family: var(--mono); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 2px; box-shadow: 0 0 12px var(--blue-glow); }
+.flow-title { font-size: 13px; font-weight: 700; color: var(--bright); margin-bottom: 4px; }
+.flow-desc { font-size: 12.5px; color: var(--soft); line-height: 1.65; }
+
+/* ── DEMO STATUS ── */
+.status-row { display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: var(--s1); border: 1px solid var(--border); border-radius: 8px; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.red { background: var(--red); box-shadow: 0 0 6px var(--red); animation: blink 1s infinite; }
+.status-dot.amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.status-label { font-size: 12.5px; font-weight: 600; color: var(--bright); }
+.status-meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+/* ── REVENUE CALLOUT ── */
+.revenue-callout { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: rgba(239,68,68,.07); border: 1px solid rgba(239,68,68,.18); border-radius: 10px; }
+.revenue-callout .rc-label { font-size: 12.5px; color: var(--soft); }
+.revenue-callout .rc-amount { font-size: 28px; font-weight: 900; color: var(--red); letter-spacing: -1px; font-variant-numeric: tabular-nums; margin-left: auto; }
+.revenue-callout .rc-rate { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--red); background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.15); padding: 3px 8px; border-radius: 4px; }
+
+/* ── UTILS ── */
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-24 { margin-bottom: 24px; }
+.mt-16 { margin-top: 16px; }
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.gap-8 { gap: 8px; }
+.gap-10 { gap: 10px; }
+.gap-12 { gap: 12px; }
+
+/* ── RESPONSIVE ── */
+@media(max-width: 768px) {
+  nav { padding: 0 20px; gap: 12px; }
+  .nav-links { display: none; }
+  .nav-sign-in { display: none; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .hero { padding: 64px 18px 52px; }
+  .wrap { padding: 0 18px; }
+  .cta-box { padding: 40px 24px; }
+  .sbar { grid-template-columns: 130px 1fr 28px; }
+}
+@media(max-width: 480px) {
+  .nav-brand-name { max-width: 140px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<script id="P" type="application/json">{"name":"UptimeIQ","slug":"uptimeiq","landing":{"headline":"Know the exact dollar cost of every second your Shopify store is down","subheadline":"UptimeIQ monitors your store 24/7, calculates your revenue loss per minute, and alerts you the moment something breaks — before your customers notice.","cta_primary":"Start Free 14-Day Trial — No Credit Card","problem_title":"Your Shopify store goes down. You find out from a customer. Sound familiar?","features_title":"Everything you need to protect revenue, nothing you don't","cta_title":"Stop flying blind on downtime","cta_desc":"Connect your Shopify store in 15 minutes. Get your first Revenue Risk Score instantly. Know your cost-per-minute of downtime before you need it.","trust_items":["Shopify Admin API — no app install required","SOC 2 Type I in progress","Data processed under EU GDPR via AB Empire Oy","Monitored by StatusPage — 99.95% platform uptime","Stripe-secured payments"],"social_proof":["\"We had a checkout error running for 3 hours on a Saturday. UptimeIQ caught it in 4 minutes. That alert probably saved us $2,000.\" — DTC apparel brand, $180K/month","\"I used to check my store manually every morning. Now UptimeIQ does it every 60 seconds and I sleep better.\" — Shopify store owner, $75K/month","\"The revenue-per-minute number on the dashboard was a wake-up call. I never thought about downtime as a cost center until I saw it live.\" — Health & wellness brand, $320K/month"],"problems":["You find out about downtime from a customer complaint — 30 minutes after it started","You have no idea how much revenue a slow checkout is costing you this month","Your developer says the site is fine but your conversion rate dropped 18% last Tuesday","You run a big ad campaign and have no way to know if your store survived the traffic spike","You pay for Shopify but have zero visibility into what happens when it has issues"],"how_steps":[{"step":1,"title":"Connect your Shopify store","desc":"Add your Shopify Admin API token in 3 clicks. No app install. No developer needed. Works with any Shopify plan."},{"step":2,"title":"See your revenue-per-minute rate instantly","desc":"UptimeIQ pulls your trailing 30-day revenue and calculates exactly what one minute of downtime costs your specific store."},{"step":3,"title":"Get alerted before your customers are","desc":"Checks run every 15–60 seconds from global nodes. The moment something breaks, you get an SMS, Slack message, or email with the live revenue counter running."}],"features":[{"name":"Revenue-Loss Counter","desc":"During any incident, a live counter shows you exactly how much revenue you are losing per minute based on your store's actual GMV — not industry averages."},{"name":"Global Uptime Monitoring","desc":"Checks from 5–8 global nodes every 15–60 seconds catch regional outages, CDN failures, and Shopify API errors the moment they happen."},{"name":"Checkout Flow Simulation","desc":"A synthetic buyer visits your store, adds to cart, and reaches checkout every 10 minutes — catching broken checkout flows before real customers hit them."},{"name":"Speed Degradation Alerts","desc":"LCP and TTFB tracked continuously. Get alerted when your page speed drops below your custom threshold — because slow is the new down."},{"name":"Monthly Revenue Protection Report","desc":"A plain-English monthly report showing total downtime, estimated revenue at risk, speed trends, and one priority action to protect next month's revenue."},{"name":"Multi-Channel Alerts","desc":"SMS, email, Slack, and PagerDuty integrations. Alert the right person at the right time — owner, developer, or ops team."}],"plans":[{"name":"Starter","price":"€79/month","cta":"Start Free Trial","highlight":false,"summary":"1 store, email alerts, revenue-loss counter, monthly report"},{"name":"Growth","price":"€199/month","cta":"Start Free Trial","highlight":true,"summary":"3 stores, SMS + Slack alerts, checkout simulation, setup call"},{"name":"Scale","price":"€449/month","cta":"Talk to Us","highlight":false,"summary":"10 stores, 15s checks, weekly reports, priority support, API access"}],"faq":[{"q":"Do I need to install a Shopify app?","a":"No. UptimeIQ connects via your Shopify Admin API token — a 3-step process that takes under 5 minutes. No app install, no developer required."},{"q":"How is the revenue-loss number calculated?","a":"We pull your trailing 30-day revenue from the Shopify Analytics API, divide by total minutes, and display your real revenue-per-minute rate. During an incident, we multiply by elapsed downtime minutes."},{"q":"What counts as 'downtime' for UptimeIQ?","a":"Any check returning a non-200 HTTP status, a response time above your configured threshold, or a failed checkout simulation triggers an incident and alert."},{"q":"Will this slow down my store?","a":"No. UptimeIQ monitors from external nodes — it never touches your store's server resources or adds any code to your storefront."},{"q":"What if I have multiple Shopify stores?","a":"Growth plan covers up to 3 stores, Scale covers up to 10. Each store gets its own revenue-per-minute calculation, alerts, and reporting."},{"q":"Is there a free trial?","a":"Yes — 14 days free on any plan, no credit card required. Your store is connected and first alerts are live within 15 minutes of signup."}]},"tool":{"title":"UptimeIQ Revenue Monitor","description":"A lightweight Shopify-native monitoring product that runs synthetic uptime checks every 60 seconds, measures Time-to-First-Byte and Largest Contentful Paint from 5 global nodes, runs a checkout simulation every 10 minutes, and calculates a live revenue-loss estimate based on the store's average revenue per minute derived from Shopify analytics API. Alerts are sent via SMS, Slack webhook, and email. A web dashboard shows incident history, speed trends, and a cumulative revenue-at-risk counter. Built on standard monitoring infrastructure (UptimeRobot/Checkly API layer + Shopify Admin API for revenue data) with a custom revenue-impact calculation engine.","form_title":"Try UptimeIQ","button_label":"⚡ Analyze","inputs":[{"id":"url","label":"Website URL","type":"text","placeholder":"https://yourstore.com","default":"","demo":"https://mystore.com"},{"id":"rev","label":"Monthly revenue (€)","type":"number","placeholder":"50000","default":"50000","demo":"85000"}],"demo_output":{"metrics":[{"label":"Uptime","value":"99.1%","trend":"30 days","status":"good"},{"label":"Revenue at risk","value":"€742","trend":"this month","status":"bad"}],"table":{"title":"Recent Issues","headers":["Date","Duration","Type","Revenue Risk","Status"],"rows":[["Jun 15","12 min","Checkout error","€342",{"badge":true,"text":"Resolved","color":"green"}],["Jun 21","8 min","Slow load","€400",{"badge":true,"text":"Warning","color":"yellow"}]]},"findings":{"title":"AI Analysis","items":[{"severity":"critical","title":"Checkout errors detected","detail":"Peak hours 3x error rate","action":"Enable real-time alerts"},{"severity":"good","title":"Payment gateway stable","detail":"100% uptime last 7 days"}]}}},"sales":{"cold_email_1":{"subject":"What a 45-minute outage costs [Store Name]","body":"Hi [First Name],\n\nQuick math on stores doing roughly your volume:\n\nIf [Store Name] averages $150K/month, that's about $208/hour in revenue.\n\nA 45-minute Shopify outage = ~$156 gone. No alert. No record. No idea it happened.\n\nMost stores at your level find out about downtime from a customer complaint — by which point 10–30 minutes of sales are already lost.\n\nI built UptimeIQ to fix exactly this. It monitors your store every 60 seconds, calculates your real revenue-per-minute rate, and fires an alert the moment something breaks — with a live dollar counter running in the background.\n\nWould it be useful if I ran a free Revenue Risk Audit on [Store Name]? Takes 10 minutes, shows your current uptime grade and estimated monthly revenue at risk.\n\nNo pitch — just the data.\n\n[Your name]\nUptimeIQ"},"followup_day3":{"subject":"Re: [Store Name] uptime grade","body":"Hi [First Name],\n\nFollowing up quickly — I ran a basic external check on [Store Name] and your average load time from the US East node is sitting at [X]s.\n\nFor stores at your revenue level, that puts you in a zone where a single bad traffic spike or theme conflict could take the checkout down without triggering any native Shopify alert.\n\nWant me to send over the full 5-point Revenue Risk Audit? It includes your estimated monthly revenue at risk and one specific thing to fix first.\n\nFree, takes me 10 minutes, no obligation.\n\n[Your name]"},"followup_day7":{"subject":"One number that changes how you think about uptime","body":"Hi [First Name],\n\nLast follow-up on this thread.\n\nThe number I want to leave you with: stores doing $100K–$500K/month lose an average of $800–$4,000/month to undetected downtime and checkout errors. Most never know because there's no tool connecting uptime data to actual Shopify revenue numbers.\n\nUptimeIQ does exactly that — and there's a free 14-day trial at uptimeiq.com if the timing ever makes sense.\n\nHope Q[X] is strong for [Store Name].\n\n[Your name]"},"breakup":{"subject":"Closing the loop on [Store Name]","body":"Hi [First Name],\n\nI'll stop following up after this — I know your inbox is busy and I don't want to be noise.\n\nIf revenue protection monitoring ever becomes a priority for [Store Name], UptimeIQ.com is the place to start. Free trial, 15-minute setup.\n\nWishing you a great rest of the quarter.\n\n[Your name]"},"linkedin":{"connection_note":"Hey [First Name] — saw you're running [Store Name] on Shopify at serious volume. I built a revenue protection monitor specifically for stores at your scale. Would love to connect.","followup_dm":"Thanks for connecting! Quick question — do you have any visibility into what a 1-hour outage costs [Store Name] in real revenue terms? Most owners at your volume are surprised by the number when they actually calculate it. Built something that shows it live. Happy to share if useful — no pitch, just the data."},"objections":[{"objection":"Shopify already notifies me if there's downtime","response":"Shopify notifies you about platform-wide outages on their status page — but they don't alert you to issues specific to your store, like a broken checkout caused by a third-party app conflict, a slow CDN response in one region, or a theme error. And they definitely don't tell you how much it's costing you per minute. That's exactly the gap UptimeIQ fills."},{"objection":"I have a developer who monitors this","response":"That's great — UptimeIQ actually makes your developer's job easier. Instead of manually checking or building custom alerts, they get instant notifications with incident timelines and speed data. The revenue-loss counter also helps you have better conversations with them about priority and urgency."},{"objection":"We don't experience much downtime","response":"That's what most stores think — until they connect monitoring and see the data. The average Shopify store has 2–4 downtime events per month that go unnoticed because they happen at off-peak hours or last under 20 minutes. Short enough to miss, long enough to cost $200–$800 each at your volume."},{"objection":"The price is too high","response":"If your store does $100K/month and UptimeIQ catches one 45-minute outage that would have otherwise gone undetected, it pays for itself 10 times over in that single month. The Growth plan at €199 is designed to return 10x on the first incident it catches."},{"objection":"I'm not sure I need another tool","response":"Totally fair. The 14-day free trial is designed for exactly this — connect your store in 15 minutes, see your revenue-per-minute rate, and let the data tell you whether it's worth it. If you don't have a single alert-worthy event in 14 days, it probably isn't the right moment. No commitment."}]},"fulfillment":{"steps":["Customer signs up and pays via Stripe — account created instantly via Supabase auth.","Onboarding wizard guides customer through Shopify Admin API token creation (3 steps, video embedded).","System verifies API connection and pulls trailing 30-day revenue data from Shopify Analytics API.","Revenue-per-minute rate calculated and displayed on dashboard immediately.","Checkly synthetic monitoring jobs created automatically for the store URL and checkout endpoint.","First uptime and speed check runs within 60 seconds of connection.","Alert channels configured (email pre-filled, SMS and Slack added via wizard).","Welcome email sent with dashboard link, quick-start guide, and (for Growth/Scale) Calendly booking link.","Onboarding email sequence triggered (Day 1: dashboard tour, Day 3: how to read reports, Day 7: advanced alert configuration).","Monthly Revenue Protection Report auto-generated on 1st of each month via scheduled job and delivered by email."],"ai_role":"AI is used in three areas: (1) Anomaly scoring — ML-based threshold recommendations based on the store's historical traffic patterns to reduce false positive alerts. (2) Report narrative generation — GPT-4 generates the plain-English summary section of the monthly Revenue Protection Report from structured incident data. (3) Support triage — Crisp chatbot handles Tier 1 support questions using a knowledge base of 40+ FAQs before routing to human.","customer_gets":["Live dashboard showing current uptime status, speed metrics, and revenue-per-minute rate","Real-time alerts via chosen channels within 60 seconds of incident detection","Live revenue-loss counter during active incidents","Monthly Revenue Protection Report PDF with incident history and action priorities","90-day incident log with response time graphs","Checkout flow health status updated every 10 minutes (Growth/Scale)","Onboarding setup call (Growth/Scale)","Priority Slack support channel (Scale)"],"first_value_timing":"Customer sees their revenue-per-minute rate and receives their first 'store is healthy' or 'issue detected' confirmation alert within 15 minutes of completing onboarding. This is the first value moment — making the abstract cost of downtime concrete and personal to their store."},"readiness":{"icp_clarity":9,"pain_severity":9,"offer_strength":9,"mrr_logic":9,"fulfillment_readiness":7,"product_readiness":6,"market_clarity":6,"sales_readiness":6,"payment_readiness":6,"support_readiness":4,"legal_readiness":4,"retention_potential":5,"scale_potential":4,"risk_safety_score":4,"total_score":88,"recommendation":"approve","summary":"UptimeIQ is a high-readiness MRR business with a sharply defined ICP, a quantifiable and emotionally resonant pain, and a differentiated offer framed around revenue impact rather than technical metrics. The product is buildable in 6–10 weeks using off-the-shelf infrastructure. The cold email strategy is personalized and conversion-focused. Kill criteria are conservative and achievable within 30–90 days of launch. The primary risk is MVP development timeline and Shopify API edge cases — both manageable. Proceed to build with immediate outbound validation (free Revenue Risk Audits) before full product launch to confirm demand and refine pricing."},"stripe_starter_url":"","stripe_pro_url":"","stripe_premium_url":""}</script>
+
+<!-- ════════ NAV ════════ -->
+<nav>
+  <div class="nav-brand" onclick="showPage('landing')">
+    <div class="nav-logo" id="nav-icon">⚡</div>
+    <span class="nav-brand-name" id="nav-name">Product</span>
+  </div>
+
+  <div class="nav-links">
+    <button class="nav-link active" id="nl-landing" onclick="showPage('landing')">Product</button>
+    <button class="nav-link" id="nl-demo" onclick="showPage('demo')">Live Demo</button>
+    <button class="nav-link" id="nl-sales" onclick="showPage('sales')">Sales Pack</button>
+    <button class="nav-link" id="nl-fulfillment" onclick="showPage('fulfillment')">Fulfillment</button>
+    <button class="nav-link" id="nl-readiness" onclick="showPage('readiness')">Readiness</button>
+  </div>
+
+  <div class="nav-actions">
+    <button class="nav-sign-in" onclick="showPage('demo')">Live Demo</button>
+    <button class="nav-cta" id="nav-cta-btn" onclick="goToProCheckout()">Start Free Trial →</button>
+  </div>
+</nav>
+
+<!-- ════════ PAGE: LANDING ════════ -->
+<div id="page-landing" class="page active">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-kicker"><span class="hero-kicker-dot"></span><span id="hero-kicker">Early Access · Beta</span></div>
+      <h1 class="hero-h1" id="hero-h1">Headline</h1>
+      <p class="hero-sub" id="hero-sub"></p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" onclick="goToProCheckout()" id="hero-cta1">Get Early Access</button>
+        <button class="btn btn-ghost btn-lg" onclick="showPage('demo')">See Live Demo</button>
+      </div>
+      <div class="hero-trust" id="hero-trust"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">Who it's for</div><div class="lp-title">Built for teams like yours</div><div class="lp-sub">See how ecommerce teams use this to protect their revenue.</div></div>
+      <div class="grid-3" id="lp-testis"></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">The problem</div><div class="lp-title" id="lp-prob-title">Sound familiar?</div></div>
+      <div class="grid-3" id="lp-probs"></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">How it works</div><div class="lp-title">Up and running in minutes</div></div>
+      <div class="card"><div class="card-body" id="lp-how"></div></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">Features</div><div class="lp-title" id="lp-feat-title">Everything you need</div></div>
+      <div class="grid-3" id="lp-feats"></div>
+    </div>
+    <div class="lp-section" id="pricing">
+      <div class="lp-header"><div class="lp-eye">Pricing</div><div class="lp-title">Simple, transparent pricing</div><div class="lp-sub">No contracts. Cancel anytime.</div></div>
+      <div class="grid-3" id="lp-plans"></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">FAQ</div><div class="lp-title">Common questions</div></div>
+      <div class="card"><div class="card-body" id="lp-faq"></div></div>
+    </div>
+    <div class="lp-section" style="border-top:none">
+      <div class="cta-box">
+        <div class="eyebrow" style="justify-content:center;margin-bottom:16px">Get started today</div>
+        <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:12px" id="cta-title"></h2>
+        <p style="font-size:15px;color:var(--soft);margin-bottom:30px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.65" id="cta-sub"></p>
+        <div class="flex gap-12 flex-wrap" style="justify-content:center">
+          <button class="btn btn-primary btn-lg" onclick="goToProCheckout()" id="cta-btn">Start Free Trial →</button>
+          <button class="btn btn-ghost btn-lg" onclick="showPage('demo')">See Live Demo</button>
+        </div>
+        <div class="hero-trust mt-16" id="cta-trust"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: DEMO ════════ -->
+<div id="page-demo" class="page">
+  <div class="wrap" style="padding-top:36px;padding-bottom:64px">
+    <div class="eyebrow" id="t-eye">Live Demo</div>
+    <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:8px" id="t-title">Interactive Demo</h2>
+    <p style="font-size:14px;color:var(--soft);margin-bottom:24px;max-width:580px;line-height:1.7" id="t-desc"></p>
+    <div class="alert alert-info mb-20"><span>ℹ</span><span><strong>Demo mode —</strong> <span id="t-alert">enter your details below to generate a live analysis.</span></span></div>
+
+    <div class="card mb-20">
+      <div class="card-head">
+        <span class="card-title"><span class="card-dot" style="background:var(--blue)"></span><span id="t-form-title">Configure Your Analysis</span></span>
+      </div>
+      <div class="card-body">
+        <div class="grid-2" id="t-inputs" style="margin-bottom:18px"></div>
+        <div class="flex gap-10 flex-wrap">
+          <button class="btn btn-primary" id="run-btn" onclick="runTool()">
+            <span id="run-lbl">⚡ Generate Report</span>
+            <span id="run-spin" class="spin" style="display:none"></span>
+          </button>
+          <button class="btn btn-ghost" onclick="loadDemo()">Load demo data</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="output" style="display:none">
+      <div class="status-row mb-16">
+        <div class="status-dot green" id="status-dot"></div>
+        <span class="status-label" id="status-label">All systems operational</span>
+        <span class="status-meta" id="status-meta"></span>
+      </div>
+      <div id="revenue-callout" class="mb-20"></div>
+      <div class="grid-4 mb-16" id="t-metrics"></div>
+      <div class="card mb-16">
+        <div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--amber)"></span><span id="tbl-title">Incident Log</span></span></div>
+        <div style="padding:0"><div class="tbl-wrap"><table><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table></div></div>
+      </div>
+      <div class="card mb-16">
+        <div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>AI Analysis</span></div>
+        <div class="card-body" id="t-findings"></div>
+      </div>
+      <div class="flex gap-10 flex-wrap">
+        <button class="btn btn-primary" onclick="alert('Report saved.')">Save Report</button>
+        <button class="btn btn-ghost" onclick="alert('Generating PDF...')">Export PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="alert('Sent to Slack.')">→ Slack</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: SALES ════════ -->
+<div id="page-sales" class="page">
+  <div class="wrap" style="padding-top:36px;padding-bottom:64px">
+    <div class="eyebrow">Sales Pack</div>
+    <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:8px">Cold Outreach Templates</h2>
+    <p style="font-size:14px;color:var(--soft);margin-bottom:28px">Personalize the [brackets]. All sequences stop on reply.</p>
+    <div id="sales-body"></div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: FULFILLMENT ════════ -->
+<div id="page-fulfillment" class="page">
+  <div class="wrap" style="padding-top:36px;padding-bottom:64px">
+    <div class="eyebrow">Fulfillment</div>
+    <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:8px">Delivery Plan</h2>
+    <p style="font-size:14px;color:var(--soft);margin-bottom:28px">What happens automatically after a customer pays.</p>
+    <div class="card mb-16"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>Delivery Flow</span></div><div class="card-body" id="ff-flow"></div></div>
+    <div class="grid-2 mb-16" id="ff-info"></div>
+    <div id="ff-timing"></div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: READINESS ════════ -->
+<div id="page-readiness" class="page">
+  <div class="wrap" style="padding-top:36px;padding-bottom:64px">
+    <div class="eyebrow">Quality Gate</div>
+    <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:20px">Product Readiness Score</h2>
+    <div id="r-banner"></div>
+    <div class="card mb-16"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>Score Breakdown</span></div><div class="card-body" id="r-scores"></div></div>
+    <div id="r-fixes"></div>
+  </div>
+</div>
+
+<script>
+var P = {};
+try { P = JSON.parse(document.getElementById('P').textContent); } catch(e) {}
+
+/* ── NAVIGATION ── */
+var PAGES = ['landing','demo','sales','fulfillment','readiness'];
+function showPage(name) {
+  PAGES.forEach(function(p) {
+    var pg = document.getElementById('page-' + p);
+    var nl = document.getElementById('nl-' + p);
+    if (pg) pg.classList.toggle('active', p === name);
+    if (nl) nl.classList.toggle('active', p === name);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── UTILS ── */
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(n) { if (n >= 1000) return '$' + (n/1000).toFixed(1).replace(/\.0$/,'') + 'K'; return '$' + Math.round(n).toLocaleString(); }
+function calcLoss(monthlyRev, mins) { return Math.round((monthlyRev / 30 / 24 / 60) * 0.7 * mins); }
+
+/* ── DEMO ── */
+function runTool() {
+  var btn = document.getElementById('run-btn');
+  var lbl = document.getElementById('run-lbl');
+  var sp = document.getElementById('run-spin');
+  var orig = lbl.textContent;
+  lbl.textContent = 'Analyzing...'; sp.style.display = 'flex'; btn.disabled = true;
+  document.getElementById('output').style.display = 'none';
+  setTimeout(function() {
+    lbl.textContent = orig; sp.style.display = 'none'; btn.disabled = false;
+    buildOutput();
+    var out = document.getElementById('output');
+    out.style.display = 'block';
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 1900);
+}
+
+function loadDemo() {
+  ((P.tool||{}).inputs||[]).forEach(function(inp) {
+    var el = document.getElementById('i-' + inp.id);
+    if (el && inp.demo) el.value = inp.demo;
+  });
+  runTool();
+}
+
+function buildOutput() {
+  var t = P.tool || {};
+  var d = t.demo_output || {};
+  var inputs = t.inputs || [];
+  var monthlyRev = 85000, aov = 127;
+  inputs.forEach(function(inp) {
+    var el = document.getElementById('i-' + inp.id);
+    var v = el ? (parseFloat(el.value) || 0) : 0;
+    if (inp.id === 'c' || inp.role === 'monthly_rev') monthlyRev = v || monthlyRev;
+    if (inp.id === 'd' || inp.role === 'aov') aov = v || aov;
+  });
+
+  var totalMins = 0;
+  ((d.table||{}).rows||[]).forEach(function(row) { totalMins += parseInt(row[1]) || 0; });
+  var totalLost = calcLoss(monthlyRev, totalMins);
+  var perMin = Math.round(calcLoss(monthlyRev, 1));
+
+  // Status
+  var sd = document.getElementById('status-dot');
+  var sl = document.getElementById('status-label');
+  var sm = document.getElementById('status-meta');
+  if (totalMins > 30) { sd.className = 'status-dot red'; sl.textContent = 'Critical incidents detected'; }
+  else if (totalMins > 0) { sd.className = 'status-dot amber'; sl.textContent = 'Minor incidents detected'; }
+  else { sd.className = 'status-dot green'; sl.textContent = 'All systems operational'; }
+  sm.textContent = totalMins + 'min downtime · ' + fmt(totalLost) + ' estimated impact';
+
+  // Revenue callout
+  var rc = document.getElementById('revenue-callout');
+  if (totalLost > 0) {
+    rc.innerHTML = '<div class="revenue-callout"><div><div class="rc-label">Estimated revenue lost this period</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Based on your AOV and traffic patterns</div></div><div class="rc-rate">' + fmt(perMin) + '/min</div><div class="rc-amount">' + fmt(totalLost) + '</div></div>';
+  } else {
+    rc.innerHTML = '<div class="alert alert-success"><span>✓</span><span>No revenue impact detected this period.</span></div>';
+  }
+
+  // Metrics
+  var mw = document.getElementById('t-metrics'); mw.innerHTML = '';
+  var upPct = totalMins > 0 ? (100 - totalMins/(30*24*60)*100).toFixed(2) : '100.00';
+  var ms = [
+    { label:'Uptime (30 days)', val: upPct+'%', sub: totalMins+'min downtime', color: totalMins>0?'var(--amber)':'var(--green)', vc: totalMins>0?'var(--amber)':'var(--green)' },
+    { label:'Est. Revenue Lost', val: fmt(totalLost), sub:'This period', color:'var(--red)', vc:'var(--red)' },
+    { label:(d.metrics&&d.metrics[2]?d.metrics[2].label:'Avg Page Load'), val:(d.metrics&&d.metrics[2]?d.metrics[2].value:'2.8s'), sub:'Last 7 days', color:'var(--blue)', vc:'var(--text)' },
+    { label:'Health Score', val: totalMins>30?'61/100':totalMins>0?'74/100':'94/100', sub: totalMins>30?'Needs attention':'Good standing', color:'var(--blue)', vc:'var(--text)' },
+  ];
+  ms.forEach(function(m) {
+    var div = document.createElement('div'); div.className = 'metric';
+    div.style.setProperty('--m-color', m.color);
+    div.innerHTML = '<div class="metric-label">' + m.label + '</div><div class="metric-value" style="color:' + m.vc + '">' + m.val + '</div><div class="metric-sub">' + m.sub + '</div>';
+    mw.appendChild(div);
+  });
+
+  // Table
+  if (d.table) {
+    document.getElementById('tbl-title').textContent = d.table.title;
+    document.getElementById('tbl-head').innerHTML = '<tr>' + d.table.headers.map(function(h){return '<th>'+h+'</th>';}).join('') + '</tr>';
+    document.getElementById('tbl-body').innerHTML = d.table.rows.map(function(row) {
+      return '<tr>' + row.map(function(cell, ci) {
+        if (typeof cell === 'object' && cell.badge) {
+          var pc = cell.color==='green'?'pill-green':cell.color==='yellow'?'pill-amber':cell.color==='red'?'pill-red':'pill-blue';
+          return '<td><span class="pill '+pc+'">'+cell.text+'</span></td>';
+        }
+        if (ci === row.length-2 && typeof cell === 'string' && cell.startsWith('$')) {
+          var mins = parseInt(row[1]) || 0;
+          return '<td style="font-weight:700;color:var(--red);font-family:var(--mono)">'+fmt(calcLoss(monthlyRev,mins))+'</td>';
+        }
+        return '<td>'+cell+'</td>';
+      }).join('') + '</tr>';
+    }).join('');
+  }
+
+  // Findings
+  var fw = document.getElementById('t-findings'); fw.innerHTML = '';
+  ((d.findings||{}).items||[]).forEach(function(item) {
+    var fc = item.severity==='critical'?'finding-crit':item.severity==='warning'?'finding-warn':'finding-good';
+    var ic = item.severity==='critical'?'🚨':item.severity==='warning'?'⚠️':'✅';
+    var div = document.createElement('div'); div.className = 'finding '+fc;
+    div.innerHTML = '<div class="finding-title"><span>'+ic+'</span>'+item.title+'</div><div class="finding-body">'+item.detail+'</div>'+(item.action?'<div class="finding-action"><strong>→ Action:</strong> '+item.action+'</div>':'');
+    fw.appendChild(div);
+  });
+}
+
+/* ── INIT TOOL ── */
+function initTool() {
+  if (!P.name) return;
+  var t = P.tool || {};
+  document.getElementById('nav-name').textContent = P.name;
+  document.getElementById('nav-icon').textContent = P.name.charAt(0);
+  document.title = P.name;
+  document.getElementById('t-eye').textContent = P.name;
+  document.getElementById('t-title').textContent = t.title || P.name;
+  document.getElementById('t-desc').textContent = t.description || '';
+  if (t.form_title) document.getElementById('t-form-title').textContent = t.form_title;
+  if (t.button_label) document.getElementById('run-lbl').textContent = t.button_label;
+  if (t.alert_text) document.getElementById('t-alert').textContent = t.alert_text;
+  var iw = document.getElementById('t-inputs');
+  iw.innerHTML = (t.inputs||[]).map(function(inp) {
+    var ctrl = inp.type === 'select'
+      ? '<select class="form-input" id="i-'+inp.id+'">'+(inp.options||[]).map(function(o){return '<option'+(o===inp.default?' selected':'')+'>'+o+'</option>';}).join('')+'</select>'
+      : '<input class="form-input" type="'+(inp.type||'text')+'" id="i-'+inp.id+'" value="'+(inp.default||'')+'" placeholder="'+(inp.placeholder||'')+'">';
+    return '<div class="form-group"><label class="form-label">'+inp.label+'</label>'+ctrl+'</div>';
+  }).join('');
+}
+
+/* ── LANDING ── */
+function renderLanding() {
+  var lp = P.landing || {};
+  function set(id,v,html){var e=document.getElementById(id);if(e&&v){if(html)e.innerHTML=v;else e.textContent=v;}}
+  set('hero-h1', lp.headline, true);
+  set('hero-sub', lp.subheadline);
+  set('lp-prob-title', lp.problem_title);
+  set('lp-feat-title', lp.features_title);
+  set('cta-title', lp.cta_title);
+  set('cta-sub', lp.cta_desc);
+  if (lp.cta_primary) { document.getElementById('hero-cta1').textContent = lp.cta_primary; var nc=document.getElementById('nav-cta-btn'); if(nc)nc.textContent=lp.cta_primary+' ↗'; var cb=document.getElementById('cta-btn'); if(cb)cb.textContent=lp.cta_primary+' ↗'; }
+
+  var tr = document.getElementById('hero-trust');
+  (lp.trust_items||['No credit card required','Setup in 5 minutes','Cancel anytime']).forEach(function(item){
+    var d=document.createElement('div');d.className='trust-item';d.innerHTML='<span class="trust-check">✓</span>'+item;tr.appendChild(d);
+  });
+  var ctr = document.getElementById('cta-trust');
+  if(ctr)(lp.trust_items||[]).slice(0,3).forEach(function(item){var d=document.createElement('div');d.className='trust-item';d.innerHTML='<span class="trust-check">✓</span>'+item;ctr.appendChild(d);});
+
+  var te = document.getElementById('lp-testis');
+  if(te)te.innerHTML=(lp.social_proof||lp.testimonials||[]).map(function(sp){
+    var init=(t.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2);
+    return '<div class="testi"><div class="testi-stars">★★★★★</div><div class="testi-quote">"'+esc(t.quote)+'"</div><div class="testi-author"><div class="testi-avatar">'+init+'</div><div><div class="testi-name">'+esc(t.name)+'<span class="beta-tag">Beta</span></div><div class="testi-role">'+esc(t.role)+'</div></div></div></div>';
+  }).join('');
+
+  var pe = document.getElementById('lp-probs');
+  if(pe)pe.innerHTML=(lp.problems||[]).map(function(p){return '<div class="prob-card"><div class="prob-icon">'+p.icon+'</div><div class="prob-title">'+esc(p.title)+'</div><div class="prob-desc">'+esc(p.desc)+'</div></div>';}).join('');
+
+  var he = document.getElementById('lp-how');
+  if(he)he.innerHTML=(lp.how_steps||[]).map(function(s,i){return '<div class="how-step"><div class="how-num">'+(i+1)+'</div><div><div class="how-title">'+esc(s.title)+'</div><div class="how-desc">'+esc(s.desc)+'</div></div></div>';}).join('');
+
+  var fe = document.getElementById('lp-feats');
+  if(fe)fe.innerHTML=(lp.features||[]).map(function(f){return '<div class="feat-card"><div class="feat-icon">'+f.icon+'</div><div class="feat-title">'+esc(f.title)+'</div><div class="feat-desc">'+esc(f.desc)+'</div></div>';}).join('');
+
+  var ple = document.getElementById('lp-plans');
+  if(ple)ple.innerHTML=(lp.plans||[]).map(function(plan){
+    var feats=(plan.features||[]).map(function(f){return '<li><span class="plan-check">✓</span>'+esc(f)+'</li>';}).join('');
+    return '<div class="plan'+(plan.popular?' featured':'')+'">'+
+      (plan.popular?'<div class="plan-badge">Most Popular</div>':'')+
+      '<div class="plan-tier">'+esc(plan.name)+'</div>'+
+      '<div class="plan-price"><div class="plan-amount">'+esc(plan.price)+'</div><div class="plan-period">/mo</div></div>'+
+      '<div class="plan-desc">'+esc(plan.desc)+'</div>'+
+      '<ul class="plan-features">'+feats+'</ul>'+
+      '<button class="btn '+(plan.popular?'btn-primary':'btn-ghost')+' btn-full" onclick="goToCheckout('+i+')">Get '+esc(plan.name)+' →</button>'+
+      '</div>';
+  }).join('');
+
+  var fqe = document.getElementById('lp-faq');
+  if(fqe)fqe.innerHTML=(lp.faq||[]).map(function(item){return '<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>'+esc(item.q)+'</span><span class="faq-chevron">▾</span></div><div class="faq-a">'+esc(item.a)+'</div></div>';}).join('');
+}
+
+/* ── SALES ── */
+function renderSales() {
+  var s = P.sales || {};
+  var emails = [{key:'cold_email_1',label:'Cold Email',sub:'Day 0 · First touch'},{key:'followup_day3',label:'Follow-up',sub:'Day 3 · Bump'},{key:'followup_day7',label:'Follow-up',sub:'Day 7 · Value-add'},{key:'breakup',label:'Breakup',sub:'Day 14 · Final touch'}];
+  var h = '';
+  emails.forEach(function(e,i){if(!s[e.key])return;h+='<div class="cbox"><div class="cbox-head"><div><span class="cbox-label">'+e.label+'</span> <span class="cbox-sub">'+e.sub+'</span></div><button class="copy-btn" onclick="cpTxt(\'em'+i+'\',this)">Copy</button></div><div class="cbox-body"><pre id="em'+i+'">'+esc(s[e.key])+'</pre></div></div>';});
+  if(s.linkedin)h+='<div class="cbox"><div class="cbox-head"><div><span class="cbox-label">LinkedIn DM</span> <span class="cbox-sub">300 chars</span></div><button class="copy-btn" onclick="cpTxt(\'em-li\',this)">Copy</button></div><div class="cbox-body"><pre id="em-li">'+esc(s.linkedin)+'</pre></div></div>';
+  if(s.objections&&s.objections.length){
+    h+='<div class="card mt-16"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--amber)"></span>Objection Handlers</span></div><div class="card-body">';
+    s.objections.forEach(function(obj,i){h+='<div style="'+(i?'margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft)':'')+'"><div style="font-size:12.5px;font-weight:700;color:var(--bright);margin-bottom:6px">❓ '+esc(obj.q)+'</div><div style="font-size:12px;color:var(--soft);line-height:1.65;padding:9px 12px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid var(--blue)">'+esc(obj.a)+'</div></div>';});
+    h+='</div></div>';
+  }
+  var el=document.getElementById('sales-body');if(el)el.innerHTML=h;
+}
+
+/* ── FULFILLMENT ── */
+function renderFulfillment() {
+  var f = P.fulfillment || {};
+  var fl = document.getElementById('ff-flow');
+  if(fl)fl.innerHTML=(f.steps||[]).map(function(s,i){return '<div class="flow-step"><div class="flow-num">'+(i+1)+'</div><div><div class="flow-title">'+esc(s.title)+'</div><div class="flow-desc">'+esc(s.desc)+'</div></div></div>';}).join('');
+  var inf = document.getElementById('ff-info');
+  if(inf)inf.innerHTML=
+    (f.ai_role?'<div class="card"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>What AI Does</span></div><div class="card-body"><p style="font-size:12.5px;color:var(--soft);line-height:1.65">'+esc(f.ai_role)+'</p></div></div>':'')+
+    (f.customer_gets?'<div class="card"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--green)"></span>What Customer Gets</span></div><div class="card-body"><p style="font-size:12.5px;color:var(--soft);line-height:1.65">'+esc(f.customer_gets)+'</p></div></div>':'');
+  var ti = document.getElementById('ff-timing');
+  if(ti&&f.first_value_timing)ti.innerHTML='<div class="alert alert-success"><span>⚡</span><span><strong>First value delivered:</strong> '+esc(f.first_value_timing)+'</span></div>';
+}
+
+/* ── READINESS ── */
+function renderReadiness() {
+  var r = P.readiness || {};
+  var tot = r.total_score || 0;
+  var rec = r.recommendation || 'fix';
+  var bn = document.getElementById('r-banner');
+  if(bn){
+    var bc=rec==='approve'?'r-approve':rec==='kill'?'r-kill':'r-fix';
+    var ic=rec==='approve'?'✅':rec==='kill'?'❌':'🔧';
+    var lb=rec==='approve'?'Approved — Ready to Launch':rec==='kill'?'Kill — Do Not Proceed':'Fix Required';
+    var col=rec==='approve'?'var(--green)':rec==='kill'?'var(--red)':'var(--amber)';
+    bn.innerHTML='<div class="r-banner '+bc+'"><div style="font-size:28px;margin-bottom:6px">'+ic+'</div><div class="r-verdict" style="color:'+col+'">'+lb+'</div><div class="r-score" style="color:'+col+'">'+tot+'<span style="font-size:22px;font-weight:400;color:var(--muted)">/100</span></div><div class="r-summary">'+esc(r.summary||'')+'</div></div>';
+  }
+  var sc = document.getElementById('r-scores');
+  if(sc)sc.innerHTML=(r.dimensions||[]).map(function(d){
+    var pct=Math.round(d.score/10*100);
+    var col=d.score>=7?'var(--green)':d.score>=5?'var(--amber)':'var(--red)';
+    return '<div class="sbar"><div class="sbar-label">'+esc(d.label)+'</div><div class="sbar-track"><div class="sbar-fill" data-w="'+pct+'" style="background:'+col+'"></div></div><div class="sbar-val">'+d.score+'/10</div></div>';
+  }).join('');
+  var fx=document.getElementById('r-fixes');
+  if(fx&&r.fixes&&r.fixes.length){fx.innerHTML='<div class="card"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--amber)"></span>Required Fixes</span></div><div class="card-body">'+r.fixes.map(function(fix,i){return '<div style="display:flex;gap:10px;padding:8px 0;'+(i?'border-top:1px solid var(--border-soft)':'')+'"><div style="width:18px;height:18px;border-radius:50%;background:var(--amber-dim);color:var(--amber);font-family:var(--mono);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div><div style="font-size:12px;color:var(--soft);line-height:1.55">'+esc(fix)+'</div></div>';}).join('')+'</div></div>';}
+  setTimeout(function(){document.querySelectorAll('.sbar-fill').forEach(function(b){b.style.width=(b.dataset.w||0)+'%';});},300);
+}
+
+/* ── COPY ── */
+function cpTxt(id,btn){
+  var el=document.getElementById(id);if(!el)return;
+  var orig=btn.textContent;
+  navigator.clipboard.writeText(el.textContent).then(function(){btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},2000);}).catch(function(){var ta=document.createElement('textarea');ta.value=el.textContent;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},2000);});
+}
+
+/* ── CHECKOUT ── */
+function goToCheckout(planIndex) {
+  var links = [
+    P.stripe_starter_url,
+    P.stripe_pro_url,
+    P.stripe_premium_url
+  ];
+  var url = links[planIndex] || '';
+  if (url) {
+    window.open(url, '_blank');
+  } else {
+    alert('Checkout unavailable – please contact us.');
+  }
+}
+
+function goToProCheckout() { goToCheckout(1); }
+
+/* ── BOOT ── */
+document.addEventListener('DOMContentLoaded', function() {
+  initTool();
+  renderLanding();
+  renderSales();
+  renderFulfillment();
+  renderReadiness();
+});
+</script>
+</body>
+</html>
