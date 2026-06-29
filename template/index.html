@@ -717,7 +717,7 @@ function renderSales() {
   if(s.linkedin)h+='<div class="cbox"><div class="cbox-head"><div><span class="cbox-label">LinkedIn DM</span> <span class="cbox-sub">300 chars</span></div><button class="copy-btn" onclick="cpTxt(\'em-li\',this)">Copy</button></div><div class="cbox-body"><pre id="em-li">'+esc(s.linkedin)+'</pre></div></div>';
   if(s.objections&&s.objections.length){
     h+='<div class="card mt-16"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--amber)"></span>Objection Handlers</span></div><div class="card-body">';
-    s.objections.forEach(function(obj,i){h+='<div style="'+(i?'margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft)':'')+'"><div style="font-size:12.5px;font-weight:700;color:var(--bright);margin-bottom:6px">❓ '+esc(obj.q)+'</div><div style="font-size:12px;color:var(--soft);line-height:1.65;padding:9px 12px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid var(--blue)">'+esc(obj.a)+'</div></div>';});
+    s.objections.forEach(function(obj,i){h+='<div style="'+(i?'margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft)':'')+'"><div style="font-size:12.5px;font-weight:700;color:var(--bright);margin-bottom:6px">❓ '+esc(obj.q||obj.objection||'')+'</div><div style="font-size:12px;color:var(--soft);line-height:1.65;padding:9px 12px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid var(--blue)">'+esc(obj.a||obj.response||'')+'</div></div>';});
     h+='</div></div>';
   }
   var el=document.getElementById('sales-body');if(el)el.innerHTML=h;
@@ -727,7 +727,7 @@ function renderSales() {
 function renderFulfillment() {
   var f = P.fulfillment || {};
   var fl = document.getElementById('ff-flow');
-  if(fl)fl.innerHTML=(f.steps||[]).map(function(s,i){return '<div class="flow-step"><div class="flow-num">'+(i+1)+'</div><div><div class="flow-title">'+esc(s.title)+'</div><div class="flow-desc">'+esc(s.desc)+'</div></div></div>';}).join('');
+  if(fl)fl.innerHTML=(f.steps||[]).map(function(s,i){var t=typeof s==='string'?s:(s.title||s.step||s.action||'');var d=typeof s==='string'?'':(s.desc||s.description||s.detail||'');return '<div class="flow-step"><div class="flow-num">'+(i+1)+'</div><div><div class="flow-title">'+esc(t)+'</div><div class="flow-desc">'+esc(d)+'</div></div></div>';}).join('');
   var inf = document.getElementById('ff-info');
   if(inf)inf.innerHTML=
     (f.ai_role?'<div class="card"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>What AI Does</span></div><div class="card-body"><p style="font-size:12.5px;color:var(--soft);line-height:1.65">'+esc(f.ai_role)+'</p></div></div>':'')+
@@ -750,7 +750,8 @@ function renderReadiness() {
     bn.innerHTML='<div class="r-banner '+bc+'"><div style="font-size:28px;margin-bottom:6px">'+ic+'</div><div class="r-verdict" style="color:'+col+'">'+lb+'</div><div class="r-score" style="color:'+col+'">'+tot+'<span style="font-size:22px;font-weight:400;color:var(--muted)">/100</span></div><div class="r-summary">'+esc(r.summary||'')+'</div></div>';
   }
   var sc = document.getElementById('r-scores');
-  if(sc)sc.innerHTML=(r.dimensions||[]).map(function(d){
+  var dims=[{label:'ICP Clarity',score:r.icp_clarity},{label:'Pain Severity',score:r.pain_severity},{label:'Offer Strength',score:r.offer_strength},{label:'MRR Logic',score:r.mrr_logic},{label:'Fulfillment',score:r.fulfillment_readiness},{label:'Product',score:r.product_readiness},{label:'Market Clarity',score:r.market_clarity},{label:'Sales Readiness',score:r.sales_readiness},{label:'Payment',score:r.payment_readiness},{label:'Support',score:r.support_readiness},{label:'Legal',score:r.legal_readiness},{label:'Retention',score:r.retention_potential},{label:'Scale',score:r.scale_potential},{label:'Risk / Safety',score:r.risk_safety_score}].filter(function(d){return d.score!=null;});
+  if(sc)sc.innerHTML=(r.dimensions||dims).map(function(d){
     var pct=Math.round(d.score/10*100);
     var col=d.score>=7?'var(--green)':d.score>=5?'var(--amber)':'var(--red)';
     return '<div class="sbar"><div class="sbar-label">'+esc(d.label)+'</div><div class="sbar-track"><div class="sbar-fill" data-w="'+pct+'" style="background:'+col+'"></div></div><div class="sbar-val">'+d.score+'/10</div></div>';
