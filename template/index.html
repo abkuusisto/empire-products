@@ -367,7 +367,7 @@ td { padding: 11px 14px; color: var(--text); vertical-align: middle; }
 
   <div class="nav-actions">
     <button class="nav-sign-in" onclick="showPage('demo')">Live Demo</button>
-    <button class="nav-cta" id="nav-cta-btn" onclick="alert('Redirecting to Stripe...')">Start Free Trial →</button>
+    <button class="nav-cta" id="nav-cta-btn" onclick="goToProCheckout()">Start Free Trial →</button>
   </div>
 </nav>
 
@@ -380,7 +380,7 @@ td { padding: 11px 14px; color: var(--text); vertical-align: middle; }
       <h1 class="hero-h1" id="hero-h1">Headline</h1>
       <p class="hero-sub" id="hero-sub"></p>
       <div class="hero-actions">
-        <button class="btn btn-primary btn-lg" onclick="alert('Redirecting to Stripe...')" id="hero-cta1">Start Free Trial</button>
+        <button class="btn btn-primary btn-lg" onclick="goToProCheckout()" id="hero-cta1">Start Free Trial</button>
         <button class="btn btn-ghost btn-lg" onclick="showPage('demo')">See Live Demo</button>
       </div>
       <div class="hero-trust" id="hero-trust"></div>
@@ -418,7 +418,7 @@ td { padding: 11px 14px; color: var(--text); vertical-align: middle; }
         <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:12px" id="cta-title"></h2>
         <p style="font-size:15px;color:var(--soft);margin-bottom:30px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.65" id="cta-sub"></p>
         <div class="flex gap-12 flex-wrap" style="justify-content:center">
-          <button class="btn btn-primary btn-lg" onclick="alert('Redirecting to Stripe...')" id="cta-btn">Start Free Trial →</button>
+          <button class="btn btn-primary btn-lg" onclick="goToProCheckout()" id="cta-btn">Start Free Trial →</button>
           <button class="btn btn-ghost btn-lg" onclick="showPage('demo')">See Live Demo</button>
         </div>
         <div class="hero-trust mt-16" id="cta-trust"></div>
@@ -700,7 +700,7 @@ function renderLanding() {
       '<div class="plan-price"><div class="plan-amount">'+esc(plan.price)+'</div><div class="plan-period">/mo</div></div>'+
       '<div class="plan-desc">'+esc(plan.desc)+'</div>'+
       '<ul class="plan-features">'+feats+'</ul>'+
-      '<button class="btn '+(plan.popular?'btn-primary':'btn-ghost')+' btn-full" onclick="alert(\'Stripe checkout...\')">Get '+esc(plan.name)+'</button>'+
+      '<button class="btn '+(plan.popular?'btn-primary':'btn-ghost')+' btn-full" onclick="goToCheckout('+i+')">Get '+esc(plan.name)+' →</button>'+
       '</div>';
   }).join('');
 
@@ -766,6 +766,23 @@ function cpTxt(id,btn){
   var orig=btn.textContent;
   navigator.clipboard.writeText(el.textContent).then(function(){btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},2000);}).catch(function(){var ta=document.createElement('textarea');ta.value=el.textContent;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},2000);});
 }
+
+/* ── CHECKOUT ── */
+function goToCheckout(planIndex) {
+  var links = [
+    P.stripe_starter_url,
+    P.stripe_pro_url,
+    P.stripe_premium_url
+  ];
+  var url = links[planIndex] || '';
+  if (url) {
+    window.open(url, '_blank');
+  } else {
+    alert('Checkout unavailable – please contact us.');
+  }
+}
+
+function goToProCheckout() { goToCheckout(1); }
 
 /* ── BOOT ── */
 document.addEventListener('DOMContentLoaded', function() {
