@@ -1,0 +1,780 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08090a;
+  --s1: #0e1012;
+  --s2: #141618;
+  --s3: #1a1d20;
+  --border: #232629;
+  --border-soft: #1c1f22;
+  --border-bright: #2e3338;
+  --muted: #404549;
+  --dim: #5c6370;
+  --soft: #8b949e;
+  --text: #b2bcc6;
+  --bright: #d8e2ec;
+  --white: #eef4f9;
+  --blue: #3b82f6;
+  --blue-h: #60a5fa;
+  --blue-glow: rgba(59,130,246,.2);
+  --blue-dim: rgba(59,130,246,.08);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.08);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.08);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.08);
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+::selection { background: rgba(59,130,246,.2); color: var(--white); }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+/* ── NAV (proper website navigation) ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(8,9,10,.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  gap: 32px;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; flex-shrink: 0; text-decoration: none;
+}
+.nav-logo {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: #fff;
+  box-shadow: 0 0 20px rgba(59,130,246,.25);
+  flex-shrink: 0;
+}
+.nav-brand-name {
+  font-size: 15.5px; font-weight: 800; color: var(--white);
+  letter-spacing: -.4px; white-space: nowrap;
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis;
+}
+.nav-links {
+  display: flex; align-items: center; gap: 2px; flex: 1;
+  justify-content: center; overflow-x: auto; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-link {
+  height: 36px; padding: 0 14px;
+  background: none; border: none; border-radius: 8px;
+  color: var(--soft); font-size: 14px; font-weight: 500;
+  font-family: var(--sans); cursor: pointer; white-space: nowrap;
+  transition: color .15s, background .15s;
+  display: flex; align-items: center;
+}
+.nav-link:hover { color: var(--white); background: rgba(255,255,255,.06); }
+.nav-link.active { color: var(--white); font-weight: 600; background: rgba(255,255,255,.07); }
+.nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.nav-sign-in {
+  height: 36px; padding: 0 14px;
+  background: none; border: 1px solid var(--border);
+  border-radius: 8px; color: var(--soft);
+  font-size: 13.5px; font-weight: 500; font-family: var(--sans);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.nav-sign-in:hover { color: var(--white); border-color: var(--border-bright); }
+.nav-cta {
+  height: 36px; padding: 0 18px;
+  background: var(--blue); color: #fff; border: none;
+  border-radius: 8px; font-size: 13.5px; font-weight: 700;
+  font-family: var(--sans); cursor: pointer; white-space: nowrap;
+  transition: all .15s;
+  box-shadow: 0 0 20px rgba(59,130,246,.18);
+}
+.nav-cta:hover { background: var(--blue-h); box-shadow: 0 0 30px rgba(59,130,246,.32); transform: translateY(-1px); }
+.nav-cta:active { transform: translateY(0); }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; animation: fadein .15s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── LAYOUT ── */
+.wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px; }
+
+/* ── TYPE ── */
+.eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--blue-h); letter-spacing: .08em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.eyebrow::before { content: ''; width: 18px; height: 1.5px; background: var(--blue); display: block; border-radius: 1px; }
+.gradient { background: linear-gradient(135deg, var(--white) 0%, var(--blue-h) 55%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* ── CARDS ── */
+.card { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; }
+.card-head { padding: 12px 18px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 12px; font-weight: 600; color: var(--bright); display: flex; align-items: center; gap: 7px; }
+.card-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.card-body { padding: 18px; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: none; border-radius: 8px; font-family: var(--sans); font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; letter-spacing: -.1px; }
+.btn:disabled { opacity: .4; pointer-events: none; }
+.btn-primary { background: var(--blue); color: #fff; padding: 10px 20px; font-size: 13.5px; box-shadow: 0 1px 3px rgba(0,0,0,.5), 0 0 0 1px rgba(59,130,246,.4); }
+.btn-primary:hover { background: var(--blue-h); box-shadow: 0 4px 20px rgba(59,130,246,.3), 0 0 0 1px rgba(96,165,250,.5); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-ghost { background: rgba(255,255,255,.05); color: var(--bright); padding: 10px 20px; font-size: 13.5px; border: 1px solid var(--border); }
+.btn-ghost:hover { background: rgba(255,255,255,.09); border-color: var(--border-bright); color: var(--white); }
+.btn-sm { padding: 6px 13px; font-size: 12px; border-radius: 6px; }
+.btn-lg { padding: 13px 28px; font-size: 15px; border-radius: 10px; }
+.btn-full { width: 100%; }
+
+/* ── INPUTS ── */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .07em; font-family: var(--mono); }
+.form-input { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 13px; color: var(--white); font-size: 13px; font-family: var(--sans); outline: none; width: 100%; transition: border-color .15s, box-shadow .15s; }
+.form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+.form-input::placeholder { color: var(--muted); }
+.form-input option { background: var(--s2); }
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* ── METRICS ── */
+.metric { background: var(--s1); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; position: relative; overflow: hidden; }
+.metric::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--m-color, var(--blue)); }
+.metric-label { font-size: 10px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; font-family: var(--mono); }
+.metric-value { font-size: 26px; font-weight: 800; color: var(--white); letter-spacing: -.8px; line-height: 1; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+.metric-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead tr { border-bottom: 1px solid var(--border); }
+th { padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; font-family: var(--mono); }
+tbody tr { border-bottom: 1px solid var(--border-soft); transition: background .1s; }
+tbody tr:hover { background: rgba(255,255,255,.02); }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 11px 14px; color: var(--text); vertical-align: middle; }
+
+/* ── PILLS ── */
+.pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: var(--mono); letter-spacing: .03em; }
+.pill-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,.15); }
+.pill-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,.15); }
+.pill-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,.15); }
+.pill-blue { background: var(--blue-dim); color: var(--blue-h); border: 1px solid rgba(59,130,246,.15); }
+
+/* ── FINDINGS ── */
+.finding { border-left: 2px solid; padding: 12px 14px; border-radius: 0 8px 8px 0; margin-bottom: 8px; }
+.finding-crit { border-color: var(--red); background: var(--red-dim); }
+.finding-warn { border-color: var(--amber); background: var(--amber-dim); }
+.finding-good { border-color: var(--green); background: var(--green-dim); }
+.finding-title { font-size: 12.5px; font-weight: 700; color: var(--bright); margin-bottom: 5px; display: flex; align-items: center; gap: 7px; }
+.finding-body { font-size: 12px; color: var(--soft); line-height: 1.65; }
+.finding-action { margin-top: 9px; padding: 7px 11px; background: rgba(255,255,255,.04); border-left: 2px solid var(--blue); border-radius: 4px; font-size: 11.5px; color: var(--text); line-height: 1.5; }
+.finding-action strong { color: var(--blue-h); }
+
+/* ── ALERTS ── */
+.alert { display: flex; gap: 10px; align-items: flex-start; padding: 12px 15px; border-radius: 8px; font-size: 12.5px; line-height: 1.55; }
+.alert-info { background: var(--blue-dim); border: 1px solid rgba(59,130,246,.18); color: var(--blue-h); }
+.alert-success { background: var(--green-dim); border: 1px solid rgba(34,197,94,.18); color: var(--green); }
+.alert-warn { background: var(--amber-dim); border: 1px solid rgba(245,158,11,.18); color: var(--amber); }
+
+/* ── SPINNER ── */
+.spin { width: 13px; height: 13px; border-radius: 50%; border: 2px solid rgba(255,255,255,.15); border-top-color: #fff; animation: spinning .6s linear infinite; flex-shrink: 0; }
+@keyframes spinning { to { transform: rotate(360deg); } }
+
+/* ── HERO ── */
+.hero { position: relative; overflow: hidden; padding: 100px 28px 80px; text-align: center; }
+.hero-glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 80% 70% at 50% -5%, rgba(59,130,246,.11) 0%, transparent 60%), radial-gradient(ellipse 40% 30% at 15% 100%, rgba(59,130,246,.05) 0%, transparent 55%), radial-gradient(ellipse 40% 30% at 85% 100%, rgba(96,165,250,.05) 0%, transparent 55%); }
+.hero-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+.hero-kicker { display: inline-flex; align-items: center; gap: 7px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.18); color: var(--blue-h); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 100px; margin-bottom: 28px; }
+.hero-kicker-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; flex-shrink: 0; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.hero-h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 1.05; letter-spacing: -1.5px; color: var(--white); margin-bottom: 18px; }
+.hero-sub { font-size: 16px; color: var(--soft); max-width: 560px; margin: 0 auto 36px; line-height: 1.7; }
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+.hero-trust { display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap; }
+.trust-item { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.trust-check { color: var(--green); }
+
+/* ── LP SECTIONS ── */
+.lp-section { padding: 64px 0; border-top: 1px solid var(--border-soft); }
+.lp-header { text-align: center; margin-bottom: 40px; }
+.lp-eye { font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--blue-h); margin-bottom: 12px; }
+.lp-title { font-size: clamp(20px, 3vw, 28px); font-weight: 800; letter-spacing: -.6px; color: var(--white); margin-bottom: 10px; }
+.lp-sub { font-size: 13.5px; color: var(--soft); max-width: 480px; margin: 0 auto; line-height: 1.65; }
+
+/* ── TESTIMONIALS ── */
+.testi { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.testi-stars { color: var(--amber); font-size: 12px; letter-spacing: 2px; }
+.testi-quote { font-size: 13px; color: var(--bright); line-height: 1.7; font-style: italic; }
+.testi-author { display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border-soft); }
+.testi-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), #818cf8); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.testi-name { font-size: 12.5px; font-weight: 700; color: var(--bright); }
+.testi-role { font-size: 11px; color: var(--muted); }
+.beta-tag { font-size: 9px; font-weight: 700; font-family: var(--mono); background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,.18); padding: 1px 5px; border-radius: 3px; letter-spacing: .05em; margin-left: 5px; text-transform: uppercase; }
+
+/* ── PROBLEM / FEATURE CARDS ── */
+.prob-card, .feat-card { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+.prob-icon, .feat-icon { font-size: 22px; margin-bottom: 12px; }
+.prob-title, .feat-title { font-size: 13.5px; font-weight: 700; color: var(--bright); margin-bottom: 7px; }
+.prob-desc, .feat-desc { font-size: 12.5px; color: var(--soft); line-height: 1.65; }
+
+/* ── HOW IT WORKS ── */
+.how-step { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border-soft); }
+.how-step:last-child { border-bottom: none; }
+.how-num { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; background: var(--blue-dim); border: 1px solid rgba(59,130,246,.25); color: var(--blue-h); font-family: var(--mono); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.how-title { font-size: 13px; font-weight: 700; color: var(--bright); margin-bottom: 4px; }
+.how-desc { font-size: 12.5px; color: var(--soft); line-height: 1.65; }
+
+/* ── PRICING ── */
+.plan { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 26px; display: flex; flex-direction: column; gap: 16px; position: relative; transition: border-color .2s, transform .2s; }
+.plan:hover { transform: translateY(-2px); }
+.plan.featured { border-color: rgba(59,130,246,.4); background: linear-gradient(180deg, rgba(59,130,246,.06) 0%, var(--s1) 100%); }
+.plan-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--blue); color: #fff; font-size: 10px; font-weight: 700; font-family: var(--mono); letter-spacing: .06em; padding: 3px 12px; border-radius: 100px; white-space: nowrap; }
+.plan-tier { font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: var(--dim); letter-spacing: .1em; text-transform: uppercase; }
+.plan-price { display: flex; align-items: baseline; gap: 3px; }
+.plan-amount { font-size: 32px; font-weight: 900; color: var(--white); letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.plan-period { font-size: 13px; color: var(--muted); }
+.plan-desc { font-size: 12.5px; color: var(--soft); line-height: 1.5; }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.plan-features li { font-size: 12.5px; color: var(--soft); display: flex; align-items: flex-start; gap: 8px; line-height: 1.45; }
+.plan-check { color: var(--green); flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+
+/* ── FAQ ── */
+.faq-item { border-bottom: 1px solid var(--border-soft); cursor: pointer; }
+.faq-item:last-child { border-bottom: none; }
+.faq-q { padding: 15px 0; font-size: 13.5px; font-weight: 600; color: var(--text); display: flex; justify-content: space-between; align-items: center; gap: 16px; user-select: none; transition: color .15s; }
+.faq-q:hover { color: var(--blue-h); }
+.faq-chevron { color: var(--muted); font-size: 16px; transition: transform .25s; flex-shrink: 0; }
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+.faq-a { font-size: 13px; color: var(--soft); line-height: 1.7; display: none; padding-bottom: 15px; }
+.faq-item.open .faq-a { display: block; }
+.faq-item.open .faq-q { color: var(--blue-h); }
+
+/* ── CTA BOX ── */
+.cta-box { background: linear-gradient(135deg, rgba(59,130,246,.1) 0%, rgba(129,140,248,.04) 100%); border: 1px solid rgba(59,130,246,.2); border-radius: 16px; padding: 64px 48px; text-align: center; }
+
+/* ── COPY BOX ── */
+.cbox { margin-bottom: 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.cbox-head { display: flex; align-items: center; justify-content: space-between; padding: 9px 16px; background: var(--s2); border-bottom: 1px solid var(--border-soft); }
+.cbox-label { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; }
+.cbox-sub { font-size: 10px; color: var(--muted); }
+.cbox-body { background: var(--s1); padding: 16px; }
+.cbox-body pre { white-space: pre-wrap; font-size: 12.5px; color: var(--text); font-family: var(--sans); line-height: 1.75; margin: 0; }
+.copy-btn { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--dim); background: var(--s3); border: 1px solid var(--border); border-radius: 5px; padding: 4px 10px; cursor: pointer; transition: all .15s; letter-spacing: .04em; }
+.copy-btn:hover { color: var(--blue-h); border-color: rgba(59,130,246,.4); }
+.copy-btn.copied { color: var(--green); border-color: rgba(34,197,94,.3); }
+
+/* ── SCORE BARS ── */
+.sbar { display: grid; grid-template-columns: 170px 1fr 36px; gap: 12px; align-items: center; margin-bottom: 10px; }
+.sbar-label { font-size: 12.5px; color: var(--soft); }
+.sbar-track { height: 4px; background: var(--border-bright); border-radius: 2px; overflow: hidden; }
+.sbar-fill { height: 100%; border-radius: 2px; transition: width .9s cubic-bezier(.4,0,.2,1); width: 0%; }
+.sbar-val { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--soft); text-align: right; }
+
+/* ── READINESS BANNER ── */
+.r-banner { border-radius: 10px; padding: 28px; text-align: center; margin-bottom: 20px; }
+.r-approve { background: var(--green-dim); border: 1px solid rgba(34,197,94,.18); }
+.r-fix { background: var(--amber-dim); border: 1px solid rgba(245,158,11,.18); }
+.r-kill { background: var(--red-dim); border: 1px solid rgba(239,68,68,.18); }
+.r-verdict { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+.r-score { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin: 6px 0; font-variant-numeric: tabular-nums; }
+.r-summary { font-size: 13px; color: var(--soft); max-width: 500px; margin: 0 auto; line-height: 1.65; }
+
+/* ── FLOW STEPS ── */
+.flow-step { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-soft); }
+.flow-step:last-child { border-bottom: none; }
+.flow-num { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; background: var(--blue); color: #fff; font-family: var(--mono); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 2px; box-shadow: 0 0 12px var(--blue-glow); }
+.flow-title { font-size: 13px; font-weight: 700; color: var(--bright); margin-bottom: 4px; }
+.flow-desc { font-size: 12.5px; color: var(--soft); line-height: 1.65; }
+
+/* ── DEMO STATUS ── */
+.status-row { display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: var(--s1); border: 1px solid var(--border); border-radius: 8px; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.red { background: var(--red); box-shadow: 0 0 6px var(--red); animation: blink 1s infinite; }
+.status-dot.amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.status-label { font-size: 12.5px; font-weight: 600; color: var(--bright); }
+.status-meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+/* ── REVENUE CALLOUT ── */
+.revenue-callout { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: rgba(239,68,68,.07); border: 1px solid rgba(239,68,68,.18); border-radius: 10px; }
+.revenue-callout .rc-label { font-size: 12.5px; color: var(--soft); }
+.revenue-callout .rc-amount { font-size: 28px; font-weight: 900; color: var(--red); letter-spacing: -1px; font-variant-numeric: tabular-nums; margin-left: auto; }
+.revenue-callout .rc-rate { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--red); background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.15); padding: 3px 8px; border-radius: 4px; }
+
+/* ── UTILS ── */
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-24 { margin-bottom: 24px; }
+.mt-16 { margin-top: 16px; }
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.gap-8 { gap: 8px; }
+.gap-10 { gap: 10px; }
+.gap-12 { gap: 12px; }
+
+/* ── RESPONSIVE ── */
+@media(max-width: 768px) {
+  nav { padding: 0 20px; gap: 12px; }
+  .nav-links { display: none; }
+  .nav-sign-in { display: none; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .hero { padding: 64px 18px 52px; }
+  .wrap { padding: 0 18px; }
+  .cta-box { padding: 40px 24px; }
+  .sbar { grid-template-columns: 130px 1fr 28px; }
+}
+@media(max-width: 480px) {
+  .nav-brand-name { max-width: 140px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<script id="P" type="application/json">{"name":"Uptime Revenue Monitor","slug":"uptime-revenue-monitor","tool":{"title":"See How Much Downtime Is Costing Your Store","description":"Enter your store details to instantly see your estimated revenue loss from downtime and page speed issues this month.","form_title":"Configure Your Analysis","button_label":"⚡ Generate Report","inputs":[{"id":"a","label":"Your Store URL","type":"text","placeholder":"yourstore.com","default":"mystore.com","demo":"peakgearco.com"},{"id":"b","label":"E-commerce Platform","type":"select","options":["Shopify","WooCommerce","BigCommerce"],"default":"Shopify","demo":"WooCommerce"},{"id":"c","label":"Monthly Revenue ($)","type":"number","placeholder":"0","default":"85000","demo":"95000"},{"id":"d","label":"Average Order Value ($)","type":"number","placeholder":"0","default":"127","demo":"149"}],"demo_output":{"metrics":[{"label":"Uptime This Month","value":"98.7%","trend":"vs 99.4% last month","status":"bad"},{"label":"Estimated Revenue Lost","value":"$2,614","trend":"this month to date","status":"bad"},{"label":"Avg Page Load Time","value":"3.8s","trend":"industry avg is 2.1s","status":"neutral"},{"label":"Site Health Score","value":"61/100","trend":"down 9pts from last month","status":"neutral"}],"table":{"title":"Recent Incidents","headers":["Date","Duration","Type","Revenue Lost","Status"],"rows":[["Nov 12","18 min","Full outage","$312",{"badge":true,"text":"Resolved","color":"green"}],["Nov 17","9 min","Slow load spike","$743",{"badge":true,"text":"Resolved","color":"green"}],["Nov 21","4 min","Checkout error","$258",{"badge":true,"text":"Warning","color":"yellow"}],["Nov 24","31 min","Full outage","$1,301",{"badge":true,"text":"Resolved","color":"green"}]]},"findings":{"title":"AI Findings","items":[{"severity":"critical","title":"Black Friday Window at Risk","detail":"Your server response time spikes above 4.2s every day between 7–9 PM EST — your peak traffic window. On Nov 24 alone this caused a 31-minute outage costing an estimated $1,301 in lost orders.","action":"Forward the included plain-English server report to your hosting provider or VA and request an upgrade to a plan with dedicated resources before your next peak sale."},{"severity":"warning","title":"Checkout Page Loads 2.1x Slower Than Your Homepage","detail":"Your checkout loads in 5.3s on mobile vs 2.5s on desktop. On mobile devices, which drive 64% of your traffic, every extra second of load time reduces conversions by roughly 7%.","action":"Ask your developer or theme support to defer non-essential scripts on the checkout page. The fix typically takes under 2 hours."},{"severity":"good","title":"Your Product Pages Are Stable","detail":"No downtime incidents were recorded on product listing pages this month. Average load time of 2.3s is within acceptable range and has improved 0.4s since last month."}]}}},"landing":{"headline":"Your Store Was Down Last Week. <em>You Had No Idea.</em>","subheadline":"Uptime Revenue Monitor watches your Shopify, WooCommerce, or BigCommerce store around the clock and sends you plain-English daily emails showing exactly how much revenue you lost to downtime and slow pages — no server logs, no tech jargon, no guessing. Built for bootstrapped store owners doing $10K–$500K/month who are done finding out about outages from angry customers in their DMs.","problem_title":"Sound Familiar?","features_title":"Everything a Revenue-Obsessed Store Owner Actually Needs","cta_title":"Start Protecting Your Revenue Today","cta_desc":"Join founders who stopped losing money to problems they could not see.","testimonials":[{"name":"Sarah K.","role":"Founder, Shopify apparel store — $180K/mo","quote":"I found out my store was down for 47 minutes on a Saturday morning because a customer DMed me on Instagram. When I checked Uptime Revenue Monitor, it had already caught it, calculated I'd lost roughly $1,900 in that window, and gave me three sentences to send my developer. I was back up in 20 minutes. That kind of clarity is worth every penny of the subscription."},{"name":"Marcus T.","role":"CEO, WooCommerce supplements store — $95K/mo","quote":"I was using UptimeRobot before this. It would send me a text that said something like 'HTTP 503 detected' and I'd have no idea if I needed to panic or not. Now I get a text that says 'Your store has been down 6 minutes, estimated loss so far: $214. Click here for next steps.' That urgency gets me moving immediately."},{"name":"Lisa M.","role":"Founder, BigCommerce home goods store — $62K/mo","quote":"The monthly report is what sold me. I sent the PDF to my freelance developer and he fixed three things in one afternoon that had been quietly draining conversions for months. My load time dropped from 4.1 seconds to 2.3 seconds and my conversion rate jumped almost half a percent the following week. I never would have known where to even start without that report."}],"problems":[{"icon":"😤","title":"You Learn About Outages From Angry Customers","desc":"Your store went down at 8 PM on a Tuesday. You found out at 10 PM when someone replied to your email list saying 'your site is broken.' Meanwhile, two hours of peak traffic — and who knows how much revenue — just evaporated."},{"icon":"💸","title":"You Have No Idea What Downtime Actually Costs You","desc":"Existing tools send you raw technical alerts — HTTP 503, TTFB spike, DNS failure. But none of them tell you what matters: did you just lose $80 or $8,000? Without a dollar figure attached, most store owners do nothing."},{"icon":"😰","title":"Slow Pages Are Killing You Silently and You Can't See It","desc":"Your store might be technically 'up' but loading in 5 seconds on mobile. You're not getting an alert. Your customers are just bouncing. Your ad spend is working, your conversion rate is suffering, and you have no data connecting the two."}],"how_steps":[{"title":"Connect Your Store in 90 Seconds","desc":"Paste your store URL, select your platform — Shopify, WooCommerce, or BigCommerce — and enter your average order value and monthly traffic. No plugins, no code, no developer needed."},{"title":"We Monitor 24/7 and Translate Everything Into Dollars","desc":"Uptime Revenue Monitor checks your store every minute, tracks uptime, page speed, and checkout performance, and converts every incident into an estimated revenue impact based on your real numbers — not industry averages."},{"title":"You Get Clarity, Not Confusion","desc":"Every morning you get a plain-English email with your site health score, yesterday's uptime, and any revenue lost. If your store goes down, you get an immediate SMS or Slack alert with a live revenue-per-minute loss counter so you feel exactly what's at stake."}],"features":[{"icon":"⚡","title":"Real-Time SMS & Slack Alerts with a Revenue Ticker","desc":"The moment your store goes down, you get a text or Slack message that says 'Your store has been offline 4 minutes — estimated loss: $186 and counting.' Not a cryptic error code. A dollar amount that makes you act fast."},{"icon":"📊","title":"Daily Plain-English Email Reports","desc":"Every morning at 7 AM you get a one-page summary: yesterday's uptime percentage, average load speed, number of incidents, total estimated revenue lost, and a green/yellow/red health score you can read in under 60 seconds."},{"icon":"📈","title":"Monthly Revenue Health Report as a Shareable PDF","desc":"A full monthly breakdown of total downtime minutes, total estimated revenue impact in dollars, your worst performing days, speed trends vs the prior month, and your top 3 plain-English fixes — formatted as a PDF you can hand to any developer or VA."},{"icon":"🤖","title":"Revenue Impact Calculation Built on Your Real Numbers","desc":"We don't use generic industry benchmarks. We use your actual average order value and your real traffic patterns to calculate exactly what each minute of downtime costs your specific store, not some hypothetical average store."},{"icon":"🔔","title":"Checkout and Speed Monitoring — Not Just Uptime","desc":"Most tools only tell you if your site is up or down. We also monitor your checkout page load time, add-to-cart flow, and page speed on mobile vs desktop — the exact places where slow performance bleeds your conversions every single day."},{"icon":"🔗","title":"Works With Shopify, WooCommerce, and BigCommerce — No Code Required","desc":"No plugins to install, no developer to hire, no API keys to configure. If you can paste a URL, you can set up Uptime Revenue Monitor in under two minutes and have your first report in your inbox by tomorrow morning."}],"plans":[{"name":"Starter","price":"$49","desc":"For stores doing $10K–$50K/month who want to stop flying blind on downtime.","popular":false,"features":["1-minute uptime monitoring","Daily plain-English email report","Green/yellow/red health score","Estimated revenue loss per incident"]},{"name":"Pro","price":"$97","desc":"For stores doing $50K–$200K/month who need real-time alerts and monthly reporting they can act on.","popular":true,"features":["Everything in Starter","Real-time SMS alerts with revenue ticker","Slack integration","Monthly Revenue Health Report PDF","Checkout and mobile speed monitoring","Top 3 plain-English monthly fixes"]},{"name":"Premium","price":"$197","desc":"For stores doing $200K–$500K/month where every minute of downtime has serious consequences.","popular":false,"features":["Everything in Pro","30-second monitoring intervals","Up to 5 store URLs monitored","Priority alert escalation with on-call recommendations","Quarterly trend analysis and revenue recovery report"]}],"faq":[{"q":"Do I need to install anything or have a developer set this up?","a":"No. You paste your store URL, tell us your platform, and enter your average order value. That's it. Setup takes under two minutes and requires zero technical knowledge. No plugins, no code, no API configuration."},{"q":"How do you calculate the revenue lost during downtime?","a":"We use your actual average order value and your store's real hourly traffic patterns to estimate revenue lost during each downtime window. It's not a generic industry number — it's calculated specifically for your store based on when the incident happened and how much traffic you normally see at that time of day."},{"q":"Is $97/month really worth it for a store my size?","a":"If your store does $50K/month and experiences even one 30-minute outage during a peak evening window, you could easily lose $500–$1,500 in a single incident. Most of our Pro users recover the cost of a full year's subscription within the first month just by catching one outage they would have otherwise missed for hours. The monthly report alone has helped store owners fix speed issues that improved conversion rates by 0.3–0.8%, which on a $95K/month store is $2,850–$7,600 per month in recovered revenue."},{"q":"How long does it take to get my first report?","a":"You'll receive your first daily email report the morning after you connect your store. Within the first 24 hours, our system will have already run hundreds of checks on your store and will have baseline data on your uptime percentage, average load times, and any incidents that occurred. If your store goes down at any point after setup, you'll get an SMS or Slack alert within 60 seconds."},{"q":"Can I cancel anytime?","a":"Yes, cancel anytime with no questions asked and no penalty. We don't lock you into contracts. If you cancel, you keep access through the end of your current billing period. We'd also love to know why you're leaving — most issues our customers have had, we've been able to resolve in under 24 hours."}]},"sales":{"cold_email_1":"Hi {{first_name}},\n\nQuick question — when your Shopify store goes down at 8 PM on a Friday, how long does it usually take you to find out?\n\nMost store owners I talk to say 30–60 minutes. Some find out from a customer email. A few have told me they didn't know until the next morning.\n\nIf you're doing $80K–$200K/month, a 45-minute evening outage can easily run $800–$2,000 in lost orders — and that's before you factor in the ad spend you burned sending traffic to a broken store.\n\nI built Uptime Revenue Monitor specifically for store owners like you. Instead of sending you cryptic server alerts you can't act on, we send you a plain-English morning email every day with your uptime percentage, page speed, and a dollar estimate of any revenue you lost — calculated from your actual AOV and traffic.\n\nIf your store goes down, you get an SMS within 60 seconds that says something like: 'Your store has been offline 6 minutes — estimated loss: $312 and climbing.'\n\nWould it be worth 10 minutes to see what last month looked like for your store?\n\n[Name]","followup_day3":"Hi {{first_name}},\n\nFollowing up on my note from Monday.\n\nI know you're running a store and your inbox is a disaster — mine is too.\n\nOne thing I didn't mention: we also track your checkout page load time separately from your homepage. Most store owners are shocked to find out their checkout loads 2–3x slower than the rest of their site on mobile — which is usually where 60–70% of their traffic is coming from.\n\nSlow checkout doesn't trigger an 'outage' alert in any existing tool. But it absolutely kills conversions. Silently. Every single day.\n\nWe catch that too, and we tell you what it's likely costing you in plain English — not a graph you have to decode.\n\nWorth a look? I can show you a sample report from a store similar to yours in about 10 minutes.\n\n[Name]","followup_day7":"Hi {{first_name}},\n\nLast follow-up — I'll keep this short.\n\nMarcus runs a WooCommerce supplements store doing about $95K/month. He was using UptimeRobot before finding us. When his store went down for 22 minutes on a Sunday afternoon, UptimeRobot sent him a text that said 'HTTP 503 detected.' He didn't know if he should call someone, wait it out, or panic.\n\nWhen he switched to Uptime Revenue Monitor, the next time his store had an issue — 11 minutes of slow load during a flash sale — he got a Slack message that said: 'Checkout page loading in 6.1s. Estimated impact: $490 so far. Here's what to tell your host.'\n\nHe was back to normal in 18 minutes and his host fixed the root cause the next day.\n\nIf that kind of clarity would save you money, I'd love to show you how it works for your specific store.\n\n[Name]","breakup":"Hi {{first_name}},\n\nI've reached out a few times and haven't heard back — totally understand, you're busy running a store.\n\nI'll leave you with one thing: the average e-commerce store doing $100K/month loses between $8,000 and $22,000 per year to downtime and slow pages they never detect in real time. Most of it happens in small windows — 12 minutes here, 25 minutes there — that no one catches until it's too late.\n\nIf that number ever starts to bother you, Uptime Revenue Monitor is at uptimerevenuemonitor.com. Setup takes two minutes.\n\nWishing you a season of zero outages.\n\n[Name]","linkedin":"Hey {{first_name}} — quick question: when your store goes down after hours, how fast do you actually find out? I built a tool that sends e-commerce founders a real-time SMS with an estimated dollar-per-minute loss the moment their site goes offline — happy to show you a quick demo if that sounds useful.","objections":[{"q":"I already use UptimeRobot / Pingdom — why do I need this?","a":"Those tools tell you your site is down. They don't tell you what it costs you. There's a huge difference between getting an alert that says 'HTTP 503 detected' and one that says 'Your store has been offline 8 minutes — estimated revenue loss: $412.' One is noise. The other is urgency. We also monitor checkout speed and mobile page load, which neither of those tools does in a way that connects to your revenue."},{"q":"I can't justify $97/month right now.","a":"Totally fair — let's look at the math together. If your store does $75K/month and has even one undetected 40-minute outage per month during a peak window, you're likely losing $600–$1,400 in that single incident. That's 6–14x the cost of a Pro subscription. Most store owners who sign up tell us they caught their first major incident within the first two weeks. The monthly Revenue Health Report alone has helped founders identify speed fixes worth thousands per month in recovered conversion rate. One month's ROI usually covers a full year of the tool."},{"q":"I don't have time to read another report every day.","a":"The daily email takes under 60 seconds to read. It has a green, yellow, or red score at the top. If it's green, you move on with your day. If it's yellow or red, you know exactly why and exactly what to do — in plain English you can forward to a developer or VA. You don't need to interpret anything. That's the whole point."}]},"fulfillment":{"steps":[{"title":"Immediate After Payment","desc":"You receive a confirmation email with your account login and a two-minute setup guide. No waiting, no onboarding call required. Your store monitoring begins the moment you paste your URL into the dashboard."},{"title":"Connect Your Store","desc":"You enter your store URL, select your platform (Shopify, WooCommerce, or BigCommerce), input your average order value, and optionally connect Slack or add a mobile number for SMS alerts. No plugins or developer access required."},{"title":"AI Monitoring Activates","desc":"Our system immediately begins checking your store every 60 seconds — testing uptime, homepage load time, checkout page speed, mobile vs desktop performance, and DNS health. It builds a baseline of your normal traffic patterns using your revenue inputs to calibrate dollar-impact calculations specific to your store."},{"title":"First Results Delivered","desc":"By the next morning at 7 AM, your first daily plain-English email report lands in your inbox showing overnight uptime, any incidents detected, estimated revenue impact, and your starting health score. If any incident occurred during setup, you'll also receive a retroactive incident summary with revenue impact included."}],"ai_role":"The AI continuously monitors your store's uptime, page load speed, and checkout performance every 60 seconds. It cross-references incident timing against your historical traffic patterns and average order value to calculate real-time and cumulative revenue loss estimates. It writes all alerts, daily summaries, and monthly reports in plain English — translating raw server data into dollar amounts, health scores, and specific action items your team can execute without technical knowledge. The monthly report's top 3 fixes are generated by analyzing your incident history, speed trends, and platform-specific best practices, then written in language you can paste directly into a message to a developer or VA.","customer_gets":"A daily email every morning with uptime percentage, page speed, incident count, estimated revenue lost, and a green/yellow/red health score. Real-time SMS or Slack alerts the moment their store goes down, including a live revenue-per-minute loss estimate. A full Monthly Revenue Health Report as a shareable PDF including total downtime minutes, total revenue impact in dollars, worst performing days, speed trend vs prior month, and top 3 plain-English action items ready to send to a developer or VA.","first_value_timing":"Within 24 hours of connecting your store"},"readiness":{"recommendation":"approve","total_score":78,"summary":"Uptime Revenue Monitor solves a real, expensive, and emotionally resonant problem for a well-defined and reachable ICP, with a clear differentiation from existing technical tools and strong pricing leverage tied directly to recoverable revenue.","dimensions":[{"label":"Market Demand","score":8},{"label":"Problem Clarity","score":9},{"label":"Solution Fit","score":8},{"label":"ICP Specificity","score":7},{"label":"Revenue Potential","score":7},{"label":"Competition","score":6},{"label":"Technical Complexity","score":8},{"label":"Sales Cycle","score":7},{"label":"Pricing Power","score":7},{"label":"Scalability","score":8}],"fixes":[]}}</script>
+
+<!-- ════════ NAV ════════ -->
+<nav>
+  <div class="nav-brand" onclick="showPage('landing')">
+    <div class="nav-logo" id="nav-icon">⚡</div>
+    <span class="nav-brand-name" id="nav-name">Product</span>
+  </div>
+
+  <div class="nav-links">
+    <button class="nav-link active" id="nl-landing" onclick="showPage('landing')">Product</button>
+    <button class="nav-link" id="nl-demo" onclick="showPage('demo')">Live Demo</button>
+    <button class="nav-link" id="nl-sales" onclick="showPage('sales')">Sales Pack</button>
+    <button class="nav-link" id="nl-fulfillment" onclick="showPage('fulfillment')">Fulfillment</button>
+    <button class="nav-link" id="nl-readiness" onclick="showPage('readiness')">Readiness</button>
+  </div>
+
+  <div class="nav-actions">
+    <button class="nav-sign-in" onclick="showPage('demo')">Live Demo</button>
+    <button class="nav-cta" id="nav-cta-btn" onclick="alert('Redirecting to Stripe...')">Start Free Trial →</button>
+  </div>
+</nav>
+
+<!-- ════════ PAGE: LANDING ════════ -->
+<div id="page-landing" class="page active">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-kicker"><span class="hero-kicker-dot"></span><span id="hero-kicker">Early Access · Beta</span></div>
+      <h1 class="hero-h1" id="hero-h1">Headline</h1>
+      <p class="hero-sub" id="hero-sub"></p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" onclick="alert('Redirecting to Stripe...')" id="hero-cta1">Start Free Trial</button>
+        <button class="btn btn-ghost btn-lg" onclick="showPage('demo')">See Live Demo</button>
+      </div>
+      <div class="hero-trust" id="hero-trust"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">Social proof</div><div class="lp-title">Trusted by early adopters</div><div class="lp-sub">Real results from beta users after 30 days.</div></div>
+      <div class="grid-3" id="lp-testis"></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">The problem</div><div class="lp-title" id="lp-prob-title">Sound familiar?</div></div>
+      <div class="grid-3" id="lp-probs"></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">How it works</div><div class="lp-title">Up and running in minutes</div></div>
+      <div class="card"><div class="card-body" id="lp-how"></div></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">Features</div><div class="lp-title" id="lp-feat-title">Everything you need</div></div>
+      <div class="grid-3" id="lp-feats"></div>
+    </div>
+    <div class="lp-section" id="pricing">
+      <div class="lp-header"><div class="lp-eye">Pricing</div><div class="lp-title">Simple, transparent pricing</div><div class="lp-sub">No contracts. Cancel anytime.</div></div>
+      <div class="grid-3" id="lp-plans"></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-header"><div class="lp-eye">FAQ</div><div class="lp-title">Common questions</div></div>
+      <div class="card"><div class="card-body" id="lp-faq"></div></div>
+    </div>
+    <div class="lp-section" style="border-top:none">
+      <div class="cta-box">
+        <div class="eyebrow" style="justify-content:center;margin-bottom:16px">Get started today</div>
+        <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:12px" id="cta-title"></h2>
+        <p style="font-size:15px;color:var(--soft);margin-bottom:30px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.65" id="cta-sub"></p>
+        <div class="flex gap-12 flex-wrap" style="justify-content:center">
+          <button class="btn btn-primary btn-lg" onclick="alert('Redirecting to Stripe...')" id="cta-btn">Start Free Trial →</button>
+          <button class="btn btn-ghost btn-lg" onclick="showPage('demo')">See Live Demo</button>
+        </div>
+        <div class="hero-trust mt-16" id="cta-trust"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: DEMO ════════ -->
+<div id="page-demo" class="page">
+  <div class="wrap" style="padding-top:36px;padding-bottom:64px">
+    <div class="eyebrow" id="t-eye">Live Demo</div>
+    <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:8px" id="t-title">Interactive Demo</h2>
+    <p style="font-size:14px;color:var(--soft);margin-bottom:24px;max-width:580px;line-height:1.7" id="t-desc"></p>
+    <div class="alert alert-info mb-20"><span>ℹ</span><span><strong>Demo mode —</strong> <span id="t-alert">enter your details below to generate a live analysis.</span></span></div>
+
+    <div class="card mb-20">
+      <div class="card-head">
+        <span class="card-title"><span class="card-dot" style="background:var(--blue)"></span><span id="t-form-title">Configure Your Analysis</span></span>
+      </div>
+      <div class="card-body">
+        <div class="grid-2" id="t-inputs" style="margin-bottom:18px"></div>
+        <div class="flex gap-10 flex-wrap">
+          <button class="btn btn-primary" id="run-btn" onclick="runTool()">
+            <span id="run-lbl">⚡ Generate Report</span>
+            <span id="run-spin" class="spin" style="display:none"></span>
+          </button>
+          <button class="btn btn-ghost" onclick="loadDemo()">Load demo data</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="output" style="display:none">
+      <div class="status-row mb-16">
+        <div class="status-dot green" id="status-dot"></div>
+        <span class="status-label" id="status-label">All systems operational</span>
+        <span class="status-meta" id="status-meta"></span>
+      </div>
+      <div id="revenue-callout" class="mb-20"></div>
+      <div class="grid-4 mb-16" id="t-metrics"></div>
+      <div class="card mb-16">
+        <div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--amber)"></span><span id="tbl-title">Incident Log</span></span></div>
+        <div style="padding:0"><div class="tbl-wrap"><table><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table></div></div>
+      </div>
+      <div class="card mb-16">
+        <div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>AI Analysis</span></div>
+        <div class="card-body" id="t-findings"></div>
+      </div>
+      <div class="flex gap-10 flex-wrap">
+        <button class="btn btn-primary" onclick="alert('Report saved.')">Save Report</button>
+        <button class="btn btn-ghost" onclick="alert('Generating PDF...')">Export PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="alert('Sent to Slack.')">→ Slack</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: SALES ════════ -->
+<div id="page-sales" class="page">
+  <div class="wrap" style="padding-top:36px;padding-bottom:64px">
+    <div class="eyebrow">Sales Pack</div>
+    <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:8px">Cold Outreach Templates</h2>
+    <p style="font-size:14px;color:var(--soft);margin-bottom:28px">Personalize the [brackets]. All sequences stop on reply.</p>
+    <div id="sales-body"></div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: FULFILLMENT ════════ -->
+<div id="page-fulfillment" class="page">
+  <div class="wrap" style="padding-top:36px;padding-bottom:64px">
+    <div class="eyebrow">Fulfillment</div>
+    <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:8px">Delivery Plan</h2>
+    <p style="font-size:14px;color:var(--soft);margin-bottom:28px">What happens automatically after a customer pays.</p>
+    <div class="card mb-16"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>Delivery Flow</span></div><div class="card-body" id="ff-flow"></div></div>
+    <div class="grid-2 mb-16" id="ff-info"></div>
+    <div id="ff-timing"></div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: READINESS ════════ -->
+<div id="page-readiness" class="page">
+  <div class="wrap" style="padding-top:36px;padding-bottom:64px">
+    <div class="eyebrow">Quality Gate</div>
+    <h2 style="font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.8px;color:var(--white);margin-bottom:20px">Product Readiness Score</h2>
+    <div id="r-banner"></div>
+    <div class="card mb-16"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>Score Breakdown</span></div><div class="card-body" id="r-scores"></div></div>
+    <div id="r-fixes"></div>
+  </div>
+</div>
+
+<script>
+var P = {};
+try { P = JSON.parse(document.getElementById('P').textContent); } catch(e) {}
+
+/* ── NAVIGATION ── */
+var PAGES = ['landing','demo','sales','fulfillment','readiness'];
+function showPage(name) {
+  PAGES.forEach(function(p) {
+    var pg = document.getElementById('page-' + p);
+    var nl = document.getElementById('nl-' + p);
+    if (pg) pg.classList.toggle('active', p === name);
+    if (nl) nl.classList.toggle('active', p === name);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── UTILS ── */
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(n) { if (n >= 1000) return '$' + (n/1000).toFixed(1).replace(/\.0$/,'') + 'K'; return '$' + Math.round(n).toLocaleString(); }
+function calcLoss(monthlyRev, mins) { return Math.round((monthlyRev / 30 / 24 / 60) * 0.7 * mins); }
+
+/* ── DEMO ── */
+function runTool() {
+  var btn = document.getElementById('run-btn');
+  var lbl = document.getElementById('run-lbl');
+  var sp = document.getElementById('run-spin');
+  var orig = lbl.textContent;
+  lbl.textContent = 'Analyzing...'; sp.style.display = 'flex'; btn.disabled = true;
+  document.getElementById('output').style.display = 'none';
+  setTimeout(function() {
+    lbl.textContent = orig; sp.style.display = 'none'; btn.disabled = false;
+    buildOutput();
+    var out = document.getElementById('output');
+    out.style.display = 'block';
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 1900);
+}
+
+function loadDemo() {
+  ((P.tool||{}).inputs||[]).forEach(function(inp) {
+    var el = document.getElementById('i-' + inp.id);
+    if (el && inp.demo) el.value = inp.demo;
+  });
+  runTool();
+}
+
+function buildOutput() {
+  var t = P.tool || {};
+  var d = t.demo_output || {};
+  var inputs = t.inputs || [];
+  var monthlyRev = 85000, aov = 127;
+  inputs.forEach(function(inp) {
+    var el = document.getElementById('i-' + inp.id);
+    var v = el ? (parseFloat(el.value) || 0) : 0;
+    if (inp.id === 'c' || inp.role === 'monthly_rev') monthlyRev = v || monthlyRev;
+    if (inp.id === 'd' || inp.role === 'aov') aov = v || aov;
+  });
+
+  var totalMins = 0;
+  ((d.table||{}).rows||[]).forEach(function(row) { totalMins += parseInt(row[1]) || 0; });
+  var totalLost = calcLoss(monthlyRev, totalMins);
+  var perMin = Math.round(calcLoss(monthlyRev, 1));
+
+  // Status
+  var sd = document.getElementById('status-dot');
+  var sl = document.getElementById('status-label');
+  var sm = document.getElementById('status-meta');
+  if (totalMins > 30) { sd.className = 'status-dot red'; sl.textContent = 'Critical incidents detected'; }
+  else if (totalMins > 0) { sd.className = 'status-dot amber'; sl.textContent = 'Minor incidents detected'; }
+  else { sd.className = 'status-dot green'; sl.textContent = 'All systems operational'; }
+  sm.textContent = totalMins + 'min downtime · ' + fmt(totalLost) + ' estimated impact';
+
+  // Revenue callout
+  var rc = document.getElementById('revenue-callout');
+  if (totalLost > 0) {
+    rc.innerHTML = '<div class="revenue-callout"><div><div class="rc-label">Estimated revenue lost this period</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Based on your AOV and traffic patterns</div></div><div class="rc-rate">' + fmt(perMin) + '/min</div><div class="rc-amount">' + fmt(totalLost) + '</div></div>';
+  } else {
+    rc.innerHTML = '<div class="alert alert-success"><span>✓</span><span>No revenue impact detected this period.</span></div>';
+  }
+
+  // Metrics
+  var mw = document.getElementById('t-metrics'); mw.innerHTML = '';
+  var upPct = totalMins > 0 ? (100 - totalMins/(30*24*60)*100).toFixed(2) : '100.00';
+  var ms = [
+    { label:'Uptime (30 days)', val: upPct+'%', sub: totalMins+'min downtime', color: totalMins>0?'var(--amber)':'var(--green)', vc: totalMins>0?'var(--amber)':'var(--green)' },
+    { label:'Est. Revenue Lost', val: fmt(totalLost), sub:'This period', color:'var(--red)', vc:'var(--red)' },
+    { label:(d.metrics&&d.metrics[2]?d.metrics[2].label:'Avg Page Load'), val:(d.metrics&&d.metrics[2]?d.metrics[2].value:'2.8s'), sub:'Last 7 days', color:'var(--blue)', vc:'var(--text)' },
+    { label:'Health Score', val: totalMins>30?'61/100':totalMins>0?'74/100':'94/100', sub: totalMins>30?'Needs attention':'Good standing', color:'var(--blue)', vc:'var(--text)' },
+  ];
+  ms.forEach(function(m) {
+    var div = document.createElement('div'); div.className = 'metric';
+    div.style.setProperty('--m-color', m.color);
+    div.innerHTML = '<div class="metric-label">' + m.label + '</div><div class="metric-value" style="color:' + m.vc + '">' + m.val + '</div><div class="metric-sub">' + m.sub + '</div>';
+    mw.appendChild(div);
+  });
+
+  // Table
+  if (d.table) {
+    document.getElementById('tbl-title').textContent = d.table.title;
+    document.getElementById('tbl-head').innerHTML = '<tr>' + d.table.headers.map(function(h){return '<th>'+h+'</th>';}).join('') + '</tr>';
+    document.getElementById('tbl-body').innerHTML = d.table.rows.map(function(row) {
+      return '<tr>' + row.map(function(cell, ci) {
+        if (typeof cell === 'object' && cell.badge) {
+          var pc = cell.color==='green'?'pill-green':cell.color==='yellow'?'pill-amber':cell.color==='red'?'pill-red':'pill-blue';
+          return '<td><span class="pill '+pc+'">'+cell.text+'</span></td>';
+        }
+        if (ci === row.length-2 && typeof cell === 'string' && cell.startsWith('$')) {
+          var mins = parseInt(row[1]) || 0;
+          return '<td style="font-weight:700;color:var(--red);font-family:var(--mono)">'+fmt(calcLoss(monthlyRev,mins))+'</td>';
+        }
+        return '<td>'+cell+'</td>';
+      }).join('') + '</tr>';
+    }).join('');
+  }
+
+  // Findings
+  var fw = document.getElementById('t-findings'); fw.innerHTML = '';
+  ((d.findings||{}).items||[]).forEach(function(item) {
+    var fc = item.severity==='critical'?'finding-crit':item.severity==='warning'?'finding-warn':'finding-good';
+    var ic = item.severity==='critical'?'🚨':item.severity==='warning'?'⚠️':'✅';
+    var div = document.createElement('div'); div.className = 'finding '+fc;
+    div.innerHTML = '<div class="finding-title"><span>'+ic+'</span>'+item.title+'</div><div class="finding-body">'+item.detail+'</div>'+(item.action?'<div class="finding-action"><strong>→ Action:</strong> '+item.action+'</div>':'');
+    fw.appendChild(div);
+  });
+}
+
+/* ── INIT TOOL ── */
+function initTool() {
+  if (!P.name) return;
+  var t = P.tool || {};
+  document.getElementById('nav-name').textContent = P.name;
+  document.getElementById('nav-icon').textContent = P.name.charAt(0);
+  document.title = P.name;
+  document.getElementById('t-eye').textContent = P.name;
+  document.getElementById('t-title').textContent = t.title || P.name;
+  document.getElementById('t-desc').textContent = t.description || '';
+  if (t.form_title) document.getElementById('t-form-title').textContent = t.form_title;
+  if (t.button_label) document.getElementById('run-lbl').textContent = t.button_label;
+  if (t.alert_text) document.getElementById('t-alert').textContent = t.alert_text;
+  var iw = document.getElementById('t-inputs');
+  iw.innerHTML = (t.inputs||[]).map(function(inp) {
+    var ctrl = inp.type === 'select'
+      ? '<select class="form-input" id="i-'+inp.id+'">'+(inp.options||[]).map(function(o){return '<option'+(o===inp.default?' selected':'')+'>'+o+'</option>';}).join('')+'</select>'
+      : '<input class="form-input" type="'+(inp.type||'text')+'" id="i-'+inp.id+'" value="'+(inp.default||'')+'" placeholder="'+(inp.placeholder||'')+'">';
+    return '<div class="form-group"><label class="form-label">'+inp.label+'</label>'+ctrl+'</div>';
+  }).join('');
+}
+
+/* ── LANDING ── */
+function renderLanding() {
+  var lp = P.landing || {};
+  function set(id,v,html){var e=document.getElementById(id);if(e&&v){if(html)e.innerHTML=v;else e.textContent=v;}}
+  set('hero-h1', lp.headline, true);
+  set('hero-sub', lp.subheadline);
+  set('lp-prob-title', lp.problem_title);
+  set('lp-feat-title', lp.features_title);
+  set('cta-title', lp.cta_title);
+  set('cta-sub', lp.cta_desc);
+  if (lp.cta_primary) { document.getElementById('hero-cta1').textContent = lp.cta_primary; }
+
+  var tr = document.getElementById('hero-trust');
+  (lp.trust_items||['No credit card required','Setup in 5 minutes','Cancel anytime']).forEach(function(item){
+    var d=document.createElement('div');d.className='trust-item';d.innerHTML='<span class="trust-check">✓</span>'+item;tr.appendChild(d);
+  });
+  var ctr = document.getElementById('cta-trust');
+  if(ctr)(lp.trust_items||[]).slice(0,3).forEach(function(item){var d=document.createElement('div');d.className='trust-item';d.innerHTML='<span class="trust-check">✓</span>'+item;ctr.appendChild(d);});
+
+  var te = document.getElementById('lp-testis');
+  if(te)te.innerHTML=(lp.testimonials||[]).map(function(t){
+    var init=(t.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2);
+    return '<div class="testi"><div class="testi-stars">★★★★★</div><div class="testi-quote">"'+esc(t.quote)+'"</div><div class="testi-author"><div class="testi-avatar">'+init+'</div><div><div class="testi-name">'+esc(t.name)+'<span class="beta-tag">Beta</span></div><div class="testi-role">'+esc(t.role)+'</div></div></div></div>';
+  }).join('');
+
+  var pe = document.getElementById('lp-probs');
+  if(pe)pe.innerHTML=(lp.problems||[]).map(function(p){return '<div class="prob-card"><div class="prob-icon">'+p.icon+'</div><div class="prob-title">'+esc(p.title)+'</div><div class="prob-desc">'+esc(p.desc)+'</div></div>';}).join('');
+
+  var he = document.getElementById('lp-how');
+  if(he)he.innerHTML=(lp.how_steps||[]).map(function(s,i){return '<div class="how-step"><div class="how-num">'+(i+1)+'</div><div><div class="how-title">'+esc(s.title)+'</div><div class="how-desc">'+esc(s.desc)+'</div></div></div>';}).join('');
+
+  var fe = document.getElementById('lp-feats');
+  if(fe)fe.innerHTML=(lp.features||[]).map(function(f){return '<div class="feat-card"><div class="feat-icon">'+f.icon+'</div><div class="feat-title">'+esc(f.title)+'</div><div class="feat-desc">'+esc(f.desc)+'</div></div>';}).join('');
+
+  var ple = document.getElementById('lp-plans');
+  if(ple)ple.innerHTML=(lp.plans||[]).map(function(plan){
+    var feats=(plan.features||[]).map(function(f){return '<li><span class="plan-check">✓</span>'+esc(f)+'</li>';}).join('');
+    return '<div class="plan'+(plan.popular?' featured':'')+'">'+
+      (plan.popular?'<div class="plan-badge">Most Popular</div>':'')+
+      '<div class="plan-tier">'+esc(plan.name)+'</div>'+
+      '<div class="plan-price"><div class="plan-amount">'+esc(plan.price)+'</div><div class="plan-period">/mo</div></div>'+
+      '<div class="plan-desc">'+esc(plan.desc)+'</div>'+
+      '<ul class="plan-features">'+feats+'</ul>'+
+      '<button class="btn '+(plan.popular?'btn-primary':'btn-ghost')+' btn-full" onclick="alert(\'Stripe checkout...\')">Get '+esc(plan.name)+'</button>'+
+      '</div>';
+  }).join('');
+
+  var fqe = document.getElementById('lp-faq');
+  if(fqe)fqe.innerHTML=(lp.faq||[]).map(function(item){return '<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>'+esc(item.q)+'</span><span class="faq-chevron">▾</span></div><div class="faq-a">'+esc(item.a)+'</div></div>';}).join('');
+}
+
+/* ── SALES ── */
+function renderSales() {
+  var s = P.sales || {};
+  var emails = [{key:'cold_email_1',label:'Cold Email',sub:'Day 0 · First touch'},{key:'followup_day3',label:'Follow-up',sub:'Day 3 · Bump'},{key:'followup_day7',label:'Follow-up',sub:'Day 7 · Value-add'},{key:'breakup',label:'Breakup',sub:'Day 14 · Final touch'}];
+  var h = '';
+  emails.forEach(function(e,i){if(!s[e.key])return;h+='<div class="cbox"><div class="cbox-head"><div><span class="cbox-label">'+e.label+'</span> <span class="cbox-sub">'+e.sub+'</span></div><button class="copy-btn" onclick="cpTxt(\'em'+i+'\',this)">Copy</button></div><div class="cbox-body"><pre id="em'+i+'">'+esc(s[e.key])+'</pre></div></div>';});
+  if(s.linkedin)h+='<div class="cbox"><div class="cbox-head"><div><span class="cbox-label">LinkedIn DM</span> <span class="cbox-sub">300 chars</span></div><button class="copy-btn" onclick="cpTxt(\'em-li\',this)">Copy</button></div><div class="cbox-body"><pre id="em-li">'+esc(s.linkedin)+'</pre></div></div>';
+  if(s.objections&&s.objections.length){
+    h+='<div class="card mt-16"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--amber)"></span>Objection Handlers</span></div><div class="card-body">';
+    s.objections.forEach(function(obj,i){h+='<div style="'+(i?'margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft)':'')+'"><div style="font-size:12.5px;font-weight:700;color:var(--bright);margin-bottom:6px">❓ '+esc(obj.q)+'</div><div style="font-size:12px;color:var(--soft);line-height:1.65;padding:9px 12px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid var(--blue)">'+esc(obj.a)+'</div></div>';});
+    h+='</div></div>';
+  }
+  var el=document.getElementById('sales-body');if(el)el.innerHTML=h;
+}
+
+/* ── FULFILLMENT ── */
+function renderFulfillment() {
+  var f = P.fulfillment || {};
+  var fl = document.getElementById('ff-flow');
+  if(fl)fl.innerHTML=(f.steps||[]).map(function(s,i){return '<div class="flow-step"><div class="flow-num">'+(i+1)+'</div><div><div class="flow-title">'+esc(s.title)+'</div><div class="flow-desc">'+esc(s.desc)+'</div></div></div>';}).join('');
+  var inf = document.getElementById('ff-info');
+  if(inf)inf.innerHTML=
+    (f.ai_role?'<div class="card"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--blue)"></span>What AI Does</span></div><div class="card-body"><p style="font-size:12.5px;color:var(--soft);line-height:1.65">'+esc(f.ai_role)+'</p></div></div>':'')+
+    (f.customer_gets?'<div class="card"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--green)"></span>What Customer Gets</span></div><div class="card-body"><p style="font-size:12.5px;color:var(--soft);line-height:1.65">'+esc(f.customer_gets)+'</p></div></div>':'');
+  var ti = document.getElementById('ff-timing');
+  if(ti&&f.first_value_timing)ti.innerHTML='<div class="alert alert-success"><span>⚡</span><span><strong>First value delivered:</strong> '+esc(f.first_value_timing)+'</span></div>';
+}
+
+/* ── READINESS ── */
+function renderReadiness() {
+  var r = P.readiness || {};
+  var tot = r.total_score || 0;
+  var rec = r.recommendation || 'fix';
+  var bn = document.getElementById('r-banner');
+  if(bn){
+    var bc=rec==='approve'?'r-approve':rec==='kill'?'r-kill':'r-fix';
+    var ic=rec==='approve'?'✅':rec==='kill'?'❌':'🔧';
+    var lb=rec==='approve'?'Approved — Ready to Launch':rec==='kill'?'Kill — Do Not Proceed':'Fix Required';
+    var col=rec==='approve'?'var(--green)':rec==='kill'?'var(--red)':'var(--amber)';
+    bn.innerHTML='<div class="r-banner '+bc+'"><div style="font-size:28px;margin-bottom:6px">'+ic+'</div><div class="r-verdict" style="color:'+col+'">'+lb+'</div><div class="r-score" style="color:'+col+'">'+tot+'<span style="font-size:22px;font-weight:400;color:var(--muted)">/100</span></div><div class="r-summary">'+esc(r.summary||'')+'</div></div>';
+  }
+  var sc = document.getElementById('r-scores');
+  if(sc)sc.innerHTML=(r.dimensions||[]).map(function(d){
+    var pct=Math.round(d.score/10*100);
+    var col=d.score>=7?'var(--green)':d.score>=5?'var(--amber)':'var(--red)';
+    return '<div class="sbar"><div class="sbar-label">'+esc(d.label)+'</div><div class="sbar-track"><div class="sbar-fill" data-w="'+pct+'" style="background:'+col+'"></div></div><div class="sbar-val">'+d.score+'/10</div></div>';
+  }).join('');
+  var fx=document.getElementById('r-fixes');
+  if(fx&&r.fixes&&r.fixes.length){fx.innerHTML='<div class="card"><div class="card-head"><span class="card-title"><span class="card-dot" style="background:var(--amber)"></span>Required Fixes</span></div><div class="card-body">'+r.fixes.map(function(fix,i){return '<div style="display:flex;gap:10px;padding:8px 0;'+(i?'border-top:1px solid var(--border-soft)':'')+'"><div style="width:18px;height:18px;border-radius:50%;background:var(--amber-dim);color:var(--amber);font-family:var(--mono);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div><div style="font-size:12px;color:var(--soft);line-height:1.55">'+esc(fix)+'</div></div>';}).join('')+'</div></div>';}
+  setTimeout(function(){document.querySelectorAll('.sbar-fill').forEach(function(b){b.style.width=(b.dataset.w||0)+'%';});},300);
+}
+
+/* ── COPY ── */
+function cpTxt(id,btn){
+  var el=document.getElementById(id);if(!el)return;
+  var orig=btn.textContent;
+  navigator.clipboard.writeText(el.textContent).then(function(){btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},2000);}).catch(function(){var ta=document.createElement('textarea');ta.value=el.textContent;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},2000);});
+}
+
+/* ── BOOT ── */
+document.addEventListener('DOMContentLoaded', function() {
+  initTool();
+  renderLanding();
+  renderSales();
+  renderFulfillment();
+  renderReadiness();
+});
+</script>
+</body>
+</html>
