@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uptime Revenue Monitor — Know What Downtime Costs You in Dollars</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#05070f;
+  --surface-1:#0a0d18;
+  --surface-2:#0f1320;
+  --border:#1a2035;
+  --accent:#5b5fef;
+  --accent-2:#7578f3;
+  --text-1:#eef0f8;
+  --text-2:#7a85a8;
+  --green:#22c55e;
+  --red:#f87171;
+  --amber:#fbbf24;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-1);min-height:100vh;overflow-x:hidden}
+.page{display:none}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;height:48px;background:rgba(5,7,15,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--text-1);white-space:nowrap}
+.nav-logo-icon{width:24px;height:24px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.nav-sep{width:1px;height:24px;background:var(--border);margin:0 4px}
+.nav-tabs{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{background:none;border:none;color:var(--text-2);font-size:13px;font-weight:500;padding:6px 12px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Inter',sans-serif;height:48px}
+.nav-tab:hover{color:var(--text-1)}
+.nav-tab.active{color:#fff;border-bottom-color:var(--accent)}
+.beta-pill{margin-left:auto;background:rgba(91,95,239,.18);color:var(--accent-2);font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;border:1px solid rgba(91,95,239,.3);white-space:nowrap}
+
+/* BUTTONS */
+.btn-primary{background:var(--accent);color:#fff;border:none;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.5);transition:all .2s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{box-shadow:0 4px 20px rgba(91,95,239,.35);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text-1);border:1px solid var(--border);padding:11px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px}
+.btn-ghost:hover{border-color:var(--accent-2);color:var(--accent-2)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:6px}
+
+/* CARDS */
+.card{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:24px}
+.card-sm{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:16px}
+
+/* SECTION */
+.section{padding:64px 24px;max-width:1100px;margin:0 auto}
+.section-sm{padding:40px 24px;max-width:1100px;margin:0 auto}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2);margin-bottom:12px}
+h1.hero-title{font-size:clamp(32px,5vw,62px);font-weight:900;line-height:1.08;letter-spacing:-.02em}
+h2.section-title{font-size:clamp(24px,3vw,38px);font-weight:800;line-height:1.2;letter-spacing:-.02em}
+.gradient-text{background:linear-gradient(135deg,#fff 0%,var(--accent-2) 60%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid-6{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+/* FORM */
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em}
+.form-input{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text-1);font-size:14px;font-family:'Inter',sans-serif;transition:border-color .2s;outline:none}
+.form-input:focus{border-color:var(--accent)}
+select.form-input option{background:var(--surface-2)}
+
+/* ALERT */
+.alert{border-radius:10px;padding:12px 16px;font-size:13px;font-weight:500;display:flex;align-items:flex-start;gap:10px}
+.alert-blue{background:rgba(91,95,239,.1);border:1px solid rgba(91,95,239,.25);color:#a5a8f8}
+.alert-amber{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);color:var(--amber)}
+.alert-red{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);color:var(--red)}
+.alert-green{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:var(--green)}
+
+/* PILLS */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.pill-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.pill-red{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.pill-amber{background:rgba(251,191,36,.12);color:var(--amber);border:1px solid rgba(251,191,36,.2)}
+.pill-blue{background:rgba(91,95,239,.12);color:var(--accent-2);border:1px solid rgba(91,95,239,.2)}
+
+/* METRIC CARDS */
+.metric-card{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.metric-value{font-size:clamp(24px,3vw,32px);font-weight:800;letter-spacing:-.02em}
+.metric-label{font-size:12px;color:var(--text-2);font-weight:500}
+.metric-change{font-size:12px;font-weight:600}
+.metric-change.up{color:var(--green)}
+.metric-change.down{color:var(--red)}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{text-align:left;padding:10px 14px;color:var(--text-2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+.data-table td{padding:11px 14px;border-bottom:1px solid rgba(26,32,53,.5)}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* AI FINDINGS */
+.finding{border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;font-size:13px;font-weight:500;line-height:1.5}
+.finding-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.finding.critical{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);color:#fca5a5}
+.finding.warning{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.18);color:#fde68a}
+.finding.good{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);color:#86efac}
+
+/* TESTIMONIAL */
+.testimonial-card{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.stars{color:var(--amber);font-size:14px;letter-spacing:2px}
+.testi-text{font-size:14px;line-height:1.65;color:var(--text-1)}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+.testi-name{font-size:13px;font-weight:700}
+.testi-role{font-size:12px;color:var(--text-2)}
+
+/* STEPS */
+.step-num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+
+/* PRICING */
+.pricing-card{background:var(--surface-1);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px;position:relative;transition:transform .2s}
+.pricing-card:hover{transform:translateY(-2px)}
+.pricing-card.featured{border-color:var(--accent);background:linear-gradient(180deg,rgba(91,95,239,.08) 0%,var(--surface-1) 100%)}
+.pricing-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap}
+.price-amount{font-size:42px;font-weight:900;letter-spacing:-.03em}
+.price-period{font-size:14px;color:var(--text-2);font-weight:500}
+.price-feature{font-size:13px;color:var(--text-2);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.price-feature::before{content:"✓";color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* FAQ */
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-question{padding:18px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;gap:16px;user-select:none;color:var(--text-1)}
+.faq-question:hover{color:var(--accent-2)}
+.faq-chevron{flex-shrink:0;transition:transform .3s;color:var(--text-2);font-size:18px}
+.faq-item.open .faq-chevron{transform:rotate(180deg)}
+.faq-answer{font-size:14px;color:var(--text-2);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s}
+.faq-item.open .faq-answer{max-height:300px;padding-bottom:18px}
+
+/* SALES PACK */
+.email-box{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:13px;line-height:1.7;color:var(--text-2);white-space:pre-wrap;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.copy-wrap{position:relative}
+.copy-btn{position:absolute;top:10px;right:10px}
+
+/* FULFILLMENT */
+.step-card{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:16px;align-items:flex-start}
+.step-badge{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+
+/* READINESS */
+.readiness-banner{border-radius:14px;padding:28px;text-align:center;margin-bottom:32px}
+.readiness-banner.approved{background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04));border:1px solid rgba(34,197,94,.25)}
+.readiness-banner.fix{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,191,36,.03));border:1px solid rgba(251,191,36,.22)}
+.readiness-banner.kill{background:linear-gradient(135deg,rgba(248,113,113,.1),rgba(248,113,113,.03));border:1px solid rgba(248,113,113,.22)}
+.score-big{font-size:72px;font-weight:900;letter-spacing:-.04em}
+.score-bar-wrap{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.score-bar-label{font-size:13px;font-weight:600;color:var(--text-2);width:180px;flex-shrink:0}
+.score-bar-track{flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:4px;width:0%;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.score-bar-val{font-size:13px;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+
+/* AURORA */
+.aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.aurora-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.18}
+.hero-wrap{position:relative;overflow:hidden}
+
+/* TRUST ROW */
+.trust-row{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:24px}
+.trust-item{font-size:12px;font-weight:600;color:var(--text-2);display:flex;align-items:center;gap:6px}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:0}
+
+/* LOADING */
+.loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* HEALTH SCORE RING */
+.health-ring{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:10px;font-size:14px;font-weight:700}
+.health-ring.green{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);color:var(--green)}
+.health-ring.amber{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.18);color:var(--amber)}
+.health-ring.red{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.18);color:var(--red)}
+.health-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.health-dot.green{background:var(--green);box-shadow:0 0 8px var(--green)}
+.health-dot.amber{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.health-dot.red{background:var(--red);box-shadow:0 0 8px var(--red)}
+
+/* RESPONSIVE */
+@media(max-width:720px){
+  .grid-2,.grid-3,.grid-4,.grid-6{grid-template-columns:1fr}
+  .section{padding:40px 16px}
+  .section-sm{padding:28px 16px}
+  nav{padding:0 12px;gap:8px}
+  .nav-tab{padding:6px 8px;font-size:12px}
+  .score-bar-label{width:130px;font-size:12px}
+}
+
+/* OBJECTION CARD */
+.obj-card{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:12px}
+.obj-q{font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:8px}
+.obj-a{font-size:13px;color:var(--text-2);line-height:1.65}
+
+/* FEATURE CARD */
+.feature-card{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.feature-icon{font-size:26px}
+.feature-title{font-size:15px;font-weight:700}
+.feature-desc{font-size:13px;color:var(--text-2);line-height:1.6}
+
+/* PROBLEM CARD */
+.problem-card{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;display:flex;flex-direction:column;gap:12px}
+.problem-emoji{font-size:36px}
+
+/* CTA SECTION */
+.cta-section{background:linear-gradient(135deg,rgba(91,95,239,.1) 0%,rgba(117,120,243,.05) 100%);border:1px solid rgba(91,95,239,.2);border-radius:20px;padding:48px;text-align:center}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.spinner-wrap{display:none;align-items:center;gap:10px;color:var(--text-2);font-size:14px}
+.spinner-wrap.active{display:flex}
+
+</style>
+</head>
+<body onload="showTab('demo')">
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">📡</div>
+    <span>UptimeRevenue</span>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-tabs">
+    <button class="nav-tab" onclick="showTab('demo',event)">Live Demo</button>
+    <button class="nav-tab" onclick="showTab('landing',event)">Landing Page</button>
+    <button class="nav-tab" onclick="showTab('sales',event)">Sales Pack</button>
+    <button class="nav-tab" onclick="showTab('fulfillment',event)">Fulfillment</button>
+    <button class="nav-tab" onclick="showTab('readiness',event)">Readiness Score</button>
+  </div>
+  <span class="beta-pill">BETA</span>
+</nav>
+
+<!-- ===================== TAB 1: LIVE DEMO ===================== -->
+<div class="page" id="page-demo">
+<div class="section">
+  <div class="eyebrow">🔴 Live Demo — Uptime Revenue Monitor</div>
+  <h2 class="section-title" style="margin-bottom:8px">See Exactly What <span class="gradient-text">Your Downtime Is Costing</span></h2>
+  <p style="color:var(--text-2);font-size:15px;margin-bottom:24px;max-width:600px">Enter your store details below and generate a sample Revenue Health Report — the same one that lands in your inbox every morning.</p>
+
+  <div class="alert alert-blue" style="margin-bottom:28px">
+    <span>ℹ️</span>
+    <span><strong>Demo Mode:</strong> This uses simulated monitoring data to show exactly what your daily report looks like. Connect your real store to start receiving live alerts with your actual revenue impact numbers.</span>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Your Store Details</h3>
+    <div class="grid-2" style="gap:16px;margin-bottom:16px">
+      <div class="form-group">
+        <label class="form-label">Store URL</label>
+        <input class="form-input" id="demo-url" type="text" value="mybrandstore.myshopify.com" placeholder="yourstore.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Platform</label>
+        <select class="form-input" id="demo-platform">
+          <option>Shopify</option>
+          <option>WooCommerce</option>
+          <option>BigCommerce</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Average Order Value ($)</label>
+        <input class="form-input" id="demo-aov" type="number" value="87" placeholder="e.g. 75">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Monthly Revenue ($)</label>
+        <input class="form-input" id="demo-rev" type="number" value="48000" placeholder="e.g. 25000">
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <button class="btn-primary" id="gen-btn" onclick="generateReport()">
+        <span id="gen-text">⚡ Generate My Report</span>
+        <span class="loader" id="gen-loader" style="display:none"></span>
+      </button>
+      <button class="btn-ghost" onclick="loadDemo()">📂 Load Demo Data</button>
+      <div class="spinner-wrap" id="spinner-wrap">
+        <div class="loader"></div>
+        <span>Analyzing 48 hours of monitoring data...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div id="output" style="display:none">
+    <div class="alert alert-amber" style="margin-bottom:24px">
+      <span>⚠️</span>
+      <span><strong>3 downtime incidents detected in the last 24 hours.</strong> Estimated revenue impact: <strong>$347</strong> based on your store traffic and AOV. Full breakdown below.</span>
+    </div>
+
+    <!-- Health Score Bar -->
+    <div style="display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;margin-bottom:24px">
+      <div class="health-ring amber" style="flex:1;min-width:200px">
+        <div class="health-dot amber"></div>
+        <div>
+          <div style="font-size:11px;font-weight:600;opacity:.7;margin-bottom:2px">SITE HEALTH SCORE</div>
+          <div style="font-size:22px;font-weight:900">72 / 100 — YELLOW</div>
+        </div>
+      </div>
+      <div style="flex:2;min-width:260px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:24px">📊</span>
+        <div>
+          <div style="font-size:12px;color:var(--text-2);font-weight:600;margin-bottom:3px">PLAIN ENGLISH SUMMARY</div>
+          <div style="font-size:13px;font-weight:500;line-height:1.5">Your store went down <strong style="color:var(--red)">3 times yesterday</strong>. Longest outage was <strong>14 minutes</strong>. You were losing <strong style="color:var(--red)">$24.70/minute</strong> in estimated revenue during each outage.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="metric-card">
+        <div class="metric-label">⏱️ Uptime (Last 24h)</div>
+        <div class="metric-value" style="color:var(--amber)">98.1%</div>
+        <div class="metric-change down">↓ From 99.7% yesterday</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">💸 Est. Revenue Lost</div>
+        <div class="metric-value" style="color:var(--red)">$347</div>
+        <div class="metric-change down">↑ 3 downtime incidents</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">⚡ Avg Page Load</div>
+        <div class="metric-value" style="color:var(--amber)">3.8s</div>
+        <div class="metric-change down">↑ +1.2s vs last week</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">🔔 Incidents Today</div>
+        <div class="metric-value" style="color:var(--red)">3</div>
+        <div class="metric-change down">↑ 2 more than avg</div>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card" style="margin-bottom:24px;overflow-x:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <h3 style="font-size:15px;font-weight:700">📋 Yesterday's Incident Log</h3>
+        <span class="pill pill-amber">3 incidents</span>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Duration</th>
+            <th>Type</th>
+            <th>Revenue Lost</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2:14 AM</td>
+            <td>14 min</td>
+            <td><span class="pill pill-red">Full Outage</span></td>
+            <td style="font-weight:700;color:var(--red)">$147</td>
+            <td><span class="pill pill-green">Resolved</span></td>
+          </tr>
+          <tr>
+            <td>9:32 AM</td>
+            <td>5 min</td>
+            <td><span class="pill pill-amber">Slow Load &gt;8s</span></td>
+            <td style="font-weight:700;color:var(--amber)">$68</td>
+            <td><span class="pill pill-green">Resolved</span></td>
+</body>
+</html>
