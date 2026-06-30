@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loading...</title>
+<style>
+:root{--bg:#0a0a0f;--bg2:#13131a;--bg3:#1c1c26;--border:#2a2a38;--accent:#6366f1;--accent2:#818cf8;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--text:#f1f5f9;--muted:#94a3b8;--radius:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+a{color:var(--accent2);text-decoration:none}
+.nav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px}
+.nav-logo{font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--accent2),#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-link{font-size:13px;color:var(--muted);font-weight:500;transition:color .15s}
+.nav-link:hover{color:var(--text)}
+.nav-cta{background:var(--accent);color:#fff;padding:7px 18px;border-radius:8px;font-weight:600;font-size:13px;border:none;cursor:pointer;transition:opacity .15s;text-decoration:none}
+.nav-cta:hover{opacity:.85}
+.hero{padding:88px 24px 72px;text-align:center;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(99,102,241,.15),transparent)}
+.hero h1{font-size:clamp(28px,4.5vw,58px);font-weight:900;line-height:1.1;letter-spacing:-1.5px;max-width:840px;margin:0 auto 22px;background:linear-gradient(135deg,#fff 0%,var(--muted) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:clamp(15px,2vw,20px);color:var(--muted);max-width:600px;margin:0 auto 40px;line-height:1.7}
+.hero-cta{display:inline-block;background:var(--accent);color:#fff;padding:15px 36px;border-radius:10px;font-weight:700;font-size:17px;transition:opacity .15s;margin-right:12px}
+.hero-cta:hover{opacity:.85}
+.trust-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 24px;padding:20px 24px;border-bottom:1px solid var(--border)}
+.trust-item{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.trust-item::before{content:'✓';color:var(--green);font-weight:700}
+.section{max-width:1100px;margin:0 auto;padding:60px 24px}
+.section-title{font-size:28px;font-weight:800;text-align:center;margin-bottom:10px;letter-spacing:-.5px}
+.section-sub{text-align:center;color:var(--muted);font-size:15px;margin-bottom:40px;max-width:500px;margin-left:auto;margin-right:auto}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:border-color .2s}
+.card:hover{border-color:var(--accent)}
+.card-icon{font-size:28px;margin-bottom:12px}
+.card-title{font-weight:700;margin-bottom:6px;font-size:15px}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
+.step{text-align:center}
+.step-num{width:44px;height:44px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;margin:0 auto 14px}
+.step-title{font-weight:700;font-size:14px;margin-bottom:4px}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.testimonial{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.testimonial-label{font-size:11px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.testimonial-text{font-style:italic;color:var(--muted);margin-bottom:14px;font-size:14px;line-height:1.7}
+.testimonial-source{font-size:12px;color:var(--muted);opacity:.7}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:900px;margin:0 auto}
+.plan{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;position:relative}
+.plan.popular{border-color:var(--accent);background:linear-gradient(180deg,rgba(99,102,241,.08),var(--bg2))}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap}
+.plan-name{font-size:17px;font-weight:800;margin-bottom:4px}
+.plan-price{font-size:32px;font-weight:900;color:var(--accent2);margin:12px 0 6px}
+.plan-desc{font-size:13px;color:var(--muted);margin-bottom:20px}
+.plan-feats{list-style:none;margin-bottom:24px}
+.plan-feats li{font-size:13px;padding:5px 0;display:flex;gap:9px;align-items:flex-start;color:var(--muted)}
+.plan-feats li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px}
+.plan-btn{display:block;text-align:center;background:var(--accent);color:#fff;padding:12px;border-radius:8px;font-weight:700;font-size:14px;transition:opacity .15s}
+.plan-btn:hover{opacity:.85}
+.faq{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0}
+.faq-q{font-weight:700;margin-bottom:8px;font-size:15px}
+.faq-a{font-size:14px;color:var(--muted);line-height:1.7}
+.cta-band{text-align:center;padding:70px 24px;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(129,140,248,.06));border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.cta-band h2{font-size:30px;font-weight:800;margin-bottom:10px}
+.cta-band p{color:var(--muted);margin-bottom:32px;font-size:16px;max-width:500px;margin-left:auto;margin-right:auto}
+.cta-band a{background:var(--accent);color:#fff;padding:15px 36px;border-radius:10px;font-weight:700;font-size:17px;display:inline-block;transition:opacity .15s}
+.cta-band a:hover{opacity:.85}
+.section-divider{height:1px;background:var(--border);margin:0}
+footer{padding:32px 24px 24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:20px;margin-bottom:20px}
+.footer-brand{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap}
+.footer-links a{color:var(--muted);font-size:12px}
+.footer-links a:hover{color:var(--text)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:16px;font-size:11px;color:var(--muted)}
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--bg2);border-top:1px solid var(--border);padding:16px 24px;display:none}
+.cookie-banner.show{display:block}
+.cookie-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.cookie-text{font-size:12px;color:var(--muted);flex:1;min-width:200px}
+.cookie-text a{color:var(--accent2)}
+.cookie-btns{display:flex;gap:8px;flex-shrink:0}
+.cookie-accept{background:var(--accent);color:#fff;padding:7px 18px;border-radius:7px;font-size:12px;font-weight:600;border:none;cursor:pointer}
+.cookie-decline{background:var(--bg3);color:var(--muted);padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;border:1px solid var(--border);cursor:pointer}
+@media(max-width:640px){.nav-links{display:none}.hero h1{letter-spacing:-.5px}.plans{grid-template-columns:1fr}.footer-top{flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-inner">
+<div class="nav-logo" id="NL">…</div>
+<div class="nav-links">
+<a class="nav-link" href="#how-it-works">How it works</a>
+<a class="nav-link" href="#pricing">Pricing</a>
+<a class="nav-link" href="#faq">FAQ</a>
+</div>
+<a class="nav-cta" id="NC" href="#pricing">Get Started</a>
+</div>
+</nav>
+<div id="page-landing"></div>
+<footer>
+<div class="footer-inner">
+<div class="footer-top">
+<div>
+<div class="footer-brand" id="FL">…</div>
+<div style="font-size:11px;margin-top:2px">A Qsisto portfolio product operated by AB Empire Oy</div>
+</div>
+<div class="footer-links">
+<a href="#" id="FL-privacy">Privacy Policy</a>
+<a href="#" id="FL-terms">Terms of Service</a>
+<a href="#" id="FL-refund">Refund Policy</a>
+<a href="#" id="FL-cookies">Cookie Policy</a>
+<a href="mailto:support@qsisto.com">support@qsisto.com</a>
+</div>
+</div>
+<div class="footer-bottom">
+AB Empire Oy &middot; Y-tunnus: 3499735-5 &middot; <a href="mailto:support@qsisto.com" style="color:var(--muted)">support@qsisto.com</a> &middot; All businesses operated under the Qsisto portfolio
+</div>
+</div>
+</footer>
+<div class="cookie-banner" id="cookie-banner">
+<div class="cookie-inner">
+<div class="cookie-text">We use essential cookies to make this site work. By continuing, you agree to our <a href="#" id="CB-cookies">Cookie Policy</a>. We never use tracking or advertising cookies without your consent.</div>
+<div class="cookie-btns">
+<button class="cookie-decline" onclick="cookieChoice('decline')">Essential only</button>
+<button class="cookie-accept" onclick="cookieChoice('accept')">Accept all</button>
+</div>
+</div>
+</div>
+<script>
+const P={"name":"ReplyRadar","slug":"replyradar-853949","landing":{"headline":"Know Exactly Which LinkedIn Messages Book Meetings","subheadline":"ReplyRadar automatically monitors your team's LinkedIn outreach and delivers weekly performance reports — so you can double down on what converts and cut what doesn't.","cta_primary":"Start Free 14-Day Trial","problem_title":"Your Team Is Flying Blind on LinkedIn","features_title":"Everything You Need to Turn LinkedIn Into a Predictable Pipeline Channel","cta_title":"Stop Guessing. Start Scaling.","cta_desc":"Join B2B sales teams using ReplyRadar to turn LinkedIn outreach into a measurable, optimizable pipeline engine. First report in 48 hours.","trust_items":["No LinkedIn account access required — works from exports","GDPR compliant data handling","Operated by AB Empire Oy under Qsisto","Automated reports — zero manual work after setup","14-day free trial, cancel anytime"],"social_proof":[{"quote":"Illustrative: A SaaS SDR Manager at a 60-person company reduced their message templates from 12 to 3 after seeing conversion data — meeting rate improved within 4 weeks","name":"Illustrative","role":"Example use case"},{"quote":"Illustrative: A RevOps lead at a B2B fintech used ReplyRadar to prove LinkedIn was driving 28% of inbound discovery calls — unlocking budget for expanded outreach","name":"Illustrative","role":"Example use case"},{"quote":"Illustrative: An agency owner white-labeled weekly reports for 5 clients and used it as a retention and upsell tool in quarterly reviews","name":"Illustrative","role":"Example use case"}],"problems":[{"icon":"!","title":"You send 100 messages a week...","desc":"You send 100 messages a week but can't tell which ones actually led to meetings"},{"icon":"!","title":"Your team has 8 different message...","desc":"Your team has 8 different message templates with no data on which performs best"},{"icon":"!","title":"You're coaching SDRs based on gut...","desc":"You're coaching SDRs based on gut feel instead of conversion data"},{"icon":"!","title":"Your CRM shows opportunities but not...","desc":"Your CRM shows opportunities but not what LinkedIn message triggered them"},{"icon":"!","title":"You iterate on outreach every quarter...","desc":"You iterate on outreach every quarter manually — the feedback loop takes months"}],"how_steps":[{"title":"Connect your data — upload a Sales Navigator CSV or sync your CRM in under 5 minutes","desc":""},{"title":"ReplyRadar analyzes every message — reply rates, meeting conversions, sequence performance, scored automatically","desc":""},{"title":"Receive your weekly report every Monday — ranked templates, AI recommendations, and what to test next","desc":""}],"features":[{"icon":"*","title":"Message-level conversion scoring — see...","desc":"Message-level conversion scoring — see exactly which openers and templates book meetings"},{"icon":"*","title":"Weekly automated email report —...","desc":"Weekly automated email report — delivered every Monday, no manual work required"},{"icon":"*","title":"Sequence A/B comparison — compare...","desc":"Sequence A/B comparison — compare performance of different outreach flows side by side"},{"icon":"*","title":"AI improvement suggestions — get...","desc":"AI improvement suggestions — get specific rewrites based on your top-performing patterns"},{"icon":"*","title":"Team leaderboard — benchmark rep...","desc":"Team leaderboard — benchmark rep performance across your entire sales team"},{"icon":"*","title":"CRM export — push insights...","desc":"CRM export — push insights directly to HubSpot or Pipedrive"},{"icon":"*","title":"Slack digest — morning summary...","desc":"Slack digest — morning summary of key outreach metrics in your team channel"},{"icon":"*","title":"90-day trend history — track...","desc":"90-day trend history — track performance improvements over time"}],"plans":[{"name":"Starter","price":"€79/month","desc":"","popular":false,"features":["1 LinkedIn seat monitored","Weekly performance report via email","Message reply rate scoring","Top 5 converting templates highlighted","CSV data upload","30-day message history"]},{"name":"Team","price":"€249/month","desc":"","popular":false,"features":["Up to 5 LinkedIn seats monitored","Weekly + daily digest reports","Sequence A/B comparison","Meeting conversion attribution","CRM export (HubSpot, Pipedrive)","AI message improvement suggestions","90-day history","Slack digest integration"]},{"name":"Revenue","price":"€599/month","desc":"","popular":false,"features":["Up to 20 LinkedIn seats monitored","Full team leaderboard & rep benchmarking","Custom KPI dashboards","Automated best-template alerts","Priority Slack support","Quarterly strategy review call","API access","Unlimited history","White-label report option"]}],"faq":[{"q":"Does ReplyRadar need access to my LinkedIn account?","a":"No. ReplyRadar works from data exports (Sales Navigator CSV) or CRM syncs — we never require your LinkedIn login credentials."},{"q":"How quickly will I see my first report?","a":"Within 48 hours of uploading or connecting your first data source."},{"q":"What data do I need to provide?","a":"A Sales Navigator export, a CSV of sent messages with reply/meeting outcomes, or a CRM sync with LinkedIn activity logged. We provide templates and guides for each."},{"q":"Can I track multiple reps on the same account?","a":"Yes — the Team and Revenue plans support multiple seats and include per-rep performance breakdowns."},{"q":"Is this GDPR compliant?","a":"Yes. ReplyRadar is operated by AB Empire Oy (Finland) and processes data in accordance with GDPR. We do not store prospect personal data beyond what is needed to generate your reports."},{"q":"What if I only send a small volume of messages?","a":"ReplyRadar is useful from as few as 20 messages per week — the more data you feed in over time, the more precise the conversion patterns become."}]},"pricing_tiers":[{"tier_name":"Starter","price_eur":79,"billing_interval":1,"features":["1 LinkedIn seat monitored","Weekly performance report via email","Message reply rate scoring","Top 5 converting templates highlighted","CSV data upload","30-day message history"]},{"tier_name":"Team","price_eur":249,"billing_interval":1,"features":["Up to 5 LinkedIn seats monitored","Weekly + daily digest reports","Sequence A/B comparison","Meeting conversion attribution","CRM export (HubSpot, Pipedrive)","AI message improvement suggestions","90-day history","Slack digest integration"]},{"tier_name":"Revenue","price_eur":599,"billing_interval":1,"features":["Up to 20 LinkedIn seats monitored","Full team leaderboard & rep benchmarking","Custom KPI dashboards","Automated best-template alerts","Priority Slack support","Quarterly strategy review call","API access","Unlimited history","White-label report option"]}]};
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cookieChoice(c){localStorage.setItem('cookie_consent',c);document.getElementById('cookie-banner').classList.remove('show');}
+function initCookies(){if(!localStorage.getItem('cookie_consent'))document.getElementById('cookie-banner').classList.add('show');}
+function rLanding(){
+const L=P.landing||{},name=esc(P.name||'Product');
+document.title=name+' — powered by Qsisto';
+document.getElementById('NL').textContent=name;
+document.getElementById('FL').textContent=name;
+const nc=document.getElementById('NC');if(nc)nc.textContent=esc(L.cta_primary||'Get Started');
+const slug=P.slug||'';
+const baseUrl='https://empire-products.vercel.app/'+slug;
+['FL-privacy','FL-terms','FL-refund','FL-cookies','CB-cookies'].forEach((id,i)=>{
+const el=document.getElementById(id);
+if(el){const pages=['privacy','terms','refund','cookies','cookies'];el.href=baseUrl+'/'+pages[i];}
+});
+const tH=(L.trust_items||[]).map(t=>`<span class="trust-item">${esc(t)}</span>`).join('');
+const spH=(L.social_proof||[]).map(t=>{
+const q=t.quote||t.text||t;const src=t.name||t.source||'Illustrative example';
+return`<div class="testimonial"><div class="testimonial-label">Illustrative example</div><div class="testimonial-text">"${esc(typeof q==='string'?q:'')}</div><div class="testimonial-source">${esc(src)}</div></div>`;
+}).join('');
+const prH=(L.problems||[]).map(p=>`<div class="card"><div class="card-icon">${p.icon||'⚠️'}</div><div class="card-title">${esc(p.title||'')}</div><div class="card-desc">${esc(p.desc||p.description||'')}</div></div>`).join('');
+const hwH=(L.how_steps||[]).map((s,i)=>`<div class="step"><div class="step-num">${i+1}</div><div class="step-title">${esc(s.title||s)}</div>${s.desc?`<div class="step-desc">${esc(s.desc)}</div>`:''}</div>`).join('');
+const ftH=(L.features||[]).map(f=>`<div class="card"><div class="card-icon">${f.icon||'✨'}</div><div class="card-title">${esc(f.title||f.name||'')}</div><div class="card-desc">${esc(f.desc||f.description||'')}</div></div>`).join('');
+const tiers=P.pricing_tiers||[];
+const plH=(L.plans||[]).map((pl,i)=>{
+const tier=tiers[i]||{};
+const url=tier.stripe_link_url||pl.stripe_url||'#';
+return`<div class="plan${pl.popular?' popular':''}">` + (pl.popular?'<div class="plan-badge">Most Popular</div>':'') + `<div class="plan-name">${esc(pl.name)}</div><div class="plan-price">${esc(pl.price)}</div><div class="plan-desc">${esc(pl.desc||pl.best_for||'')}</div><ul class="plan-feats">${(pl.features||[]).map(f=>`<li>${esc(f)}</li>`).join('')}</ul><a href="${esc(url)}" class="plan-btn">${esc(pl.cta||L.cta_primary||'Get Started')}</a></div>`;
+}).join('');
+const fqH=(L.faq||[]).map(f=>`<div class="faq-item"><div class="faq-q">${esc(f.q||f.question||'')}</div><div class="faq-a">${esc(f.a||f.answer||'')}</div></div>`).join('');
+document.getElementById('page-landing').innerHTML=`
+<div class="hero"><h1>${esc(L.headline||name)}</h1><p>${esc(L.subheadline||'')}</p><a href="#pricing" class="hero-cta" id="HCTA">${esc(L.cta_primary||'Get Started')}</a></div>
+${tH?`<div class="trust-bar">${tH}</div>`:''}
+${spH?`<div class="section"><div class="testimonials">${spH}</div></div><div class="section-divider"></div>`:''}
+${prH?`<div class="section"><h2 class="section-title">${esc(L.problem_title||'Sound Familiar?')}</h2><div class="grid-3">${prH}</div></div><div class="section-divider"></div>`:''}
+${hwH?`<div class="section" id="how-it-works"><h2 class="section-title">How It Works</h2><p class="section-sub">Up and running in minutes. First value delivered automatically.</p><div class="steps">${hwH}</div></div><div class="section-divider"></div>`:''}
+${ftH?`<div class="section"><h2 class="section-title">${esc(L.features_title||'Features')}</h2><div class="grid-3">${ftH}</div></div><div class="section-divider"></div>`:''}
+${plH?`<div class="section" id="pricing"><h2 class="section-title">Simple, Transparent Pricing</h2><p class="section-sub">No contracts. Cancel anytime. No credit card required for trial.</p><div class="plans">${plH}</div></div><div class="section-divider"></div>`:''}
+${fqH?`<div class="section" id="faq"><h2 class="section-title">Frequently Asked Questions</h2><div class="faq">${fqH}</div></div><div class="section-divider"></div>`:''}
+<div class="cta-band"><h2>${esc(L.cta_title||'Get started today')}</h2><p>${esc(L.cta_desc||'')}</p><a href="#pricing">${esc(L.cta_primary||'Get Started')}</a></div>
+`;}
+rLanding();
+initCookies();
+</script>
+</body>
+</html>
