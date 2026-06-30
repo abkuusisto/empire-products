@@ -138,6 +138,7 @@ Operated by Qsisto. Qsisto is operated by AB Empire Oy, Y-tunnus 3499735-5. Cont
 <div class="cookie-pref-row"><strong>Strictly necessary</strong><span>Always on</span></div>
 <div class="cookie-pref-row"><strong>Functional</strong><input type="checkbox" id="pref-functional"></div>
 <div class="cookie-pref-row"><strong>Analytics</strong><input type="checkbox" id="pref-analytics"></div>
+<div class="cookie-pref-row"><strong>Marketing</strong><input type="checkbox" id="pref-marketing"></div>
 <button class="cookie-save" onclick="cookieChoice('customized')">Save preferences</button>
 </div>
 </div>
@@ -172,10 +173,34 @@ function toggleCookiePrefs(){
   document.getElementById('cookie-prefs').classList.toggle('show');
 }
 
+var SB_REST='https://jmhzzzefiyvplwxvuuxo.supabase.co/rest/v1/';
+var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptaHp6emVmaXl2cGx3eHZ1dXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NTA2NjMsImV4cCI6MjA5ODEyNjY2M30.fhq7OJXOgGp2YWfs3uW_WrZU9I-6_d7uHUcEMTdS_Kc';
+
+function logLearningEvent(eventType, eventData){
+  try{
+    fetch(SB_REST+'usage_events',{
+      method:'POST',
+      headers:{
+        'apikey':SB_ANON,
+        'Authorization':'Bearer '+SB_ANON,
+        'Content-Type':'application/json',
+        'Prefer':'return=representation'
+      },
+      body:JSON.stringify({
+        business_id:(P&&P.business_id)||null,
+        event_type:eventType,
+        event_source:'launch_learning',
+        event_data:eventData
+      })
+    }).catch(function(e){});
+  }catch(e){}
+}
+
 function logConsentToSupabase(status, categories){
   var businessId=(P&&P.business_id)||null;
   var visitorId=getVisitorId();
   var sessionId=getOrCreateSessionId();
+  var consentType=status==='accept'?'accept_all':(status==='reject'?'reject_non_essential':'manage_preferences');
   var payload={
     business_id:businessId,
     visitor_id:visitorId,
@@ -185,9 +210,7 @@ function logConsentToSupabase(status, categories){
     consent_categories:categories,
     environment:'beta'
   };
-  var SB_URL='https://jmhzzzefiyvplwxvuuxo.supabase.co/rest/v1/consent_log';
-  var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptaHp6emVmaXl2cGx3eHZ1dXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NTA2NjMsImV4cCI6MjA5ODEyNjY2M30.fhq7OJXOgGp2YWfs3uW_WrZU9I-6_d7uHUcEMTdS_Kc';
-  fetch(SB_URL,{
+  fetch(SB_REST+'consent_log',{
     method:'POST',
     headers:{
       'apikey':SB_ANON,
@@ -198,7 +221,7 @@ function logConsentToSupabase(status, categories){
     body:JSON.stringify({
       business_id:payload.business_id,
       visitor_id:payload.visitor_id,
-      consent_type:payload.consent_status==='accept'?'accept_all':(payload.consent_status==='reject'?'reject_non_essential':'manage_preferences'),
+      consent_type:consentType,
       preferences:{categories:payload.consent_categories,session_id:payload.session_id,environment:payload.environment},
       page_url:payload.page_url,
       user_agent:navigator.userAgent
@@ -211,25 +234,41 @@ function logConsentToSupabase(status, categories){
       }
     }catch(e){}
   }).catch(function(e){});
+
+  var learningEventType=status==='accept'?'cookie_consent_accept':(status==='reject'?'cookie_consent_reject':'cookie_preferences_updated');
+  logLearningEvent(learningEventType,{
+    business_id:payload.business_id,
+    anonymous_session_id:payload.visitor_id,
+    page_url:payload.page_url,
+    consent_status:payload.consent_status,
+    consent_categories:payload.consent_categories,
+    environment:payload.environment
+  });
 }
 
 function activateNonEssential(categories){
-  // Placeholder hook: non-essential scripts (analytics, etc.) should only be
-  // loaded from inside this function, which only runs after explicit consent.
-  // No non-essential tracking is loaded anywhere else in this file.
+  // Placeholder hook: non-essential scripts (analytics, marketing, etc.) should
+  // only be loaded from inside this function, which only runs after explicit
+  // consent. No non-essential tracking is loaded anywhere else in this file.
   if(categories&&categories.analytics){
     // analytics script would load here, only post-consent
+  }
+  if(categories&&categories.marketing){
+    // marketing/ad pixel would load here, only post-consent
+    // Marketing tracking not implemented / disabled, no marketing cookies loaded.
   }
 }
 
 function cookieChoice(c){
-  var categories={functional:false,analytics:false};
-  if(c==='accept'){categories.functional=true;categories.analytics=true;}
+  var categories={functional:false,analytics:false,marketing:false};
+  if(c==='accept'){categories.functional=true;categories.analytics=true;categories.marketing=true;}
   else if(c==='customized'){
     var fEl=document.getElementById('pref-functional');
     var aEl=document.getElementById('pref-analytics');
+    var mEl=document.getElementById('pref-marketing');
     categories.functional=!!(fEl&&fEl.checked);
     categories.analytics=!!(aEl&&aEl.checked);
+    categories.marketing=!!(mEl&&mEl.checked);
   }
   try{localStorage.setItem('cookie_consent',c);}catch(e){}
   logConsentToSupabase(c,categories);
