@@ -79,10 +79,17 @@ footer{padding:32px 24px 24px;border-top:1px solid var(--border);font-size:12px;
 .cookie-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .cookie-text{font-size:12px;color:var(--muted);flex:1;min-width:200px}
 .cookie-text a{color:var(--accent2)}
-.cookie-btns{display:flex;gap:8px;flex-shrink:0}
+.cookie-btns{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
 .cookie-accept{background:var(--accent);color:#fff;padding:7px 18px;border-radius:7px;font-size:12px;font-weight:600;border:none;cursor:pointer}
 .cookie-decline{background:var(--bg3);color:var(--muted);padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;border:1px solid var(--border);cursor:pointer}
-@media(max-width:640px){.nav-links{display:none}.hero h1{letter-spacing:-.5px}.plans{grid-template-columns:1fr}.footer-top{flex-direction:column}}
+.cookie-manage{background:transparent;color:var(--accent2);padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;border:1px solid var(--accent2);cursor:pointer}
+.cookie-prefs{display:none;max-width:900px;margin:12px auto 0;padding-top:12px;border-top:1px solid var(--border)}
+.cookie-prefs.show{display:block}
+.cookie-pref-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:12px;color:var(--muted)}
+.cookie-pref-row strong{color:var(--text)}
+.cookie-pref-row input[type=checkbox]{width:16px;height:16px}
+.cookie-save{background:var(--accent);color:#fff;padding:7px 18px;border-radius:7px;font-size:12px;font-weight:600;border:none;cursor:pointer;margin-top:8px}
+@media(max-width:640px){.nav-links{display:none}.hero h1{letter-spacing:-.5px}.plans{grid-template-columns:1fr}.footer-top{flex-direction:column}.cookie-inner{flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
@@ -114,7 +121,7 @@ footer{padding:32px 24px 24px;border-top:1px solid var(--border);font-size:12px;
 </div>
 </div>
 <div class="footer-bottom">
-AB Empire Oy &middot; Y-tunnus: 3499735-5 &middot; <a href="mailto:support@qsisto.com" style="color:var(--muted)">support@qsisto.com</a> &middot; All businesses operated under the Qsisto portfolio
+Operated by Qsisto. Qsisto is operated by AB Empire Oy, Y-tunnus 3499735-5. Contact: <a href="mailto:support@qsisto.com" style="color:var(--muted)">support@qsisto.com</a>.
 </div>
 </div>
 </footer>
@@ -122,27 +129,131 @@ AB Empire Oy &middot; Y-tunnus: 3499735-5 &middot; <a href="mailto:support@qsist
 <div class="cookie-inner">
 <div class="cookie-text">We use essential cookies to make this site work. By continuing, you agree to our <a href="#" id="CB-cookies">Cookie Policy</a>. We never use tracking or advertising cookies without your consent.</div>
 <div class="cookie-btns">
-<button class="cookie-decline" onclick="cookieChoice('decline')">Essential only</button>
+<button class="cookie-decline" onclick="cookieChoice('reject')">Reject non-essential</button>
+<button class="cookie-manage" onclick="toggleCookiePrefs()">Manage preferences</button>
 <button class="cookie-accept" onclick="cookieChoice('accept')">Accept all</button>
 </div>
+</div>
+<div class="cookie-prefs" id="cookie-prefs">
+<div class="cookie-pref-row"><strong>Strictly necessary</strong><span>Always on</span></div>
+<div class="cookie-pref-row"><strong>Functional</strong><input type="checkbox" id="pref-functional"></div>
+<div class="cookie-pref-row"><strong>Analytics</strong><input type="checkbox" id="pref-analytics"></div>
+<button class="cookie-save" onclick="cookieChoice('customized')">Save preferences</button>
 </div>
 </div>
 <script>
 const P=PRODUCT_JSON_PLACEHOLDER;
 function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function cookieChoice(c){localStorage.setItem('cookie_consent',c);document.getElementById('cookie-banner').classList.remove('show');}
-function initCookies(){if(!localStorage.getItem('cookie_consent'))document.getElementById('cookie-banner').classList.add('show');}
+
+function uuidv4(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16);});}
+
+function getVisitorId(){
+  var k='qsisto_visitor_id';
+  var id=null;
+  try{id=localStorage.getItem(k);}catch(e){}
+  if(!id){id=uuidv4();try{localStorage.setItem(k,id);}catch(e){}}
+  return id;
+}
+
+function getOrCreateSessionId(){
+  var k='qsisto_session_id';
+  var id=null;
+  try{id=sessionStorage.getItem(k);}catch(e){}
+  if(!id){id=uuidv4();try{sessionStorage.setItem(k,id);}catch(e){}}
+  return id;
+}
+
+window.openCookiePreferences=function(){
+  document.getElementById('cookie-banner').classList.add('show');
+  toggleCookiePrefs();
+};
+
+function toggleCookiePrefs(){
+  document.getElementById('cookie-prefs').classList.toggle('show');
+}
+
+function logConsentToSupabase(status, categories){
+  var businessId=(P&&P.business_id)||null;
+  var visitorId=getVisitorId();
+  var sessionId=getOrCreateSessionId();
+  var payload={
+    business_id:businessId,
+    visitor_id:visitorId,
+    session_id:sessionId,
+    page_url:window.location.href,
+    consent_status:status,
+    consent_categories:categories,
+    environment:'beta'
+  };
+  var SB_URL='https://jmhzzzefiyvplwxvuuxo.supabase.co/rest/v1/consent_log';
+  var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptaHp6emVmaXl2cGx3eHZ1dXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NTA2NjMsImV4cCI6MjA5ODEyNjY2M30.fhq7OJXOgGp2YWfs3uW_WrZU9I-6_d7uHUcEMTdS_Kc';
+  fetch(SB_URL,{
+    method:'POST',
+    headers:{
+      'apikey':SB_ANON,
+      'Authorization':'Bearer '+SB_ANON,
+      'Content-Type':'application/json',
+      'Prefer':'return=representation'
+    },
+    body:JSON.stringify({
+      business_id:payload.business_id,
+      visitor_id:payload.visitor_id,
+      consent_type:payload.consent_status==='accept'?'accept_all':(payload.consent_status==='reject'?'reject_non_essential':'manage_preferences'),
+      preferences:{categories:payload.consent_categories,session_id:payload.session_id,environment:payload.environment},
+      page_url:payload.page_url,
+      user_agent:navigator.userAgent
+    })
+  }).then(function(r){return r.json();}).then(function(data){
+    try{
+      var row=Array.isArray(data)?data[0]:data;
+      if(row&&row.id){
+        try{localStorage.setItem('qsisto_last_consent_id',row.id);}catch(e){}
+      }
+    }catch(e){}
+  }).catch(function(e){});
+}
+
+function activateNonEssential(categories){
+  // Placeholder hook: non-essential scripts (analytics, etc.) should only be
+  // loaded from inside this function, which only runs after explicit consent.
+  // No non-essential tracking is loaded anywhere else in this file.
+  if(categories&&categories.analytics){
+    // analytics script would load here, only post-consent
+  }
+}
+
+function cookieChoice(c){
+  var categories={functional:false,analytics:false};
+  if(c==='accept'){categories.functional=true;categories.analytics=true;}
+  else if(c==='customized'){
+    var fEl=document.getElementById('pref-functional');
+    var aEl=document.getElementById('pref-analytics');
+    categories.functional=!!(fEl&&fEl.checked);
+    categories.analytics=!!(aEl&&aEl.checked);
+  }
+  try{localStorage.setItem('cookie_consent',c);}catch(e){}
+  logConsentToSupabase(c,categories);
+  if(c==='accept'||c==='customized'){activateNonEssential(categories);}
+  document.getElementById('cookie-banner').classList.remove('show');
+  document.getElementById('cookie-prefs').classList.remove('show');
+}
+
+function initCookies(){
+  var existing=null;
+  try{existing=localStorage.getItem('cookie_consent');}catch(e){}
+  if(!existing)document.getElementById('cookie-banner').classList.add('show');
+}
+
 function rLanding(){
 const L=P.landing||{},name=esc(P.name||'Product');
 document.title=name+' — powered by Qsisto';
 document.getElementById('NL').textContent=name;
 document.getElementById('FL').textContent=name;
 const nc=document.getElementById('NC');if(nc)nc.textContent=esc(L.cta_primary||'Get Started');
-const slug=P.slug||'';
-const baseUrl='https://empire-products.vercel.app/'+slug;
+const baseUrl='https://empire-products.vercel.app/legal';
 ['FL-privacy','FL-terms','FL-refund','FL-cookies','CB-cookies'].forEach((id,i)=>{
 const el=document.getElementById(id);
-if(el){const pages=['privacy','terms','refund','cookies','cookies'];el.href=baseUrl+'/'+pages[i];}
+if(el){const pages=['privacy','terms','refund','cookies','cookies'];el.href=baseUrl+'/'+pages[i]+'.html';}
 });
 const tH=(L.trust_items||[]).map(t=>`<span class="trust-item">${esc(t)}</span>`).join('');
 const spH=(L.social_proof||[]).map(t=>{
