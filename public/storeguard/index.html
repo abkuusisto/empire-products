@@ -98,6 +98,7 @@ h2{font-size:clamp(1.55rem,3.5vw,2.35rem);font-weight:800;line-height:1.13;lette
 /* Primary — teal bg, dark text. Works on ANY background. */
 .btn-primary{background:var(--teal);color:#0A0F1E !important}
 .btn-primary:hover{opacity:.86;box-shadow:0 0 20px var(--teal-glow),0 4px 10px rgba(0,229,204,.2);transform:translateY(-1px)}
+.nav-links .btn-primary:hover{box-shadow:0 0 32px rgba(0,229,204,.5),0 4px 14px rgba(0,0,0,.3);opacity:1}
 .btn-primary:active{transform:translateY(0)}
 
 /* Ghost on dark — white border, white text */
@@ -110,6 +111,7 @@ h2{font-size:clamp(1.55rem,3.5vw,2.35rem);font-weight:800;line-height:1.13;lette
 
 /* Sm size */
 .btn-sm{min-height:38px;padding:.5rem 1rem;font-size:.84rem}
+.nav-links .btn-primary{font-weight:800;box-shadow:0 0 22px rgba(0,229,204,.35),0 2px 8px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);letter-spacing:.01em;padding:.55rem 1.15rem}
 
 /* ═══ NAV ═══════════════════════════════════════════════════════ */
 .nav{
@@ -134,7 +136,7 @@ h2{font-size:clamp(1.55rem,3.5vw,2.35rem);font-weight:800;line-height:1.13;lette
   text-align:center;
   padding:4.5rem 1.5rem 4rem;
   position:relative;overflow:hidden;
-  min-height:min(92vh,800px);
+  min-height:88vh;
 }
 .hero-glow{
   position:absolute;top:-15%;left:50%;transform:translateX(-50%);
@@ -439,7 +441,7 @@ footer{
   h2{font-size:1.5rem}
   .wrap{padding:0 1rem}
   .nav{padding:.9rem 1rem}
-  .hero{padding:3rem 1rem 3rem;min-height:auto}
+  .hero{padding:3.25rem 1rem 3rem;min-height:auto}
   .rcard-rows,.rcard-finding,.rcard-score-row,.rcard-top{padding-left:1.1rem;padding-right:1.1rem}
   .big-sc{font-size:2.9rem}
 }
@@ -876,50 +878,60 @@ async function startCheckout() {
   }
 
   const btn = document.getElementById('checkoutBtn');
+  const origText = btn.textContent;
   btn.disabled = true;
-  btn.textContent = 'Redirecting…';
+  btn.textContent = 'Opening checkout…';
 
   try {
     const storeUrl = (document.getElementById('scanUrl').value || '').trim();
-    // Call backend Stripe Checkout endpoint — no secret key in frontend
-    const r = await fetch('https://jmhzzzefiyvplwxvuuxo.supabase.co/functions/v1/monitor-alert-builder', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-Qsisto-Test-Secret':'qsisto-sg-test-2026-xK9mP3nR7vQ2wL5j'},
-      body:JSON.stringify({
-        action:'create_checkout_session',
-        plan:'starter',
-        price_eur:49,
-        product_lock_id:'PL-ST-MR1DWPL0',
+    const now = new Date().toISOString();
+    // Secure n8n checkout endpoint — no Stripe secret key in frontend
+    const r = await fetch('https://qsisto.app.n8n.cloud/webhook/storeguard-create-checkout-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        plan: 'starter',
+        product_lock_id: 'PL-ST-MR1DWPL0',
         store_url: storeUrl || null,
-        terms_accepted:true,
-        privacy_accepted:true,
-        terms_accepted_at: new Date().toISOString(),
-        privacy_accepted_at: new Date().toISOString(),
+        terms_accepted: true,
+        privacy_accepted: true,
+        terms_accepted_at: now,
+        privacy_accepted_at: now,
+        origin: window.location.origin,
         success_url: window.location.origin + '/storeguard?checkout=success',
         cancel_url: window.location.origin + '/storeguard?checkout=cancelled'
       })
     });
+
+    if (!r.ok && r.status !== 200) {
+      throw new Error('backend_error_' + r.status);
+    }
+
     const data = await r.json().catch(() => ({}));
 
-    if (data?.checkout_url) {
-      window.location.href = data.checkout_url;
-      return;
+    // Redirect to Stripe Checkout
+    const checkoutUrl = data.checkout_url || data.url;
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+      return; // page navigates away
     }
-    if (data?.url) {
-      window.location.href = data.url;
-      return;
-    }
-    // Endpoint responded but no checkout URL — report blocker
-    throw new Error(data?.error || data?.message || 'stripe_checkout_not_connected');
+
+    // Backend responded but no URL
+    const errMsg = data.error || data.message || 'no_checkout_url';
+    console.error('Checkout error:', errMsg, data);
+    throw new Error(errMsg);
+
   } catch(e) {
-    // stripe_checkout_not_connected — graceful fallback
     btn.disabled = false;
-    btn.textContent = 'Start monitoring';
+    btn.textContent = origText;
     const msg = String(e?.message || e);
-    if (msg.includes('stripe_checkout_not_connected') || msg.includes('not_connected') || msg.includes('checkout')) {
-      toast('Stripe checkout is not yet connected. Email support@qsisto.com to start your subscription immediately.');
+    console.error('startCheckout failed:', msg);
+    if (msg.includes('terms_not_accepted')) {
+      toast('Please accept Terms and Privacy Policy to continue.');
+    } else if (msg.includes('401') || msg.includes('403') || msg.includes('credential')) {
+      toast('Stripe checkout is being connected. Email support@qsisto.com to subscribe now.');
     } else {
-      toast('Could not start checkout. Please email support@qsisto.com to get started.');
+      toast('Checkout could not be started. Please try again or email support@qsisto.com.');
     }
   }
 }
