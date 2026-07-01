@@ -1,5 +1,1 @@
-{
-  "rewrites": [
-    { "source": "/:slug", "destination": "/:slug/index.html" }
-  ]
-}
+{"rewrites":[{"source":"/storeguard","destination":"/storeguard-051913-1782773052838/index.html"},{"source":"/storeguard/","destination":"/storeguard-051913-1782773052838/index.html"},{"source":"/:slug","destination":"/:slug/index.html"}]}
