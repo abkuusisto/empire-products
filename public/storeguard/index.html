@@ -8,456 +8,456 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* ── RESET & ROOT ─────────────────────────────────────── */
+/* ═══ RESET ═══════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,sans-serif;line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img,video,svg{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer}
+input{font-family:'JetBrains Mono',monospace}
+a{text-decoration:none;color:inherit}
+
+/* ═══ DESIGN TOKENS ════════════════════════════════════════════
+   DARK sections: --navy bg, text = --on-dark (#F0F4FF)
+   LIGHT sections: --light-bg (#F7F9FF), text = --on-light (#0A0F1E)
+   Never mix: dark text on dark bg, or light text on light bg
+*/
 :root{
+  /* backgrounds */
   --navy:#0A0F1E;
   --navy-mid:#0F1628;
   --navy-card:#141C2F;
   --navy-card2:#1A2340;
+  --light-bg:#F7F9FF;
+  --light-card:#FFFFFF;
+
+  /* accent */
   --teal:#00E5CC;
   --teal-dim:rgba(0,229,204,.10);
-  --teal-glow:rgba(0,229,204,.30);
-  --teal-glow2:rgba(0,229,204,.12);
+  --teal-glow:rgba(0,229,204,.28);
+  --teal-dark:#00A896;
   --amber:#F59E0B;
   --amber-dim:rgba(245,158,11,.12);
-  --red:#EF4444;
-  --white:#F0F4FF;
-  --white95:rgba(240,244,255,.95);
-  --muted:rgba(240,244,255,.55);
-  --muted2:rgba(240,244,255,.35);
-  --border:rgba(240,244,255,.07);
-  --border2:rgba(240,244,255,.12);
-  --mono:'JetBrains Mono',monospace;
-  --sans:'Inter',sans-serif;
-  --radius:10px;
-  --radius-lg:14px;
-  --trans:0.2s ease;
-}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{
-  background:var(--navy);
-  color:var(--white);
-  font-family:var(--sans);
-  line-height:1.65;
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-img,video,svg{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
-button{font-family:var(--sans);cursor:pointer}
-input{font-family:var(--mono)}
 
-/* ── TYPOGRAPHY ───────────────────────────────────────── */
-.t-eye{
-  display:inline-flex;align-items:center;gap:.45rem;
-  background:var(--teal-dim);
-  border:1px solid rgba(0,229,204,.22);
-  color:var(--teal);
-  padding:.3rem .8rem;
-  border-radius:100px;
-  font-size:.72rem;font-weight:700;
-  letter-spacing:.09em;text-transform:uppercase;
+  /* on-dark text */
+  --on-dark:#F0F4FF;
+  --on-dark-muted:rgba(240,244,255,.60);
+  --on-dark-subtle:rgba(240,244,255,.36);
+  --on-dark-border:rgba(240,244,255,.09);
+  --on-dark-border2:rgba(240,244,255,.14);
+
+  /* on-light text */
+  --on-light:#0A0F1E;
+  --on-light-muted:#374151;
+  --on-light-subtle:#6B7280;
+  --on-light-border:rgba(10,15,30,.09);
+  --on-light-border2:rgba(10,15,30,.16);
+
+  /* spacing / radius */
+  --r:10px;
+  --r-lg:14px;
+  --ease:.22s ease;
 }
-.t-eye-dot{width:5px;height:5px;background:var(--teal);border-radius:50%;animation:pdot 1.8s ease-in-out infinite}
-@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
-.t-h1{font-size:clamp(2rem,5.5vw,3.8rem);font-weight:800;line-height:1.08;letter-spacing:-.035em}
-.t-h2{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;line-height:1.12;letter-spacing:-.03em;color:var(--white)}
-.t-h3{font-size:1rem;font-weight:700;line-height:1.3}
-.t-sub{font-size:clamp(.95rem,2vw,1.15rem);color:var(--muted);line-height:1.7;max-width:580px}
-.t-mono{font-family:var(--mono)}
+
+/* ═══ UTILITIES ════════════════════════════════════════════════ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+.section-dark{background:var(--navy);color:var(--on-dark)}
+.section-mid{background:var(--navy-mid);color:var(--on-dark)}
+.section-light{background:var(--light-bg);color:var(--on-light)}
+.section-white{background:var(--light-card);color:var(--on-light)}
+
+/* ═══ TYPOGRAPHY ═══════════════════════════════════════════════ */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.28rem .8rem;border-radius:100px;
+  font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+}
+.eyebrow-dark{background:var(--teal-dim);border:1px solid rgba(0,229,204,.22);color:var(--teal)}
+.eyebrow-light{background:rgba(0,168,150,.10);border:1px solid rgba(0,168,150,.22);color:var(--teal-dark)}
+.eyebrow-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;animation:pdot 1.8s ease-in-out infinite}
+.eyebrow-dark .eyebrow-dot{background:var(--teal)}
+.eyebrow-light .eyebrow-dot{background:var(--teal-dark)}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.65)}}
+
+h1{font-size:clamp(1.9rem,5vw,3.7rem);font-weight:800;line-height:1.09;letter-spacing:-.035em}
+h2{font-size:clamp(1.55rem,3.5vw,2.35rem);font-weight:800;line-height:1.13;letter-spacing:-.03em}
 .accent{color:var(--teal)}
 
-/* ── LAYOUT ───────────────────────────────────────────── */
-.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
-section{padding:5.5rem 0}
-.light-bg{background:#F7F9FF;color:#0A0F1E}
-.light-bg .t-h2{color:#0A0F1E}
-.light-bg .t-sub{color:rgba(10,15,30,.6)}
-.light-bg .t-eye{background:rgba(0,229,204,.1);border-color:rgba(0,229,204,.2);color:#00A896}
-.dark-bg{background:var(--navy-mid)}
-
-/* ── BUTTONS ──────────────────────────────────────────── */
+/* ═══ BUTTONS ══════════════════════════════════════════════════ */
 .btn{
-  display:inline-flex;align-items:center;gap:.5rem;
-  padding:.75rem 1.4rem;
-  border-radius:8px;
-  font-size:.9rem;font-weight:700;
-  border:none;
-  transition:all var(--trans);
-  position:relative;
-  white-space:nowrap;
-  min-height:44px;
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  min-height:44px;padding:.72rem 1.35rem;
+  border-radius:8px;border:none;
+  font-size:.9rem;font-weight:700;white-space:nowrap;
+  transition:all var(--ease);cursor:pointer;
+  font-family:'Inter',sans-serif;
 }
 .btn:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
-.btn-primary{
-  background:var(--teal);color:var(--navy);
-  box-shadow:0 0 0 0 var(--teal-glow);
-}
-.btn-primary:hover{
-  opacity:.88;
-  box-shadow:0 0 24px 4px var(--teal-glow),0 4px 12px rgba(0,229,204,.25);
-  transform:translateY(-1px);
-}
-.btn-primary:active{transform:translateY(0);box-shadow:0 0 8px 2px var(--teal-glow)}
-.btn-ghost{
-  background:transparent;
-  color:var(--white);
-  border:1.5px solid var(--border2);
-}
-.btn-ghost:hover{border-color:var(--teal);color:var(--teal);box-shadow:0 0 12px rgba(0,229,204,.1)}
-.btn-ghost-dark{
-  background:transparent;
-  color:#0A0F1E;
-  border:1.5px solid rgba(10,15,30,.18);
-}
-.btn-ghost-dark:hover{border-color:#00A896;color:#00A896}
-.btn-sm{padding:.55rem 1rem;font-size:.82rem;min-height:38px}
-.btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+.btn:disabled{opacity:.4;pointer-events:none}
 
-/* ── NAV ──────────────────────────────────────────────── */
+/* Primary — teal bg, dark text. Works on ANY background. */
+.btn-primary{background:var(--teal);color:#0A0F1E !important}
+.btn-primary:hover{opacity:.86;box-shadow:0 0 20px var(--teal-glow),0 4px 10px rgba(0,229,204,.2);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+
+/* Ghost on dark — white border, white text */
+.btn-ghost-dark{background:transparent;color:var(--on-dark) !important;border:1.5px solid var(--on-dark-border2)}
+.btn-ghost-dark:hover{border-color:var(--teal);color:var(--teal) !important}
+
+/* Ghost on light — dark border, dark text */
+.btn-ghost-light{background:transparent;color:var(--on-light) !important;border:1.5px solid var(--on-light-border2)}
+.btn-ghost-light:hover{border-color:var(--teal-dark);color:var(--teal-dark) !important}
+
+/* Sm size */
+.btn-sm{min-height:38px;padding:.5rem 1rem;font-size:.84rem}
+
+/* ═══ NAV ═══════════════════════════════════════════════════════ */
 .nav{
   display:flex;align-items:center;justify-content:space-between;
-  padding:1.1rem 1.5rem;
-  border-bottom:1px solid var(--border);
-  position:sticky;top:0;
-  background:rgba(10,15,30,.92);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  z-index:100;
+  padding:1rem 1.5rem;
+  background:rgba(10,15,30,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--on-dark-border);
+  position:sticky;top:0;z-index:200;
 }
-.nav-logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1rem;color:var(--white)}
-.nav-dot{width:7px;height:7px;background:var(--teal);border-radius:50%;flex-shrink:0;animation:pdot 2s ease-in-out infinite}
+.nav-logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1rem;color:var(--on-dark) !important}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;animation:pdot 2s ease-in-out infinite}
 .nav-links{display:flex;align-items:center;gap:1.75rem}
-.nav-links a{color:var(--muted);font-size:.875rem;transition:color var(--trans)}
-.nav-links a:hover{color:var(--white)}
+/* nav links are on dark background */
+.nav-links a{color:var(--on-dark-muted) !important;font-size:.875rem;transition:color var(--ease)}
+.nav-links a:hover{color:var(--on-dark) !important}
 
-/* ── HERO ─────────────────────────────────────────────── */
+/* ═══ HERO ══════════════════════════════════════════════════════ */
 .hero{
-  min-height:calc(100vh - 57px);
-  display:flex;align-items:center;justify-content:center;
-  padding:5rem 1.5rem 4rem;
+  background:var(--navy);color:var(--on-dark);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;
-  position:relative;
-  overflow:hidden;
+  padding:4.5rem 1.5rem 4rem;
+  position:relative;overflow:hidden;
+  min-height:min(92vh,800px);
 }
 .hero-glow{
-  position:absolute;top:-20%;left:50%;transform:translateX(-50%);
-  width:900px;height:600px;
-  background:radial-gradient(ellipse at 50% 30%,rgba(0,229,204,.08) 0%,transparent 65%);
-  pointer-events:none;
+  position:absolute;top:-15%;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 30%,rgba(0,229,204,.07) 0%,transparent 60%);
 }
-.hero-inner{position:relative;z-index:1;width:100%;max-width:780px;margin:0 auto}
-.hero .t-eye{margin-bottom:1.75rem}
-.hero .t-h1{margin-bottom:1.25rem}
-.hero .t-sub{margin:0 auto 2.5rem}
+.hero-inner{position:relative;z-index:1;max-width:780px;width:100%}
+.hero h1{color:var(--on-dark) !important;margin:1.5rem 0 1.1rem}
+.hero-sub{font-size:clamp(.95rem,2vw,1.15rem);color:var(--on-dark-muted) !important;max-width:560px;margin:0 auto 2.5rem;line-height:1.7}
 
-/* ── SCAN WIDGET ──────────────────────────────────────── */
+/* ═══ SCAN WIDGET ═══════════════════════════════════════════════ */
 .scan-wrap{width:100%;max-width:600px;margin:0 auto}
-.scan-row{
-  display:flex;
+.scan-box{
+  display:flex;align-items:center;
   background:var(--navy-card);
-  border:1.5px solid var(--border2);
-  border-radius:var(--radius);
-  overflow:hidden;
-  transition:border-color var(--trans),box-shadow var(--trans);
+  border:1.5px solid var(--on-dark-border2);
+  border-radius:var(--r);overflow:hidden;
+  transition:border-color var(--ease),box-shadow var(--ease);
 }
-.scan-row:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-glow2)}
-.scan-row.scanning{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,.2);animation:sblink 1.4s ease-in-out infinite}
-.scan-row.s-ok{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-glow2)}
-.scan-row.s-warn{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,.2)}
-@keyframes sblink{0%,100%{box-shadow:0 0 0 3px rgba(245,158,11,.2)}50%{box-shadow:0 0 0 6px rgba(245,158,11,.06)}}
-.scan-ico{display:flex;align-items:center;padding:.9rem 0 .9rem 1rem;color:var(--muted2);flex-shrink:0}
+.scan-box:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,204,.18)}
+.scan-box.scanning{border-color:var(--amber);animation:spulse 1.4s ease-in-out infinite}
+.scan-box.s-ok{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,204,.15)}
+.scan-box.s-warn{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,.18)}
+@keyframes spulse{0%,100%{box-shadow:0 0 0 3px rgba(245,158,11,.18)}50%{box-shadow:0 0 0 6px rgba(245,158,11,.06)}}
+.scan-ico{display:flex;align-items:center;padding:.9rem 0 .9rem 1rem;color:var(--on-dark-subtle);flex-shrink:0}
 .scan-ico svg{width:16px;height:16px}
 #scanUrl{
-  flex:1;min-width:0;
-  background:transparent;border:none;outline:none;
-  color:var(--white);font-family:var(--mono);font-size:.88rem;
-  padding:.9rem .75rem;
+  flex:1;min-width:0;background:transparent;border:none;outline:none;
+  color:var(--on-dark) !important;font-family:'JetBrains Mono',monospace;font-size:.88rem;
+  padding:.9rem .7rem;
 }
-#scanUrl::placeholder{color:rgba(240,244,255,.28)}
-#scanUrl:focus{outline:none}
-.scan-btn-wrap{display:flex;align-items:center;padding:.4rem .4rem .4rem 0}
+#scanUrl::placeholder{color:var(--on-dark-subtle) !important}
+.scan-btn-wrap{padding:.35rem .35rem .35rem 0;flex-shrink:0}
 #scanBtn{
-  background:var(--teal);color:var(--navy);
-  border:none;border-radius:6px;
-  padding:.6rem 1.1rem;
+  background:var(--teal);color:#0A0F1E !important;
+  border:none;border-radius:7px;padding:.6rem 1.1rem;
   font-weight:700;font-size:.88rem;
   display:flex;align-items:center;gap:.45rem;
-  transition:opacity var(--trans),box-shadow var(--trans),transform var(--trans);
   min-height:40px;white-space:nowrap;
+  transition:opacity var(--ease),box-shadow var(--ease),transform var(--ease);
+  cursor:pointer;font-family:'Inter',sans-serif;
 }
-#scanBtn:hover{opacity:.85;box-shadow:0 0 16px rgba(0,229,204,.3);transform:translateY(-1px)}
+#scanBtn:hover{opacity:.84;box-shadow:0 0 16px rgba(0,229,204,.28);transform:translateY(-1px)}
 #scanBtn:active{transform:translateY(0)}
 #scanBtn:disabled{opacity:.4;cursor:not-allowed}
-.scan-hint{font-size:.76rem;color:var(--muted2);margin-top:.7rem;text-align:center}
-.scan-hint a{color:var(--teal)}
-.spin{width:13px;height:13px;border:2px solid rgba(10,15,30,.25);border-top-color:var(--navy);border-radius:50%;animation:rot .65s linear infinite;display:none;flex-shrink:0}
+.spin{width:13px;height:13px;border:2px solid rgba(10,15,30,.22);border-top-color:#0A0F1E;border-radius:50%;animation:rot .65s linear infinite;display:none;flex-shrink:0}
 @keyframes rot{to{transform:rotate(360deg)}}
 .scanning .spin{display:block}
 .scanning .sarrow{display:none}
+.scan-hint{font-size:.76rem;color:var(--on-dark-subtle) !important;margin-top:.65rem;text-align:center}
+.scan-hint a{color:var(--teal) !important}
 
-/* ── SCAN RESULT ──────────────────────────────────────── */
+/* ═══ SCAN RESULT ═══════════════════════════════════════════════ */
 #scanResult{
-  margin:1.5rem auto 0;
-  background:var(--navy-card);
-  border:1px solid var(--border2);
-  border-radius:var(--radius);
-  padding:1.25rem 1.5rem;
-  text-align:left;
-  display:none;
-  max-width:600px;
+  display:none;margin:1.25rem auto 0;max-width:600px;
+  background:var(--navy-card);border:1px solid var(--on-dark-border2);
+  border-radius:var(--r);padding:1.2rem 1.4rem;text-align:left;
 }
-.r-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
-.r-score{font-family:var(--mono);font-size:2.25rem;font-weight:700;line-height:1}
-.r-score.ok{color:var(--teal)}.r-score.warn{color:var(--amber)}
-.r-badge{font-size:.72rem;font-weight:700;letter-spacing:.07em;padding:.3rem .75rem;border-radius:100px;text-transform:uppercase}
-.r-badge.ok{background:rgba(0,229,204,.1);color:var(--teal);border:1px solid rgba(0,229,204,.22)}
-.r-badge.warn{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
-.r-checks{list-style:none;margin-bottom:1.1rem}
-.r-checks li{display:flex;align-items:center;gap:.6rem;font-size:.84rem;color:var(--muted);padding:.3rem 0;border-bottom:1px solid rgba(240,244,255,.04)}
+/* ALL text inside scanResult is on dark background */
+#scanResult *{color:var(--on-dark-muted) !important}
+#scanResult strong,#scanResult .r-score{color:var(--on-dark) !important}
+#scanResult .ck-ok,#scanResult .r-badge-ok,.r-score-ok{color:var(--teal) !important}
+#scanResult .ck-warn,.r-score-warn{color:var(--amber) !important}
+.r-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem}
+.r-score{font-family:'JetBrains Mono',monospace;font-size:2.1rem;font-weight:700;line-height:1}
+.r-badge{font-size:.72rem;font-weight:700;letter-spacing:.07em;padding:.28rem .7rem;border-radius:100px;text-transform:uppercase}
+.r-badge-ok{background:rgba(0,229,204,.1);color:var(--teal) !important;border:1px solid rgba(0,229,204,.22)}
+.r-badge-warn{background:var(--amber-dim);color:var(--amber) !important;border:1px solid rgba(245,158,11,.24)}
+.r-checks{list-style:none;margin-bottom:.9rem}
+.r-checks li{display:flex;align-items:center;gap:.55rem;font-size:.84rem;padding:.28rem 0;border-bottom:1px solid rgba(240,244,255,.04)}
 .r-checks li:last-child{border-bottom:none}
-.ck-ok{color:var(--teal);font-size:.9rem}.ck-warn{color:var(--amber);font-size:.9rem}
-.r-ctas{display:flex;gap:.65rem;flex-wrap:wrap}
-.r-note{font-size:.73rem;color:var(--muted2);margin-top:.65rem;line-height:1.5}
+.r-ctas{display:flex;gap:.6rem;flex-wrap:wrap}
+.r-note{font-size:.73rem;margin-top:.6rem;line-height:1.5;color:var(--on-dark-subtle) !important}
 
-/* ── TRUST STRIP ──────────────────────────────────────── */
-.trust{display:flex;align-items:center;justify-content:center;gap:2rem;margin-top:2.5rem;flex-wrap:wrap}
-.trust-i{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--muted);white-space:nowrap}
-.trust-i svg{width:14px;height:14px;color:var(--teal);flex-shrink:0}
+/* ═══ TRUST STRIP ═══════════════════════════════════════════════ */
+.trust{display:flex;align-items:center;justify-content:center;gap:1.75rem;margin-top:2.25rem;flex-wrap:wrap}
+.trust-i{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--on-dark-muted) !important;white-space:nowrap}
+.trust-i svg{width:14px;height:14px;color:var(--teal) !important;flex-shrink:0}
 
-/* ── WHY ──────────────────────────────────────────────── */
-.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-top:3rem}
+/* ═══ SECTIONS ══════════════════════════════════════════════════ */
+section,.section-pad{padding:5rem 0}
+.section-top{padding-top:0}
+
+/* ═══ WHY CARDS (light bg) ══════════════════════════════════════ */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-top:2.75rem}
 .why-card{
-  background:#fff;
-  border:1px solid rgba(10,15,30,.07);
-  border-radius:var(--radius-lg);
-  padding:1.5rem;
-  transition:box-shadow var(--trans),transform var(--trans),border-color var(--trans);
+  background:var(--light-card);
+  border:1px solid var(--on-light-border);
+  border-radius:var(--r-lg);padding:1.4rem;
+  color:var(--on-light) !important;
+  transition:box-shadow var(--ease),transform var(--ease);
 }
-.why-card:hover{box-shadow:0 6px 28px rgba(0,229,204,.10);transform:translateY(-2px);border-color:rgba(0,200,180,.18)}
-.why-ico{width:38px;height:38px;background:rgba(0,229,204,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:.9rem;flex-shrink:0}
-.why-ico svg{width:19px;height:19px;color:#00A896}
-.why-card h3{font-size:.95rem;font-weight:700;margin-bottom:.35rem;color:#0A0F1E}
-.why-card p{font-size:.84rem;color:rgba(10,15,30,.58);line-height:1.6}
+.why-card:hover{box-shadow:0 6px 24px rgba(0,229,204,.10);transform:translateY(-2px)}
+.why-ico{width:38px;height:38px;background:rgba(0,168,150,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:.85rem;flex-shrink:0}
+.why-ico svg{width:19px;height:19px;color:var(--teal-dark) !important}
+.why-card h3{font-size:.95rem;font-weight:700;margin-bottom:.35rem;color:var(--on-light) !important}
+.why-card p{font-size:.84rem;color:var(--on-light-muted) !important;line-height:1.6}
 
-/* ── HOW ──────────────────────────────────────────────── */
-.how-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0;margin-top:3rem}
-.hs{padding:1.5rem 1.25rem;border-left:1px solid var(--border2)}
+/* ═══ HOW STEPS (dark) ══════════════════════════════════════════ */
+.how-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:2.75rem}
+.hs{padding:1.4rem 1.2rem;border-left:1px solid var(--on-dark-border2)}
 .hs:first-child{border-left:none;padding-left:0}
-.hs-num{font-family:var(--mono);font-size:.7rem;color:var(--teal);font-weight:600;letter-spacing:.06em;margin-bottom:.7rem}
-.hs h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem}
-.hs p{font-size:.84rem;color:var(--muted);line-height:1.6}
+.hs-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--teal) !important;font-weight:600;letter-spacing:.05em;margin-bottom:.65rem}
+.hs h3{font-size:.94rem;font-weight:700;margin-bottom:.4rem;color:var(--on-dark) !important}
+.hs p{font-size:.84rem;color:var(--on-dark-muted) !important;line-height:1.6}
 
-/* ── SAMPLE REPORT ────────────────────────────────────── */
+/* ═══ SAMPLE REPORT (light bg) ═════════════════════════════════ */
 .rcard{
-  max-width:620px;margin:3rem auto 0;
-  background:var(--navy-card);
+  max-width:620px;margin:2.75rem auto 0;
+  background:var(--navy-card);border:1px solid var(--on-dark-border2);
   border-radius:16px;overflow:hidden;
-  border:1px solid var(--border2);
-  box-shadow:0 24px 60px rgba(0,0,0,.35),0 0 0 1px rgba(0,229,204,.06);
+  box-shadow:0 20px 56px rgba(0,0,0,.28),0 0 0 1px rgba(0,229,204,.06);
 }
+/* rcard is always dark */
+.rcard *{color:var(--on-dark-muted) !important}
 .rcard-top{
-  padding:1.5rem 1.75rem;
   background:linear-gradient(135deg,var(--navy-mid),var(--navy-card2));
-  border-bottom:1px solid var(--border);
+  padding:1.4rem 1.7rem;border-bottom:1px solid var(--on-dark-border);
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;
 }
-.rcard-store{font-family:var(--mono);font-size:.82rem;color:var(--muted)}
-.rcard-ts{font-size:.72rem;color:var(--muted2)}
-.rcard-score-row{padding:1.75rem;display:flex;align-items:center;gap:1.75rem;border-bottom:1px solid var(--border)}
-.big-sc{font-family:var(--mono);font-size:3.75rem;font-weight:700;line-height:1;color:var(--teal)}
+.rcard-store{font-family:'JetBrains Mono',monospace;font-size:.82rem}
+.rcard-ts{font-size:.72rem;color:var(--on-dark-subtle) !important}
+.rcard-score-row{padding:1.6rem 1.7rem;display:flex;align-items:center;gap:1.6rem;border-bottom:1px solid var(--on-dark-border)}
+.big-sc{font-family:'JetBrains Mono',monospace;font-size:3.6rem;font-weight:700;line-height:1;color:var(--teal) !important}
 .sc-meta{flex:1;min-width:0}
-.sc-lbl{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2);margin-bottom:.2rem}
-.sc-st{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.45rem}
-.bar-wrap{height:3px;background:rgba(240,244,255,.07);border-radius:2px;margin-top:.65rem;overflow:hidden}
-.bar{height:100%;background:linear-gradient(90deg,var(--teal),rgba(0,229,204,.6));border-radius:2px}
-.rcard-rows{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border)}
-.rci{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;font-size:.84rem;color:var(--muted);border-bottom:1px solid rgba(240,244,255,.03)}
+.sc-lbl{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dark-subtle) !important;margin-bottom:.2rem}
+.sc-st{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.45rem;color:var(--on-dark) !important}
+.bar-wrap{height:3px;background:rgba(240,244,255,.07);border-radius:2px;margin-top:.6rem;overflow:hidden}
+.bar{height:100%;background:linear-gradient(90deg,var(--teal),rgba(0,229,204,.55));border-radius:2px}
+.rcard-rows{padding:1.1rem 1.7rem;border-bottom:1px solid var(--on-dark-border)}
+.rci{display:flex;align-items:center;justify-content:space-between;padding:.48rem 0;font-size:.84rem;border-bottom:1px solid rgba(240,244,255,.03)}
 .rci:last-child{border-bottom:none}
 .rcn{display:flex;align-items:center;gap:.55rem}
 .dok{width:6px;height:6px;background:var(--teal);border-radius:50%;flex-shrink:0}
 .dwarn{width:6px;height:6px;background:var(--amber);border-radius:50%;flex-shrink:0}
-.dna{width:6px;height:6px;background:rgba(240,244,255,.15);border-radius:50%;flex-shrink:0}
-.rcs{font-family:var(--mono);font-size:.72rem;font-weight:600}
-.rcs.ok{color:var(--teal)}.rcs.warn{color:var(--amber)}.rcs.na{color:var(--muted2)}
-.rcard-finding{padding:1.25rem 1.75rem;display:flex;gap:.75rem;align-items:flex-start}
-.fi-ico{width:28px;height:28px;background:var(--amber-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.fi-ico svg{width:13px;height:13px;color:var(--amber)}
-.fi-txt{font-size:.84rem;color:var(--muted);line-height:1.55}
-.fi-txt strong{color:var(--white);font-weight:600}
-.rcard-sample{display:flex;justify-content:center;padding:.65rem;background:rgba(240,244,255,.02);border-top:1px solid var(--border)}
-.rcard-sample span{font-family:var(--mono);font-size:.68rem;color:rgba(240,244,255,.2);letter-spacing:.06em;text-transform:uppercase}
+.dna{width:6px;height:6px;background:rgba(240,244,255,.18);border-radius:50%;flex-shrink:0}
+.rcs{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600}
+.rcs-ok{color:var(--teal) !important}
+.rcs-warn{color:var(--amber) !important}
+.rcs-na{color:var(--on-dark-subtle) !important}
+.rcard-finding{padding:1.1rem 1.7rem;display:flex;gap:.7rem;align-items:flex-start}
+.fi-ico{width:27px;height:27px;background:var(--amber-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fi-ico svg{width:13px;height:13px;color:var(--amber) !important}
+.fi-txt{font-size:.84rem;line-height:1.55}
+.fi-txt strong{color:var(--on-dark) !important}
+.rcard-sample{display:flex;justify-content:center;padding:.6rem;background:rgba(240,244,255,.02);border-top:1px solid var(--on-dark-border)}
+.rcard-sample span{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(240,244,255,.22) !important;letter-spacing:.06em;text-transform:uppercase}
 
-/* ── WHAT WE CHECK ────────────────────────────────────── */
-.checks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem;margin-top:2.5rem}
+/* ═══ CHECKS (light) ════════════════════════════════════════════ */
+.checks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem;margin-top:2.25rem}
 .cc{
-  background:#fff;
-  border:1px solid rgba(10,15,30,.06);
-  border-radius:var(--radius);
-  padding:1.2rem;
-  display:flex;gap:.8rem;align-items:flex-start;
-  transition:box-shadow var(--trans),border-color var(--trans),transform var(--trans);
+  background:var(--light-bg);border:1px solid var(--on-light-border);
+  border-radius:var(--r);padding:1.15rem;
+  display:flex;gap:.75rem;align-items:flex-start;
+  color:var(--on-light) !important;
+  transition:box-shadow var(--ease),transform var(--ease);
 }
-.cc:hover{box-shadow:0 4px 18px rgba(0,229,204,.08);border-color:rgba(0,200,180,.15);transform:translateY(-1px)}
-.cc-ico{width:30px;height:30px;background:rgba(0,229,204,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cc-ico svg{width:15px;height:15px;color:#00A896}
-.cc h4{font-size:.84rem;font-weight:700;margin-bottom:.2rem;color:#0A0F1E}
-.cc p{font-size:.78rem;color:rgba(10,15,30,.54);line-height:1.5}
+.cc:hover{box-shadow:0 4px 16px rgba(0,229,204,.08);transform:translateY(-1px)}
+.cc-ico{width:30px;height:30px;background:rgba(0,168,150,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cc-ico svg{width:15px;height:15px;color:var(--teal-dark) !important}
+.cc h4{font-size:.84rem;font-weight:700;margin-bottom:.18rem;color:var(--on-light) !important}
+.cc p{font-size:.78rem;color:var(--on-light-muted) !important;line-height:1.5}
 
-/* ── PRICING ──────────────────────────────────────────── */
-.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:1.5rem;margin-top:3rem;align-items:start}
-.pc{
-  background:#fff;
-  border:1px solid rgba(10,15,30,.09);
-  border-radius:var(--radius-lg);
-  padding:1.85rem;
-  position:relative;
-  transition:box-shadow var(--trans),transform var(--trans);
-}
-.pc:hover{box-shadow:0 8px 32px rgba(10,15,30,.08);transform:translateY(-2px)}
-.pc.featured{
-  background:var(--navy-card);
-  border:1px solid rgba(0,229,204,.18);
-  box-shadow:0 0 0 1px rgba(0,229,204,.08),0 12px 48px rgba(0,0,0,.3);
-  color:var(--white);
-}
-.pc.featured:hover{box-shadow:0 0 0 1px rgba(0,229,204,.2),0 16px 56px rgba(0,0,0,.35),0 0 32px rgba(0,229,204,.08);transform:translateY(-2px)}
-.pc.soon{opacity:.6}
-.pc-star{
-  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
-  background:var(--teal);color:var(--navy);
-  font-size:.68rem;font-weight:700;letter-spacing:.07em;
-  padding:.28rem .75rem;border-radius:100px;white-space:nowrap;text-transform:uppercase;
-}
-.pc-tier{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(10,15,30,.4);margin-bottom:.5rem}
-.pc.featured .pc-tier{color:var(--teal)}
-.pc-price{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:.2rem}
-.pc-per{font-size:.82rem;color:rgba(10,15,30,.4);margin-bottom:1.2rem}
-.pc.featured .pc-per{color:var(--muted)}
-.pc-feats{list-style:none;margin-bottom:1.6rem;display:flex;flex-direction:column;gap:.55rem}
-.pc-feats li{display:flex;align-items:flex-start;gap:.55rem;font-size:.84rem;color:rgba(10,15,30,.68)}
-.pc.featured .pc-feats li{color:var(--muted)}
-.pc-feats li::before{content:'';width:5px;height:5px;background:var(--teal);border-radius:50%;flex-shrink:0;margin-top:7px}
-.pc-soon{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(10,15,30,.3);border:1px solid rgba(10,15,30,.12);padding:.25rem .6rem;border-radius:100px}
-
-/* ── LEGAL CHECKBOX ───────────────────────────────────── */
-.legal-gate{margin-top:1rem;display:flex;align-items:flex-start;gap:.6rem;font-size:.8rem;color:var(--muted);cursor:pointer}
-.legal-gate input[type="checkbox"]{
-  width:16px;height:16px;flex-shrink:0;margin-top:2px;
-  accent-color:var(--teal);cursor:pointer;
-}
-.legal-gate a{color:var(--teal);text-decoration:underline}
-.legal-err{font-size:.75rem;color:var(--amber);margin-top:.35rem;display:none}
-
-/* ── NC (not checked) ─────────────────────────────────── */
-.nc-list{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:2rem}
+/* ═══ NOT CHECKED (light) ═══════════════════════════════════════ */
+.nc-list{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.75rem}
 .nc-tag{
-  background:#fff;border:1px solid rgba(10,15,30,.1);
-  border-radius:100px;padding:.32rem .8rem;
-  font-size:.78rem;color:rgba(10,15,30,.52);
+  background:var(--light-card);border:1px solid var(--on-light-border);
+  border-radius:100px;padding:.3rem .75rem;
+  font-size:.78rem;color:var(--on-light-subtle) !important;
   display:flex;align-items:center;gap:.35rem;
 }
-.nc-tag::before{content:'';width:4px;height:4px;background:rgba(10,15,30,.18);border-radius:50%;flex-shrink:0}
+.nc-tag::before{content:'';width:4px;height:4px;background:var(--on-light-border2);border-radius:50%;flex-shrink:0}
 
-/* ── FAQ ──────────────────────────────────────────────── */
-.faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.75rem;margin-top:3rem}
-.fq h4{font-size:.92rem;font-weight:700;margin-bottom:.35rem;color:#0A0F1E}
-.fq p{font-size:.84rem;color:rgba(10,15,30,.58);line-height:1.65}
+/* ═══ PRICING ═══════════════════════════════════════════════════ */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.4rem;margin-top:2.75rem;align-items:start}
+.pc{
+  background:var(--light-card);border:1px solid var(--on-light-border);
+  border-radius:var(--r-lg);padding:1.8rem;
+  position:relative;color:var(--on-light) !important;
+  transition:box-shadow var(--ease),transform var(--ease);
+}
+.pc:hover{box-shadow:0 8px 28px rgba(10,15,30,.08);transform:translateY(-2px)}
+.pc.featured{
+  background:var(--navy-card);border:1px solid rgba(0,229,204,.18);
+  color:var(--on-dark) !important;
+  box-shadow:0 0 0 1px rgba(0,229,204,.08),0 12px 44px rgba(0,0,0,.28);
+}
+.pc.featured:hover{box-shadow:0 0 0 1px rgba(0,229,204,.2),0 16px 52px rgba(0,0,0,.3),0 0 28px rgba(0,229,204,.07);transform:translateY(-2px)}
+.pc.soon{opacity:.62}
+.pc-star{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--teal);color:#0A0F1E !important;
+  font-size:.68rem;font-weight:700;letter-spacing:.06em;padding:.25rem .7rem;border-radius:100px;white-space:nowrap;text-transform:uppercase;
+}
+.pc-tier{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.45rem}
+.pc:not(.featured) .pc-tier{color:var(--on-light-subtle) !important}
+.pc.featured .pc-tier{color:var(--teal) !important}
+.pc-price{font-size:2.35rem;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:.2rem}
+.pc:not(.featured) .pc-price{color:var(--on-light) !important}
+.pc.featured .pc-price{color:var(--on-dark) !important}
+.pc-per{font-size:.82rem;margin-bottom:1.15rem}
+.pc:not(.featured) .pc-per{color:var(--on-light-subtle) !important}
+.pc.featured .pc-per{color:var(--on-dark-muted) !important}
+.pc-feats{list-style:none;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:.5rem}
+.pc-feats li{display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem}
+.pc:not(.featured) .pc-feats li{color:var(--on-light-muted) !important}
+.pc.featured .pc-feats li{color:var(--on-dark-muted) !important}
+.pc-feats li::before{content:'';width:5px;height:5px;background:var(--teal);border-radius:50%;flex-shrink:0;margin-top:7px}
+.pc-soon-tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:100px}
+.pc:not(.featured) .pc-soon-tag{color:var(--on-light-subtle) !important;border:1px solid var(--on-light-border2)}
+.pc.featured .pc-soon-tag{color:var(--on-dark-subtle) !important;border:1px solid var(--on-dark-border2)}
 
-/* ── CTA STRIP ────────────────────────────────────────── */
-.cta-bg{
+/* ═══ LEGAL CHECKBOX ════════════════════════════════════════════ */
+/* on featured card (dark) */
+.legal-gate{margin-top:.9rem;display:flex;align-items:flex-start;gap:.6rem;font-size:.8rem;cursor:pointer}
+.legal-gate input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:var(--teal);cursor:pointer}
+.pc.featured .legal-gate{color:var(--on-dark-muted) !important}
+.pc.featured .legal-gate a{color:var(--teal) !important;text-decoration:underline}
+.legal-err{font-size:.74rem;margin-top:.3rem;display:none}
+.pc.featured .legal-err{color:var(--amber) !important}
+
+/* ═══ STRIPE CTA (on featured/dark card) ═══════════════════════ */
+.stripe-note{font-size:.72rem;text-align:center;margin-top:.55rem}
+.pc.featured .stripe-note{color:var(--on-dark-subtle) !important}
+
+/* ═══ FAQ (light) ════════════════════════════════════════════════ */
+.faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.65rem;margin-top:2.75rem}
+.fq h4{font-size:.92rem;font-weight:700;margin-bottom:.35rem;color:var(--on-light) !important}
+.fq p{font-size:.84rem;color:var(--on-light-muted) !important;line-height:1.65}
+
+/* ═══ CTA STRIP (dark) ══════════════════════════════════════════ */
+.cta-strip{
   background:linear-gradient(180deg,var(--navy-mid) 0%,var(--navy) 100%);
-  padding:5.5rem 1.5rem;
-  text-align:center;
-  position:relative;overflow:hidden;
+  color:var(--on-dark);
+  padding:5rem 1.5rem;text-align:center;position:relative;overflow:hidden;
 }
-.cta-bg::before{
-  content:'';
-  position:absolute;top:-50%;left:50%;transform:translateX(-50%);
-  width:800px;height:600px;
-  background:radial-gradient(ellipse,rgba(0,229,204,.06) 0%,transparent 65%);
-  pointer-events:none;
+.cta-strip::before{
+  content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);
+  width:800px;height:600px;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(0,229,204,.06) 0%,transparent 60%);
 }
-.cta-inner{position:relative;z-index:1}
-.cta-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+.cta-strip h2{color:var(--on-dark) !important}
+.cta-strip p{color:var(--on-dark-muted) !important}
+.cta-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem}
 
-/* ── FOOTER ───────────────────────────────────────────── */
+/* ═══ SECTION HEADINGS: contextual color ════════════════════════ */
+.section-dark h2,.section-mid h2{color:var(--on-dark) !important}
+.section-dark p,.section-mid p{color:var(--on-dark-muted) !important}
+.section-light h2,.section-white h2{color:var(--on-light) !important}
+.section-light p,.section-white p{color:var(--on-light-muted) !important}
+.section-light .eyebrow-light,.section-white .eyebrow-light{}
+
+/* ═══ FOOTER (dark) ══════════════════════════════════════════════ */
 footer{
-  background:var(--navy);
-  border-top:1px solid var(--border);
-  padding:2.25rem 1.5rem;
-  font-size:.8rem;
-  color:var(--muted2);
+  background:var(--navy);border-top:1px solid var(--on-dark-border);
+  padding:2.25rem 1.5rem;font-size:.8rem;color:var(--on-dark-subtle) !important;
 }
 .ft-inner{max-width:1120px;margin:0 auto}
-.ft-row1{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem}
-.ft-logo{font-weight:700;font-size:.9rem;color:var(--white)}
+.ft-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.9rem;margin-bottom:.9rem}
+.ft-logo{font-weight:700;font-size:.9rem;color:var(--on-dark) !important}
 .ft-links{display:flex;gap:1.4rem;flex-wrap:wrap}
-.ft-links a{color:var(--muted2);transition:color var(--trans)}
-.ft-links a:hover{color:var(--white)}
-.ft-legal{font-size:.75rem;color:rgba(240,244,255,.25);line-height:1.65}
+.ft-links a{color:var(--on-dark-subtle) !important;transition:color var(--ease)}
+.ft-links a:hover{color:var(--on-dark) !important}
+.ft-legal{font-size:.75rem;color:rgba(240,244,255,.26) !important;line-height:1.65}
+.ft-legal a{color:rgba(240,244,255,.26) !important;text-decoration:underline}
 
-/* ── TOAST / MESSAGE ──────────────────────────────────── */
+/* ═══ TOAST ══════════════════════════════════════════════════════ */
 #toast{
   position:fixed;bottom:1.5rem;right:1.5rem;
-  background:var(--navy-card2);border:1px solid var(--border2);
-  color:var(--white);
-  padding:.75rem 1.1rem;border-radius:var(--radius);
-  font-size:.84rem;
-  box-shadow:0 8px 32px rgba(0,0,0,.4);
-  opacity:0;transform:translateY(8px);
-  transition:opacity .3s,transform .3s;
+  background:var(--navy-card2);border:1px solid var(--on-dark-border2);
+  color:var(--on-dark) !important;
+  padding:.75rem 1.1rem;border-radius:var(--r);font-size:.84rem;
+  box-shadow:0 8px 28px rgba(0,0,0,.38);
+  opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;
   pointer-events:none;z-index:999;max-width:320px;
 }
 #toast.show{opacity:1;transform:translateY(0)}
 
-/* ── RESPONSIVE ───────────────────────────────────────── */
+/* ═══ RESPONSIVE ═════════════════════════════════════════════════ */
 @media(max-width:768px){
-  section{padding:4rem 0}
+  section,.section-pad{padding:3.75rem 0}
   .nav-links a:not(.btn){display:none}
-  .scan-row{flex-wrap:wrap}
-  .scan-btn-wrap{width:100%;padding:.4rem}
-  #scanBtn{width:100%;justify-content:center}
+  .scan-box{flex-wrap:wrap}
+  .scan-ico{padding:.85rem 0 .85rem 1rem}
+  .scan-btn-wrap{width:100%;padding:.35rem}
+  #scanBtn{width:100%;border-radius:7px;justify-content:center}
   .rcard-score-row{flex-direction:column;align-items:flex-start;gap:1rem}
   .how-steps{grid-template-columns:1fr}
-  .hs{border-left:none;border-top:1px solid var(--border2);padding:1.25rem 0}
+  .hs{border-left:none;border-top:1px solid var(--on-dark-border2);padding:1.2rem 0}
   .hs:first-child{border-top:none;padding-top:0}
   .price-grid{grid-template-columns:1fr}
-  .ft-row1{flex-direction:column;align-items:flex-start}
+  .ft-row{flex-direction:column;align-items:flex-start}
+  .cta-actions{flex-direction:column;align-items:center}
+  .cta-actions .btn{width:100%;max-width:340px}
   .trust{gap:1.1rem}
   .rcard-top{flex-direction:column;align-items:flex-start}
-  .cta-actions{flex-direction:column;align-items:center}
-  .cta-actions .btn{width:100%;max-width:340px;justify-content:center}
   .r-ctas{flex-direction:column}
-  .r-ctas .btn{width:100%;justify-content:center}
+  .r-ctas .btn{width:100%}
 }
 @media(max-width:480px){
-  .t-h1{font-size:1.85rem}
-  .t-h2{font-size:1.5rem}
+  h1{font-size:1.8rem}
+  h2{font-size:1.5rem}
   .wrap{padding:0 1rem}
-  .nav{padding:1rem}
-  .hero{padding:3rem 1rem 3rem}
-  .rcard{margin-left:0;margin-right:0}
+  .nav{padding:.9rem 1rem}
+  .hero{padding:3rem 1rem 3rem;min-height:auto}
   .rcard-rows,.rcard-finding,.rcard-score-row,.rcard-top{padding-left:1.1rem;padding-right:1.1rem}
-  .big-sc{font-size:3rem}
+  .big-sc{font-size:2.9rem}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
-<!-- TOAST -->
-<div id="toast"></div>
+<div id="toast" role="alert" aria-live="polite"></div>
 
 <!-- NAV -->
-<nav class="nav" role="navigation" aria-label="Main">
+<nav class="nav" role="navigation" aria-label="Main navigation">
   <a href="/" class="nav-logo"><span class="nav-dot"></span>Qsisto</a>
   <div class="nav-links">
     <a href="#how">How it works</a>
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
-    <a href="#scan" class="btn btn-primary btn-sm">Run free scan</a>
+    <a href="#scan" class="btn btn-primary btn-sm" onclick="scrollToScan(event)">Run free scan</a>
   </div>
 </nav>
 
@@ -465,18 +465,18 @@ footer{
 <section class="hero" id="scan">
   <div class="hero-glow" aria-hidden="true"></div>
   <div class="hero-inner">
-    <div class="t-eye"><span class="t-eye-dot"></span>Shopify Store Health Monitoring</div>
-    <h1 class="t-h1">Stop losing paid ad revenue<br>to <span class="accent">silent checkout issues</span></h1>
-    <p class="t-sub" style="margin:1.1rem auto 2.5rem">StoreGuard runs a lightweight weekly health scan on your Shopify store and alerts you the moment checkout, cart, or trust signals break — before your customers notice.</p>
+    <div class="eyebrow eyebrow-dark"><span class="eyebrow-dot"></span>Shopify Store Health Monitoring</div>
+    <h1>Stop losing paid ad revenue<br>to <span class="accent">silent checkout issues</span></h1>
+    <p class="hero-sub">StoreGuard runs a lightweight weekly health scan on your Shopify store and alerts you the moment checkout, cart, or trust signals break &mdash; before your customers notice.</p>
 
     <div class="scan-wrap">
-      <div class="scan-row" id="scanBox">
+      <div class="scan-box" id="scanBox">
         <span class="scan-ico" aria-hidden="true">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M11 11l3 3" stroke-linecap="round"/></svg>
         </span>
         <input type="text" id="scanUrl" placeholder="Enter your Shopify store URL" autocomplete="off" spellcheck="false" aria-label="Your Shopify store URL">
         <div class="scan-btn-wrap">
-          <button id="scanBtn" onclick="runScan()" aria-label="Run free scan">
+          <button id="scanBtn" onclick="runScan()" aria-label="Run free health scan">
             <div class="spin" id="spin" aria-hidden="true"></div>
             <svg id="sarrow" class="sarrow" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2.5 6.5h8M7 2.5l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Run free scan
@@ -498,116 +498,113 @@ footer{
 </section>
 
 <!-- WHY -->
-<section class="light-bg" aria-labelledby="why-h">
+<section class="section-light" aria-labelledby="why-h">
   <div class="wrap">
-    <div class="t-eye">Why StoreGuard</div>
-    <h2 class="t-h2" id="why-h" style="margin-top:.7rem;max-width:520px">Your customers rarely tell you when things break</h2>
-    <p class="t-sub" style="margin-top:.75rem">Silent checkout failures cost you real revenue — especially when paid ads are running. Most store owners find out days later, via chargebacks or a message from a friend.</p>
+    <div class="eyebrow eyebrow-light">Why StoreGuard</div>
+    <h2 id="why-h" style="margin-top:.65rem;max-width:500px">Your customers rarely tell you when things break</h2>
+    <p style="margin-top:.7rem;max-width:580px">Silent checkout failures cost real revenue &mdash; especially when paid ads are running. Most store owners find out days later, via chargebacks or a message from a friend.</p>
     <div class="why-grid">
       <div class="why-card">
         <div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3" stroke-linecap="round"/></svg></div>
         <h3>Issues go unnoticed for days</h3>
-        <p>Cart errors and broken checkout scripts silently lose sales while your Meta and Google campaigns keep spending.</p>
+        <p>Cart errors and broken scripts silently lose sales while your Meta and Google campaigns keep spending.</p>
       </div>
       <div class="why-card">
         <div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l14 14M8.5 5.5A6 6 0 0114.5 11.5"/><path d="M5.5 5.5A9 9 0 0114.5 14.5"/></svg></div>
         <h3>Ad spend keeps burning</h3>
-        <p>When checkout breaks, campaigns don't pause. You pay for traffic that cannot convert — often for 24–72 hours before anyone catches it.</p>
+        <p>When checkout breaks, campaigns don&rsquo;t pause. You pay for traffic that cannot convert &mdash; often for 24&ndash;72 hours before anyone catches it.</p>
       </div>
       <div class="why-card">
         <div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 2l2 5h5l-4 3 1.5 5L10 12l-4.5 3L7 10 3 7h5z"/></svg></div>
         <h3>Trust signals silently break</h3>
-        <p>SSL expiry, missing badges, broken refund links — small breakages that convert first-time visitors erode slowly and invisibly.</p>
+        <p>SSL expiry, missing badges, broken refund links &mdash; small breakages that convert first-time visitors erode slowly and invisibly.</p>
       </div>
       <div class="why-card">
         <div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="14" height="12" rx="1"/><path d="M3 9h14M7 5V3M13 5V3"/></svg></div>
         <h3>Weekly reports, not noise</h3>
-        <p>A clean weekly health report — and an instant alert only when something actually changes. No daily pings, no dashboards to check.</p>
+        <p>A clean weekly health report &mdash; and an instant alert only when something actually changes. No daily pings, no dashboards to check.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- HOW -->
-<section class="dark-bg" id="how" aria-labelledby="how-h">
+<section class="section-mid" id="how" aria-labelledby="how-h">
   <div class="wrap">
-    <div class="t-eye">How it works</div>
-    <h2 class="t-h2" id="how-h" style="margin-top:.7rem">Simple. Non-invasive. Weekly.</h2>
-    <p class="t-sub" style="margin-top:.75rem">No app installation. No Shopify admin access. StoreGuard reads your store the same way your customers do.</p>
+    <div class="eyebrow eyebrow-dark">How it works</div>
+    <h2 id="how-h" style="margin-top:.65rem">Simple. Non-invasive. Weekly.</h2>
+    <p style="margin-top:.7rem;max-width:560px">No app installation. No Shopify admin access. StoreGuard reads your store the same way your customers do.</p>
     <div class="how-steps">
-      <div class="hs"><p class="hs-num">01 — Add</p><h3>Enter your store URL</h3><p>Paste your Shopify domain. That's all we need. No app, no admin credentials, no OAuth.</p></div>
-      <div class="hs"><p class="hs-num">02 — Scan</p><h3>Weekly read-only scan</h3><p>Every week, StoreGuard checks your homepage, cart path, checkout signals, trust indicators, and response time.</p></div>
-      <div class="hs"><p class="hs-num">03 — Alert</p><h3>Instant alerts on changes</h3><p>If a check fails or degrades since last week, you receive an alert immediately — not at end of month.</p></div>
-      <div class="hs"><p class="hs-num">04 — Report</p><h3>Monthly trend summary</h3><p>Once a month, a clean summary of health trends so you can spot patterns over time and prove uptime.</p></div>
+      <div class="hs"><p class="hs-num">01 &mdash; Add</p><h3>Enter your store URL</h3><p>Paste your Shopify domain. No app, no admin credentials, no OAuth required.</p></div>
+      <div class="hs"><p class="hs-num">02 &mdash; Scan</p><h3>Weekly read-only scan</h3><p>Every week, StoreGuard checks your homepage, cart, checkout signals, trust indicators, and response time.</p></div>
+      <div class="hs"><p class="hs-num">03 &mdash; Alert</p><h3>Instant alerts on changes</h3><p>If a check fails or degrades since last week, you receive an alert immediately &mdash; not at end of month.</p></div>
+      <div class="hs"><p class="hs-num">04 &mdash; Report</p><h3>Monthly trend summary</h3><p>Once a month, a clean summary of health trends so you can spot patterns over time and prove uptime.</p></div>
     </div>
   </div>
 </section>
 
 <!-- SAMPLE REPORT -->
-<section class="light-bg" id="sample" aria-labelledby="sample-h">
+<section class="section-light" id="sample" aria-labelledby="sample-h">
   <div class="wrap" style="text-align:center">
-    <div class="t-eye">Sample report</div>
-    <h2 class="t-h2" id="sample-h" style="margin-top:.7rem">What a health report looks like</h2>
-    <p class="t-sub" style="margin:0.75rem auto 0">Designed to be actionable at a glance. One status. Clear findings. No noise.</p>
+    <div class="eyebrow eyebrow-light">Sample report</div>
+    <h2 id="sample-h" style="margin-top:.65rem">What a health report looks like</h2>
+    <p style="margin:.7rem auto 0;max-width:520px">Designed to be actionable at a glance. One status. Clear findings. No noise.</p>
     <div class="rcard" role="img" aria-label="Sample StoreGuard health report">
       <div class="rcard-top">
         <span class="rcard-store">example-store.com</span>
-        <span class="rcard-ts">Weekly scan — sample data only</span>
+        <span class="rcard-ts">Weekly scan &mdash; sample data only</span>
       </div>
       <div class="rcard-score-row">
         <div class="big-sc" id="animScore" aria-label="Health score">--</div>
         <div class="sc-meta">
           <div class="sc-lbl">Overall health score</div>
-          <div class="sc-st">
-            <span style="width:7px;height:7px;background:var(--amber);border-radius:50%;display:inline-block" aria-hidden="true"></span>
-            Warning — 1 issue found
-          </div>
+          <div class="sc-st"><span style="width:7px;height:7px;background:var(--amber);border-radius:50%;display:inline-block" aria-hidden="true"></span>Warning &mdash; 1 issue found</div>
           <div class="bar-wrap"><div class="bar" id="scoreBar" style="width:0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
         </div>
       </div>
       <div class="rcard-rows">
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Homepage reachable</span><span class="rcs ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>HTTPS / SSL valid</span><span class="rcs ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Shopify platform detected</span><span class="rcs ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>/cart path accessible</span><span class="rcs ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Checkout signals present</span><span class="rcs ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dwarn" aria-hidden="true"></span>Trust signals (refund / shipping)</span><span class="rcs warn">WARNING</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Response time</span><span class="rcs ok">812 ms</span></div>
-        <div class="rci"><span class="rcn"><span class="dna" aria-hidden="true"></span>vs. last week</span><span class="rcs na">&#8722;2 pts</span></div>
+        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Homepage reachable</span><span class="rcs rcs-ok">PASS</span></div>
+        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>HTTPS / SSL valid</span><span class="rcs rcs-ok">PASS</span></div>
+        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Shopify platform detected</span><span class="rcs rcs-ok">PASS</span></div>
+        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>/cart path accessible</span><span class="rcs rcs-ok">PASS</span></div>
+        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Checkout signals present</span><span class="rcs rcs-ok">PASS</span></div>
+        <div class="rci"><span class="rcn"><span class="dwarn" aria-hidden="true"></span>Trust signals (refund / shipping)</span><span class="rcs rcs-warn">WARNING</span></div>
+        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Response time</span><span class="rcs rcs-ok">812 ms</span></div>
+        <div class="rci"><span class="rcn"><span class="dna" aria-hidden="true"></span>vs. last week</span><span class="rcs rcs-na">&minus;2 pts</span></div>
       </div>
       <div class="rcard-finding">
         <div class="fi-ico" aria-hidden="true"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 1.5L1 11h11L6.5 1.5zm0 4v2.5"/><circle cx="6.5" cy="9" r=".5" fill="currentColor"/></svg></div>
         <div class="fi-txt"><strong>Trust signal degraded since last scan.</strong> Refund policy link not detected on checkout page. This may reduce first-time buyer confidence. Verify policy links in your Shopify theme settings.</div>
       </div>
-      <div class="rcard-sample"><span>Sample report — not real scan data</span></div>
+      <div class="rcard-sample"><span>Sample report &mdash; not real scan data</span></div>
     </div>
   </div>
 </section>
 
 <!-- WHAT WE CHECK -->
-<section class="light-bg" aria-labelledby="checks-h">
+<section class="section-white" aria-labelledby="checks-h">
   <div class="wrap">
-    <div class="t-eye">What we check</div>
-    <h2 class="t-h2" id="checks-h" style="margin-top:.7rem">Every scan covers these signals</h2>
+    <div class="eyebrow eyebrow-light">What we check</div>
+    <h2 id="checks-h" style="margin-top:.65rem">Every scan covers these signals</h2>
     <div class="checks-grid">
       <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8.5l2 2 3-4"/></svg></div><div><h4>Homepage reachability</h4><p>Is your store loading? We check HTTP 200 and fast first response.</p></div></div>
       <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3.5" y="7" width="9" height="7" rx=".75"/><path d="M5.5 7V5.5a2.5 2.5 0 015 0V7"/></svg></div><div><h4>HTTPS &amp; SSL validity</h4><p>Expired SSL silently blocks checkout in modern browsers.</p></div></div>
       <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 5h12l-1 8H3L2 5zm0 0l1-2h10l1 2"/></svg></div><div><h4>Shopify detection</h4><p>Confirms your store is running Shopify and core assets load.</p></div></div>
       <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3h10v3l-5 3-5-3V3z"/><path d="M8 9v4M5 13h6"/></svg></div><div><h4>Cart path accessible</h4><p>We verify /cart returns a valid response as a proxy for cart functionality.</p></div></div>
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="1"/><path d="M5 7h6M5 9.5h4"/></svg></div><div><h4>Checkout signals</h4><p>Checks for Shopify checkout script presence and cart action signals in page HTML.</p></div></div>
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.5l1.5 4h4L10 8l1.5 4L8 10l-3.5 2L6 8 2.5 5h4z"/></svg></div><div><h4>Trust signals</h4><p>Refund policy, shipping info, and trust badge presence — key conversion elements for first-time visitors.</p></div></div>
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3l2 2"/></svg></div><div><h4>Response time</h4><p>Slow stores lose mobile shoppers. We track load speed and flag week-over-week regressions.</p></div></div>
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 8h4l2-4 2 8 2-4h2"/></svg></div><div><h4>Week-over-week diff</h4><p>Every check is compared to last week. We surface regressions, not just outright failures.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="1"/><path d="M5 7h6M5 9.5h4"/></svg></div><div><h4>Checkout signals</h4><p>Checks for Shopify checkout script presence and cart action signals.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.5l1.5 4h4L10 8l1.5 4L8 10l-3.5 2L6 8 2.5 5h4z"/></svg></div><div><h4>Trust signals</h4><p>Refund policy, shipping info, and trust badge presence &mdash; key conversion elements.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3l2 2"/></svg></div><div><h4>Response time</h4><p>Slow stores lose mobile shoppers. We track load speed and flag regressions.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 8h4l2-4 2 8 2-4h2"/></svg></div><div><h4>Week-over-week diff</h4><p>Every check is compared to last week. We surface regressions, not just failures.</p></div></div>
     </div>
   </div>
 </section>
 
 <!-- NOT CHECKED -->
-<section class="light-bg" style="padding-top:0" aria-labelledby="nc-h">
-  <div class="wrap">
-    <div class="t-eye">Scope</div>
-    <h2 class="t-h2" id="nc-h" style="margin-top:.7rem;max-width:480px">What we do not check</h2>
-    <p class="t-sub" style="margin-top:.75rem">StoreGuard is a lightweight external monitor — not a full QA suite. We never access your Shopify admin, place test orders, or log into anything.</p>
+<section class="section-light section-top" aria-labelledby="nc-h">
+  <div class="wrap" style="padding-top:3rem">
+    <div class="eyebrow eyebrow-light">Scope</div>
+    <h2 id="nc-h" style="margin-top:.65rem;max-width:480px">What we do not check</h2>
+    <p style="margin-top:.7rem;max-width:580px">StoreGuard is a lightweight external monitor &mdash; not a full QA suite. We never access your Shopify admin, place test orders, or log into anything.</p>
     <div class="nc-list">
       <span class="nc-tag">Real checkout transactions</span><span class="nc-tag">Shopify admin / backend</span><span class="nc-tag">App performance</span><span class="nc-tag">Payment gateway config</span><span class="nc-tag">Inventory or product data</span><span class="nc-tag">Customer accounts</span><span class="nc-tag">Email deliverability</span><span class="nc-tag">Third-party integrations</span><span class="nc-tag">A/B test performance</span>
     </div>
@@ -615,18 +612,18 @@ footer{
 </section>
 
 <!-- PRICING -->
-<section class="light-bg" id="pricing" aria-labelledby="pricing-h">
+<section class="section-light" id="pricing" aria-labelledby="pricing-h">
   <div class="wrap">
-    <div class="t-eye">Pricing</div>
-    <h2 class="t-h2" id="pricing-h" style="margin-top:.7rem">One store or twenty, we've got you</h2>
-    <p class="t-sub" style="margin-top:.75rem">Start with weekly monitoring on a single store. Scale as your portfolio grows.</p>
+    <div class="eyebrow eyebrow-light">Pricing</div>
+    <h2 id="pricing-h" style="margin-top:.65rem">One store or twenty, we&rsquo;ve got you</h2>
+    <p style="margin-top:.7rem;max-width:560px">Start with weekly monitoring on a single store. Scale as your portfolio grows.</p>
     <div class="price-grid">
 
-      <!-- STARTER -->
+      <!-- STARTER (featured = dark card) -->
       <div class="pc featured">
         <div class="pc-star">Most popular</div>
         <div class="pc-tier">Starter</div>
-        <div class="pc-price">&#8364;49</div>
+        <div class="pc-price">&euro;49</div>
         <div class="pc-per">per month &middot; 1 store</div>
         <ul class="pc-feats">
           <li>Weekly health scan</li>
@@ -636,78 +633,63 @@ footer{
           <li>Week-over-week diff</li>
           <li>Email support</li>
         </ul>
-        <!-- Legal gate -->
         <label class="legal-gate" id="legalGate">
-          <input type="checkbox" id="termsCheck" onchange="updateCheckoutBtn()" aria-required="true">
+          <input type="checkbox" id="termsCheck" onchange="onTermsChange()" aria-required="true">
           <span>I agree to the <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
         </label>
         <div class="legal-err" id="legalErr" role="alert">Please accept the Terms and Privacy Policy to continue.</div>
-        <button id="checkoutBtn" onclick="startCheckout()" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.9rem" aria-label="Start Starter plan monitoring">
+        <button id="checkoutBtn" onclick="startCheckout()" class="btn btn-primary" style="width:100%;margin-top:.85rem" aria-label="Start monitoring &mdash; Starter plan &euro;49/month">
           Start monitoring
         </button>
-        <p style="font-size:.72rem;color:var(--muted2);margin-top:.6rem;text-align:center">
-          Checkout via Stripe &middot; Cancel anytime
-        </p>
+        <p class="stripe-note">Checkout via Stripe &middot; Cancel anytime</p>
       </div>
 
       <!-- GROWTH -->
       <div class="pc soon">
         <div class="pc-tier">Growth</div>
-        <div class="pc-price">&#8364;129</div>
+        <div class="pc-price">&euro;129</div>
         <div class="pc-per">per month &middot; up to 5 stores</div>
-        <ul class="pc-feats">
-          <li>Everything in Starter</li>
-          <li>Up to 5 stores</li>
-          <li>Priority alerts</li>
-          <li>Multi-store summary</li>
-          <li>Slack notifications</li>
-        </ul>
-        <span class="pc-soon">Coming soon</span>
+        <ul class="pc-feats"><li>Everything in Starter</li><li>Up to 5 stores</li><li>Priority alerts</li><li>Multi-store summary</li><li>Slack notifications</li></ul>
+        <span class="pc-soon-tag">Coming soon</span>
       </div>
 
       <!-- AGENCY -->
       <div class="pc soon">
         <div class="pc-tier">Agency</div>
-        <div class="pc-price">&#8364;299</div>
+        <div class="pc-price">&euro;299</div>
         <div class="pc-per">per month &middot; up to 20 stores</div>
-        <ul class="pc-feats">
-          <li>Everything in Growth</li>
-          <li>Up to 20 stores</li>
-          <li>Client-ready reports</li>
-          <li>Agency dashboard</li>
-          <li>White-label export</li>
-        </ul>
-        <a href="mailto:support@qsisto.com?subject=StoreGuard Agency early access" class="btn btn-ghost-dark btn-sm" style="display:inline-flex;margin-top:.5rem">Contact for early access</a>
+        <ul class="pc-feats"><li>Everything in Growth</li><li>Up to 20 stores</li><li>Client-ready reports</li><li>Agency dashboard</li><li>White-label export</li></ul>
+        <a href="mailto:support@qsisto.com?subject=StoreGuard Agency early access" class="btn btn-ghost-light btn-sm" style="display:inline-flex;margin-top:.5rem">Contact for early access</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section class="light-bg" id="faq" aria-labelledby="faq-h">
+<section class="section-white" id="faq" aria-labelledby="faq-h">
   <div class="wrap">
-    <div class="t-eye">FAQ</div>
-    <h2 class="t-h2" id="faq-h" style="margin-top:.7rem">Common questions</h2>
+    <div class="eyebrow eyebrow-light">FAQ</div>
+    <h2 id="faq-h" style="margin-top:.65rem">Common questions</h2>
     <div class="faq-grid">
-      <div class="fq"><h4>Do I need to install a Shopify app?</h4><p>No. StoreGuard works entirely from the outside — a read-only scan against your public store URL, exactly like a customer browsing. Nothing is installed in your Shopify admin.</p></div>
+      <div class="fq"><h4>Do I need to install a Shopify app?</h4><p>No. StoreGuard works entirely from the outside &mdash; a read-only scan against your public store URL, exactly like a customer browsing. Nothing is installed in your Shopify admin.</p></div>
       <div class="fq"><h4>Do you access my Shopify admin?</h4><p>Never. We have no access to your backend, orders, customers, or settings. We read your public-facing HTML only, the same as any browser would.</p></div>
-      <div class="fq"><h4>Do you complete test purchases?</h4><p>No. We don't add items to cart, submit payment forms, or initiate any transaction. Our scan is entirely read-only.</p></div>
-      <div class="fq"><h4>What happens if an issue is found?</h4><p>You receive an email alert immediately with the specific check that changed and what to investigate first. You take action — we don't make changes to your store.</p></div>
-      <div class="fq"><h4>Can I cancel anytime?</h4><p>Yes. No annual commitments or lock-in. Cancel from your account or email support@qsisto.com — confirmed within one business day.</p></div>
-      <div class="fq"><h4>Is this a replacement for full QA testing?</h4><p>No. StoreGuard is an early-warning monitoring layer, not a QA substitute. Think of it as your store's smoke alarm — not a full fire suppression system.</p></div>
+      <div class="fq"><h4>Do you complete test purchases?</h4><p>No. We don&rsquo;t add items to cart, submit payment forms, or initiate any transaction. Our scan is entirely read-only.</p></div>
+      <div class="fq"><h4>What happens if an issue is found?</h4><p>You receive an email alert immediately with the specific check that changed and what to investigate first. You take action &mdash; we don&rsquo;t make changes to your store.</p></div>
+      <div class="fq"><h4>Can I cancel anytime?</h4><p>Yes. No annual commitments or lock-in. Cancel from your account or email support@qsisto.com &mdash; confirmed within one business day.</p></div>
+      <div class="fq"><h4>Is this a replacement for full QA testing?</h4><p>No. StoreGuard is an early-warning monitoring layer, not a QA substitute. Think of it as your store&rsquo;s smoke alarm &mdash; not a full fire suppression system.</p></div>
     </div>
   </div>
 </section>
 
-<!-- CTA STRIP -->
-<div class="cta-bg" aria-labelledby="cta-h">
-  <div class="cta-inner">
-    <div class="t-eye" style="justify-content:center">Get started free</div>
-    <h2 class="t-h2" id="cta-h" style="margin-top:.7rem;color:var(--white)">Run your first scan in 30 seconds</h2>
-    <p class="t-sub" style="color:var(--muted);margin:0.75rem auto 0">No account needed. No Shopify app. No admin access.</p>
+<!-- CTA -->
+<div class="cta-strip" aria-labelledby="cta-h">
+  <div style="position:relative;z-index:1">
+    <div class="eyebrow eyebrow-dark" style="display:inline-flex;margin-bottom:.65rem">Get started free</div>
+    <h2 id="cta-h" style="margin-bottom:.7rem">Run your first scan in 30 seconds</h2>
+    <p>No account needed. No Shopify app. No admin access.</p>
     <div class="cta-actions">
-      <button class="btn btn-primary" onclick="document.getElementById('scan').scrollIntoView({behavior:'smooth'});setTimeout(()=>document.getElementById('scanUrl').focus(),400)">Run free health scan</button>
-      <a href="mailto:support@qsisto.com" class="btn btn-ghost">Talk to us</a>
+      <button class="btn btn-primary" onclick="scrollToScan(event)">Run free health scan</button>
+      <a href="mailto:support@qsisto.com" class="btn btn-ghost-dark">Talk to us</a>
     </div>
   </div>
 </div>
@@ -715,7 +697,7 @@ footer{
 <!-- FOOTER -->
 <footer>
   <div class="ft-inner">
-    <div class="ft-row1">
+    <div class="ft-row">
       <span class="ft-logo">Qsisto &middot; StoreGuard</span>
       <nav class="ft-links" aria-label="Legal links">
         <a href="/legal/privacy.html">Privacy Policy</a>
@@ -724,72 +706,83 @@ footer{
         <a href="mailto:support@qsisto.com">support@qsisto.com</a>
       </nav>
     </div>
-    <p class="ft-legal">
-      Operated by Qsisto. Qsisto is operated by AB Empire Oy, Business ID 3499735-5, Finland.
-      Contact: <a href="mailto:support@qsisto.com" style="color:rgba(240,244,255,.35);text-decoration:underline">support@qsisto.com</a>
-    </p>
+    <p class="ft-legal">Operated by Qsisto. Qsisto is operated by AB Empire Oy, Business ID 3499735-5, Finland. Contact: <a href="mailto:support@qsisto.com">support@qsisto.com</a></p>
   </div>
 </footer>
 
 <script>
-// ── SCORE ANIMATION ────────────────────────────────────────
+'use strict';
+// ── Score animation ────────────────────────────────────────────
 window.addEventListener('load', () => {
   const el = document.getElementById('animScore');
   const bar = document.getElementById('scoreBar');
   if (!el || !bar) return;
-  let n = 0, target = 82;
+  let n = 0;
   const iv = setInterval(() => {
-    n = Math.min(n + 3, target);
+    n = Math.min(n + 3, 82);
     el.textContent = n;
     bar.style.width = n + '%';
     bar.setAttribute('aria-valuenow', n);
-    if (n >= target) clearInterval(iv);
+    if (n >= 82) clearInterval(iv);
   }, 28);
 });
 
-// ── TOAST ──────────────────────────────────────────────────
-function showToast(msg, dur = 3500) {
+// ── Toast ──────────────────────────────────────────────────────
+function toast(msg, dur) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
+  setTimeout(() => t.classList.remove('show'), dur || 3800);
 }
 
-// ── DOMAIN VALIDATION ──────────────────────────────────────
-function sanitizeDomain(raw) {
+// ── Nav scroll helper ──────────────────────────────────────────
+function scrollToScan(e) {
+  if (e) e.preventDefault();
+  const el = document.getElementById('scan');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => {
+    const inp = document.getElementById('scanUrl');
+    if (inp) inp.focus();
+  }, 420);
+}
+
+// ── Domain validation ──────────────────────────────────────────
+function sanitize(raw) {
   return raw.replace(/^https?:\/\//i,'').replace(/\/.*/,'').replace(/\s/g,'').toLowerCase().trim();
 }
 function isPrivate(d) {
   return /^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.|0\.0\.0\.0|::1)/.test(d);
 }
-function isValidDomain(d) {
+function isValid(d) {
   return d.length >= 4 && d.includes('.') && !/[<>'"\\]/.test(d);
 }
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-// ── SCAN FLOW ──────────────────────────────────────────────
+// ── Scan ───────────────────────────────────────────────────────
 async function runScan() {
   const urlEl = document.getElementById('scanUrl');
-  const box = document.getElementById('scanBox');
-  const btn = document.getElementById('scanBtn');
-  const res = document.getElementById('scanResult');
-  const raw = urlEl.value.trim();
+  const box   = document.getElementById('scanBox');
+  const btn   = document.getElementById('scanBtn');
+  const res   = document.getElementById('scanResult');
+  const raw   = (urlEl.value || '').trim();
 
   if (!raw) { urlEl.focus(); return; }
-  const domain = sanitizeDomain(raw);
+  const domain = sanitize(raw);
 
-  if (!isValidDomain(domain)) { showScanErr('Please enter a valid store domain, e.g. yourstore.com'); return; }
+  if (!isValid(domain)) { showScanErr('Please enter a valid store domain, e.g. yourstore.com'); return; }
   if (isPrivate(domain)) { showScanErr('Private or local addresses are not supported.'); return; }
 
-  box.className = 'scan-row scanning';
+  box.className = 'scan-box scanning';
   btn.disabled = true;
   res.style.display = 'none';
 
   try {
-    // Live read-only scan — no private secrets in frontend
     const r = await fetch('https://jmhzzzefiyvplwxvuuxo.supabase.co/functions/v1/monitor-alert-builder', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Qsisto-Test-Secret': 'qsisto-sg-test-2026-xK9mP3nR7vQ2wL5j' },
-      body: JSON.stringify({ store_url: 'https://' + domain, scan_mode: 'quick_health_check', source: 'storeguard_landing' })
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Qsisto-Test-Secret':'qsisto-sg-test-2026-xK9mP3nR7vQ2wL5j'},
+      body:JSON.stringify({store_url:'https://'+domain,scan_mode:'quick_health_check',source:'storeguard_landing'})
     });
     const data = await r.json().catch(() => ({}));
     const score = data?.score ?? data?.health_score ?? null;
@@ -799,89 +792,145 @@ async function runScan() {
     showDemo(domain);
   }
 
-  box.className = 'scan-row s-ok';
+  box.className = 'scan-box s-ok';
   btn.disabled = false;
 }
 
 function showScanErr(msg) {
-  document.getElementById('scanBox').className = 'scan-row s-warn';
+  document.getElementById('scanBox').className = 'scan-box s-warn';
   document.getElementById('scanBtn').disabled = false;
   const res = document.getElementById('scanResult');
-  res.innerHTML = '<p style="color:var(--amber);font-size:.85rem;padding:.25rem 0">' + escHtml(msg) + '</p>';
+  res.innerHTML = '<p style="color:var(--amber)!important;font-size:.85rem;padding:.2rem 0">' + esc(msg) + '</p>';
   res.style.display = 'block';
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function showResult(domain, score, status) {
   const isOk = status === 'healthy' || (score != null && score >= 75);
-  const s = score ?? (isOk ? 88 : 62);
-  const badge = isOk ? 'ok' : 'warn';
-  const badgeText = isOk ? 'Healthy' : 'Warning — review recommended';
-  const res = document.getElementById('scanResult');
+  const s    = score ?? (isOk ? 88 : 62);
+  const bc   = isOk ? 'r-badge-ok' : 'r-badge-warn';
+  const bt   = isOk ? 'Healthy' : 'Warning — review recommended';
+  const res  = document.getElementById('scanResult');
   res.innerHTML =
-    '<div class="r-head"><div class="r-score ' + badge + '">' + s + '</div><div class="r-badge ' + badge + '">' + badgeText + '</div></div>' +
+    '<div class="r-head"><div class="r-score ' + (isOk?'r-score-ok':'r-score-warn') + '">' + s + '</div><div class="r-badge ' + bc + '">' + bt + '</div></div>' +
     '<ul class="r-checks">' +
     '<li><span class="ck-ok">&#10003;</span>Homepage reachable</li>' +
     '<li><span class="ck-ok">&#10003;</span>HTTPS detected</li>' +
     '<li><span class="ck-ok">&#10003;</span>Shopify platform confirmed</li>' +
     (isOk ? '<li><span class="ck-ok">&#10003;</span>Cart &amp; checkout signals present</li>' : '<li><span class="ck-warn">&#9888;</span>Trust signals need review</li>') +
     '</ul>' +
-    '<p style="font-family:var(--mono);font-size:.78rem;color:var(--muted2);margin-bottom:.9rem">' + escHtml(domain) + '</p>' +
+    '<p style="font-family:var(--mono,monospace);font-size:.78rem;margin-bottom:.85rem">' + esc(domain) + '</p>' +
     '<div class="r-ctas">' +
-    '<a href="#pricing" onclick="document.getElementById(\'pricing\').scrollIntoView({behavior:\'smooth\'});return false" class="btn btn-primary btn-sm">Start weekly monitoring &mdash; &euro;49/mo</a>' +
-    '<a href="#sample" onclick="document.getElementById(\'sample\').scrollIntoView({behavior:\'smooth\'});return false" class="btn btn-ghost btn-sm">View sample report</a>' +
+    '<button class="btn btn-primary btn-sm" onclick="scrollToPricing()">Start weekly monitoring &mdash; &euro;49/mo</button>' +
+    '<button class="btn btn-ghost-dark btn-sm" onclick="scrollToSample()">View sample report</button>' +
     '</div>' +
     '<p class="r-note">Quick preview. Full weekly monitoring includes 8 signal checks, week-over-week diff, and instant alerts.</p>';
   res.style.display = 'block';
-  document.getElementById('scanBox').className = isOk ? 'scan-row s-ok' : 'scan-row s-warn';
+  document.getElementById('scanBox').className = isOk ? 'scan-box s-ok' : 'scan-box s-warn';
 }
 
 function showDemo(domain) {
   const res = document.getElementById('scanResult');
   res.innerHTML =
-    '<div class="r-head"><div class="r-score ok">&#8212;</div><div class="r-badge ok">Domain captured</div></div>' +
+    '<div class="r-head"><div class="r-score">&#8212;</div><div class="r-badge r-badge-ok">Domain captured</div></div>' +
     '<ul class="r-checks">' +
     '<li><span class="ck-ok">&#10003;</span>Domain format valid</li>' +
     '<li><span class="ck-ok">&#10003;</span>Store URL noted</li>' +
-    '<li><span style="color:var(--muted2)">&#8594;</span>Full scan runs after activation</li>' +
+    '<li>&#8594; Full scan runs after activation</li>' +
     '</ul>' +
-    '<p style="font-family:var(--mono);font-size:.78rem;color:var(--muted2);margin-bottom:.9rem">' + escHtml(domain) + '</p>' +
+    '<p style="font-family:var(--mono,monospace);font-size:.78rem;margin-bottom:.85rem">' + esc(domain) + '</p>' +
     '<div class="r-ctas">' +
-    '<a href="#pricing" onclick="document.getElementById(\'pricing\').scrollIntoView({behavior:\'smooth\'});return false" class="btn btn-primary btn-sm">Start monitoring &mdash; &euro;49/mo</a>' +
-    '<a href="#sample" onclick="document.getElementById(\'sample\').scrollIntoView({behavior:\'smooth\'});return false" class="btn btn-ghost btn-sm">View sample report</a>' +
+    '<button class="btn btn-primary btn-sm" onclick="scrollToPricing()">Start monitoring &mdash; &euro;49/mo</button>' +
+    '<button class="btn btn-ghost-dark btn-sm" onclick="scrollToSample()">View sample report</button>' +
     '</div>' +
-    '<p class="r-note" style="color:var(--amber)">Live scan endpoint connecting. Full scan runs on activation. <a href="mailto:support@qsisto.com" style="color:var(--teal)">Contact us</a> to start immediately.</p>';
+    '<p class="r-note" style="color:var(--amber)!important">Scan endpoint connecting. Full scan runs on activation. <a href="mailto:support@qsisto.com" style="color:var(--teal)!important">Contact us</a> to start immediately.</p>';
   res.style.display = 'block';
-  document.getElementById('scanBox').className = 'scan-row s-ok';
+  document.getElementById('scanBox').className = 'scan-box s-ok';
 }
 
-// ── ENTER KEY ──────────────────────────────────────────────
-document.getElementById('scanUrl').addEventListener('keydown', e => { if (e.key === 'Enter') runScan(); });
-
-// ── TERMS / CHECKOUT ───────────────────────────────────────
-function updateCheckoutBtn() {
-  const checked = document.getElementById('termsCheck').checked;
-  const err = document.getElementById('legalErr');
-  if (checked) { err.style.display = 'none'; }
+// ── Scroll helpers ─────────────────────────────────────────────
+function scrollToPricing() {
+  document.getElementById('pricing').scrollIntoView({behavior:'smooth'});
+}
+function scrollToSample() {
+  document.getElementById('sample').scrollIntoView({behavior:'smooth'});
 }
 
-function startCheckout() {
+// ── Enter key ──────────────────────────────────────────────────
+document.getElementById('scanUrl').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runScan();
+});
+
+// ── Terms checkbox ─────────────────────────────────────────────
+function onTermsChange() {
   const checked = document.getElementById('termsCheck').checked;
-  const err = document.getElementById('legalErr');
-  if (!checked) {
-    err.style.display = 'block';
+  if (checked) document.getElementById('legalErr').style.display = 'none';
+}
+
+// ── Checkout via Stripe ────────────────────────────────────────
+async function startCheckout() {
+  if (!document.getElementById('termsCheck').checked) {
+    document.getElementById('legalErr').style.display = 'block';
     document.getElementById('termsCheck').focus();
-    showToast('Please accept Terms and Privacy Policy to continue.');
+    toast('Please accept Terms and Privacy Policy to continue.');
     return;
   }
-  // Stripe not yet connected — report blocker honestly
-  // stripe_checkout_not_connected
-  showToast('Checkout coming soon. Email support@qsisto.com to start immediately.');
-  err.style.display = 'none';
+
+  const btn = document.getElementById('checkoutBtn');
+  btn.disabled = true;
+  btn.textContent = 'Redirecting…';
+
+  try {
+    const storeUrl = (document.getElementById('scanUrl').value || '').trim();
+    // Call backend Stripe Checkout endpoint — no secret key in frontend
+    const r = await fetch('https://jmhzzzefiyvplwxvuuxo.supabase.co/functions/v1/monitor-alert-builder', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Qsisto-Test-Secret':'qsisto-sg-test-2026-xK9mP3nR7vQ2wL5j'},
+      body:JSON.stringify({
+        action:'create_checkout_session',
+        plan:'starter',
+        price_eur:49,
+        product_lock_id:'PL-ST-MR1DWPL0',
+        store_url: storeUrl || null,
+        terms_accepted:true,
+        privacy_accepted:true,
+        terms_accepted_at: new Date().toISOString(),
+        privacy_accepted_at: new Date().toISOString(),
+        success_url: window.location.origin + '/storeguard?checkout=success',
+        cancel_url: window.location.origin + '/storeguard?checkout=cancelled'
+      })
+    });
+    const data = await r.json().catch(() => ({}));
+
+    if (data?.checkout_url) {
+      window.location.href = data.checkout_url;
+      return;
+    }
+    if (data?.url) {
+      window.location.href = data.url;
+      return;
+    }
+    // Endpoint responded but no checkout URL — report blocker
+    throw new Error(data?.error || data?.message || 'stripe_checkout_not_connected');
+  } catch(e) {
+    // stripe_checkout_not_connected — graceful fallback
+    btn.disabled = false;
+    btn.textContent = 'Start monitoring';
+    const msg = String(e?.message || e);
+    if (msg.includes('stripe_checkout_not_connected') || msg.includes('not_connected') || msg.includes('checkout')) {
+      toast('Stripe checkout is not yet connected. Email support@qsisto.com to start your subscription immediately.');
+    } else {
+      toast('Could not start checkout. Please email support@qsisto.com to get started.');
+    }
+  }
 }
+
+// ── Checkout result param ──────────────────────────────────────
+(function() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('checkout') === 'success') {
+    setTimeout(() => toast('Subscription started successfully. Check your email for confirmation.', 6000), 500);
+  }
+})();
 </script>
 </body>
 </html>
