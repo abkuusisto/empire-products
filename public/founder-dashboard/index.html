@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Qsisto Founder Dashboard v2 — Internal Staging</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:#08091A;color:#C8D0E8;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:root{
+  --bg:#08091A;
+  --bg2:#0D1128;
+  --card:#111828;
+  --card2:#151E35;
+  --border:rgba(99,121,183,.15);
+  --border2:rgba(99,121,183,.25);
+  --text:#C8D0E8;
+  --text2:#7A8BB8;
+  --text3:#3D4E75;
+  --green:#22C55E;
+  --green-bg:rgba(34,197,94,.08);
+  --green-border:rgba(34,197,94,.2);
+  --amber:#F59E0B;
+  --amber-bg:rgba(245,158,11,.08);
+  --amber-border:rgba(245,158,11,.2);
+  --red:#EF4444;
+  --red-bg:rgba(239,68,68,.08);
+  --red-border:rgba(239,68,68,.2);
+  --blue:#3B82F6;
+  --blue-bg:rgba(59,130,246,.08);
+  --teal:#06B6D4;
+  --mono:'JetBrains Mono',monospace;
+}
+a{color:var(--text);text-decoration:none}
+/* STAGING BANNER */
+.staging-banner{background:linear-gradient(90deg,#1a0a02,#2d1500,#1a0a02);border-bottom:1px solid rgba(245,158,11,.3);padding:6px 1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber)}
+.staging-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* SIDEBAR */
+.layout{display:flex;min-height:calc(100vh - 33px)}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:1.25rem 0;flex-shrink:0;position:sticky;top:33px;height:calc(100vh - 33px);overflow-y:auto}
+.sb-logo{padding:0 1.25rem .9rem;border-bottom:1px solid var(--border);margin-bottom:.9rem}
+.sb-logo-text{font-size:.95rem;font-weight:700;color:#E8EDFF}
+.sb-logo-sub{font-size:.68rem;color:var(--text3);margin-top:1px;font-family:var(--mono)}
+.sb-section{padding:0 .75rem;margin-bottom:.25rem}
+.sb-label{font-size:.66rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);padding:.5rem .5rem .35rem;display:block}
+.sb-item{display:flex;align-items:center;gap:.55rem;padding:.45rem .5rem;border-radius:6px;font-size:.82rem;color:var(--text2);cursor:pointer;transition:all .15s;text-decoration:none}
+.sb-item:hover,.sb-item.active{background:rgba(59,130,246,.08);color:#E8EDFF}
+.sb-item.active{color:var(--blue)}
+.sb-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.sb-dot-green{background:var(--green)}
+.sb-dot-amber{background:var(--amber)}
+.sb-dot-gray{background:var(--text3)}
+/* MAIN */
+.main{flex:1;padding:1.75rem;max-width:calc(100vw - 220px)}
+/* HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:.75rem}
+.page-title{font-size:1.2rem;font-weight:700;color:#E8EDFF;letter-spacing:-.01em}
+.page-meta{font-size:.75rem;color:var(--text3)}
+.badge{display:inline-flex;align-items:center;gap:.35rem;padding:.22rem .6rem;border-radius:100px;font-size:.7rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.badge-red{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)}
+.badge-amber{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber)}
+.badge-green{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
+.badge-blue{background:var(--blue-bg);border:1px solid rgba(59,130,246,.2);color:var(--blue)}
+.badge-gray{background:rgba(99,121,183,.08);border:1px solid var(--border);color:var(--text2)}
+/* GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem}
+.card-sm{padding:.85rem 1rem}
+.kpi-label{font-size:.71rem;color:var(--text3);margin-bottom:.35rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.kpi-value{font-size:1.6rem;font-weight:700;color:#E8EDFF;line-height:1;font-family:var(--mono)}
+.kpi-sub{font-size:.72rem;color:var(--text3);margin-top:.3rem}
+.kpi-value.green{color:var(--green)}
+.kpi-value.amber{color:var(--amber)}
+/* SECTION TITLE */
+.section-title{font-size:.78rem;font-weight:600;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.85rem}
+/* CARD HEADER */
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.card-title{font-size:.9rem;font-weight:600;color:#E8EDFF}
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;margin-bottom:12px}
+.three-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:12px}
+/* CHECK LIST */
+.check-list{display:flex;flex-direction:column;gap:.45rem}
+.check-item{display:flex;align-items:flex-start;gap:.55rem;font-size:.82rem}
+.check-ico{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:.65rem;font-weight:700}
+.ico-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.ico-amber{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
+.ico-red{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.ico-gray{background:rgba(99,121,183,.1);color:var(--text3);border:1px solid var(--border)}
+.check-text{color:var(--text2);line-height:1.45}
+.check-text .bold{color:#E8EDFF;font-weight:500}
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:.85rem 0}
+/* KV row */
+.kv{display:flex;justify-content:space-between;align-items:center;padding:.32rem 0;border-bottom:1px solid rgba(99,121,183,.07);font-size:.81rem}
+.kv:last-child{border-bottom:none}
+.kv-key{color:var(--text3)}
+.kv-val{color:#E8EDFF;font-weight:500}
+.kv-val.mono{font-family:var(--mono);font-size:.75rem}
+.kv-val.green{color:var(--green)}
+.kv-val.amber{color:var(--amber)}
+.kv-val.red{color:var(--red)}
+/* PROGRESS BAR */
+.prog-wrap{height:5px;background:rgba(99,121,183,.1);border-radius:3px;overflow:hidden;margin:.5rem 0}
+.prog{height:100%;border-radius:3px;transition:width 1s ease}
+.prog-green{background:var(--green)}
+.prog-amber{background:var(--amber)}
+/* SCORE RING */
+.score-ring-wrap{display:flex;align-items:center;gap:1.1rem;margin:.85rem 0}
+.score-num{font-size:2.6rem;font-weight:700;font-family:var(--mono);color:var(--amber);line-height:1}
+.score-meta{}
+.score-label{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.score-verdict{font-size:.88rem;font-weight:600;color:var(--amber)}
+/* LAYERS */
+.layer-grid{display:flex;flex-direction:column;gap:.35rem}
+.layer-row{display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;border-radius:5px;font-size:.79rem}
+.layer-row.done{background:rgba(34,197,94,.05)}
+.layer-row.warn{background:rgba(245,158,11,.05)}
+.layer-row.miss{background:rgba(239,68,68,.04)}
+.layer-name{display:flex;align-items:center;gap:.5rem;color:var(--text2)}
+.layer-name.done-txt{color:#E8EDFF}
+/* EVENT LOG */
+.event-log{display:flex;flex-direction:column;gap:0}
+.event{display:flex;align-items:flex-start;gap:.75rem;padding:.55rem 0;border-bottom:1px solid rgba(99,121,183,.06)}
+.event:last-child{border-bottom:none}
+.event-ts{font-size:.7rem;color:var(--text3);font-family:var(--mono);white-space:nowrap;min-width:80px;padding-top:2px}
+.event-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.event-dot.g{background:var(--green)}
+.event-dot.a{background:var(--amber)}
+.event-dot.b{background:var(--blue)}
+.event-text{font-size:.8rem;color:var(--text2);line-height:1.45}
+/* BLOCKER */
+.blocker{border-radius:8px;padding:.75rem .9rem;margin-bottom:.55rem;border:1px solid}
+.blocker.hard{background:var(--amber-bg);border-color:var(--amber-border)}
+.blocker.soft{background:rgba(99,121,183,.05);border-color:var(--border2)}
+.blocker.clear{background:var(--green-bg);border-color:var(--green-border)}
+.blocker-title{font-size:.8rem;font-weight:600;margin-bottom:.2rem}
+.blocker.hard .blocker-title{color:var(--amber)}
+.blocker.soft .blocker-title{color:var(--text)}
+.blocker.clear .blocker-title{color:var(--green)}
+.blocker-sub{font-size:.74rem;color:var(--text3)}
+/* INTEGRITY FOOTER */
+.integrity{background:var(--bg2);border-top:1px solid var(--border);padding:.75rem 1.75rem;display:flex;flex-wrap:wrap;gap:1.25rem;align-items:center;font-size:.74rem;color:var(--text3);position:sticky;bottom:0}
+.int-item{display:flex;align-items:center;gap:.4rem}
+.int-red{color:var(--red);font-weight:600}
+.int-green{color:var(--green);font-weight:600}
+/* SENDER DOMAIN TAGS */
+.domain-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+.dtag{font-size:.72rem;font-family:var(--mono);padding:.22rem .55rem;border-radius:4px;background:rgba(99,121,183,.08);border:1px solid var(--border);color:var(--text2)}
+/* RESPONSIVE */
+@media(max-width:900px){.sidebar{display:none}.main{max-width:100%}.layout{display:block}}
+@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.two-col,.three-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- STAGING BANNER -->
+<div class="staging-banner">
+  <span class="staging-dot"></span>
+  Internal staging &mdash; empire-products.vercel.app &mdash; Not linked from qsisto.com &mdash; No auth implemented yet
+  <span class="staging-dot"></span>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-text">Qsisto</div>
+    <div class="sb-logo-sub">Founder Dashboard v2</div>
+  </div>
+
+  <div class="sb-section">
+    <span class="sb-label">Overview</span>
+    <a class="sb-item active" href="#overview">&#x25A0; Cockpit</a>
+    <a class="sb-item" href="#storeguard">&#x25A0; StoreGuard</a>
+    <a class="sb-item" href="#outreach">&#x25A0; Outreach</a>
+    <a class="sb-item" href="#capacity">&#x25A0; Senders</a>
+    <a class="sb-item" href="#events">&#x25A0; Events</a>
+  </div>
+
+  <div class="sb-section" style="margin-top:.75rem">
+    <span class="sb-label">Products</span>
+    <a class="sb-item" href="#storeguard">
+      <span class="sb-dot sb-dot-amber"></span>StoreGuard
+    </a>
+  </div>
+
+  <div class="sb-section" style="margin-top:.75rem">
+    <span class="sb-label">System</span>
+    <div class="sb-item"><span class="sb-dot sb-dot-green"></span>Stripe live</div>
+    <div class="sb-item"><span class="sb-dot sb-dot-green"></span>Sender pool</div>
+    <div class="sb-item"><span class="sb-dot sb-dot-amber"></span>Supabase log</div>
+    <div class="sb-item"><span class="sb-dot sb-dot-gray"></span>Auth: pending</div>
+  </div>
+
+  <div style="padding:1rem 1.25rem;margin-top:auto;border-top:1px solid var(--border);margin-top:2rem">
+    <div style="font-size:.7rem;color:var(--text3);line-height:1.6">
+      AB Empire Oy<br>Business ID 3499735-5<br>Finland
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Page header -->
+  <div class="page-header" id="overview">
+    <div>
+      <div class="page-title">Founder Cockpit</div>
+      <div class="page-meta">2026-07-01 &middot; Empire Engine v1 &middot; Internal staging</div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <span class="badge badge-red">real_send_allowed = false</span>
+      <span class="badge badge-amber">Awaiting send approval</span>
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpi-grid">
+    <div class="card card-sm">
+      <div class="kpi-label">Total MRR</div>
+      <div class="kpi-value" style="color:var(--text3)">&euro;0</div>
+      <div class="kpi-sub">0 customers</div>
+    </div>
+    <div class="card card-sm">
+      <div class="kpi-label">Products live</div>
+      <div class="kpi-value">1</div>
+      <div class="kpi-sub">StoreGuard</div>
+    </div>
+    <div class="card card-sm">
+      <div class="kpi-label">Emails sent</div>
+      <div class="kpi-value" style="color:var(--text3)">0</div>
+      <div class="kpi-sub">today &middot; all time</div>
+    </div>
+    <div class="card card-sm">
+      <div class="kpi-label">Sender capacity</div>
+      <div class="kpi-value green">324</div>
+      <div class="kpi-sub">safe/day &middot; 0 used</div>
+    </div>
+    <div class="card card-sm">
+      <div class="kpi-label">Batch ready</div>
+      <div class="kpi-value amber">7</div>
+      <div class="kpi-sub">prospects locked</div>
+    </div>
+    <div class="card card-sm">
+      <div class="kpi-label">Blockers</div>
+      <div class="kpi-value amber">1</div>
+      <div class="kpi-sub">send approval</div>
+    </div>
+    <div class="card card-sm">
+      <div class="kpi-label">Replies</div>
+      <div class="kpi-value" style="color:var(--text3)">0</div>
+      <div class="kpi-sub">no sends yet</div>
+    </div>
+    <div class="card card-sm">
+      <div class="kpi-label">Payments</div>
+      <div class="kpi-value" style="color:var(--text3)">0</div>
+      <div class="kpi-sub">stripe connected</div>
+    </div>
+  </div>
+
+  <!-- PRE-SEND BLOCKERS -->
+  <div class="section-title">Pre-send blockers</div>
+  <div style="margin-bottom:1.5rem">
+    <div class="blocker hard">
+      <div class="blocker-title">&#9888; Owner send approval pending [HARD BLOCK]</div>
+      <div class="blocker-sub">real_send_allowed = false. Explicit owner send approval required. Batch remains BLOCKED until separate approval given.</div>
+    </div>
+    <div class="blocker soft">
+      <div class="blocker-title">&#8505; Supabase event log 401 [SOFT — review before send]</div>
+      <div class="blocker-sub">Code node uses wrong credential for usage_events. Non-blocking but should be corrected so event audit trail works on first send.</div>
+    </div>
+    <div class="blocker soft">
+      <div class="blocker-title">&#8505; Final email copy review [RECOMMENDED]</div>
+      <div class="blocker-sub">Optional review of outreach copy before first real send to 7 prospects.</div>
+    </div>
+    <div class="blocker clear">
+      <div class="blocker-title">&#10003; All automated guards active</div>
+      <div class="blocker-sub">Suppression guard &middot; duplicate guard &middot; stop-on-reply &middot; global capacity manager &middot; prospect quality gate</div>
+    </div>
+  </div>
+
+  <!-- STOREGUARD CARD + READINESS -->
+  <div class="section-title" id="storeguard">StoreGuard &mdash; Launch readiness</div>
+  <div class="two-col" style="margin-bottom:1.5rem">
+
+    <!-- Status card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">StoreGuard</span>
+        <span class="badge badge-amber">Awaiting send approval</span>
+      </div>
+      <div style="font-size:.72rem;font-family:var(--mono);color:var(--text3);margin-bottom:.85rem">PL-ST-MR1DWPL0 &middot; qsisto.com/storeguard</div>
+
+      <div class="check-list">
+        <div class="check-item"><div class="check-ico ico-green">&#10003;</div><span class="check-text"><span class="bold">Visual review approved</span> &mdash; V6 approved by owner</span></div>
+        <div class="check-item"><div class="check-ico ico-green">&#10003;</div><span class="check-text"><span class="bold">Stripe Checkout verified</span> &mdash; opens in real browser, redirects to checkout.stripe.com</span></div>
+        <div class="check-item"><div class="check-ico ico-green">&#10003;</div><span class="check-text"><span class="bold">Legal pages live</span> &mdash; /legal/terms, /legal/privacy, /legal/dpa HTTP 200</span></div>
+        <div class="check-item"><div class="check-ico ico-green">&#10003;</div><span class="check-text"><span class="bold">Business ID 3499735-5</span> in footer &mdash; Finnish registration number absent from English page</span></div>
+        <div class="check-item"><div class="check-ico ico-green">&#10003;</div><span class="check-text"><span class="bold">Product Lock issued</span> &mdash; PL-ST-MR1DWPL0, gate 88.15/88.0 PASS</span></div>
+        <div class="check-item"><div class="check-ico ico-green">&#10003;</div><span class="check-text"><span class="bold">7-prospect batch verified</span> &mdash; suppression, duplicate, domain qualification passed</span></div>
+        <div class="check-item"><div class="check-ico ico-amber">!</div><span class="check-text"><span class="bold">Owner send approval pending</span> &mdash; batch is ready but blocked</span></div>
+        <div class="check-item"><div class="check-ico ico-gray">-</div><span class="check-text">First payment &mdash; not yet</span></div>
+        <div class="check-item"><div class="check-ico ico-gray">-</div><span class="check-text">Reply received &mdash; not yet (no sends)</span></div>
+      </div>
+
+      <hr class="divider">
+      <div class="kv"><span class="kv-key">product_lock_id</span><span class="kv-val mono">PL-ST-MR1DWPL0</span></div>
+      <div class="kv"><span class="kv-key">campaign_id</span><span class="kv-val mono">CAMP-ST-AUYT91DG</span></div>
+      <div class="kv"><span class="kv-key">batch_id</span><span class="kv-val mono">BATCH-SG-STARTER-U0GX5Z7N</span></div>
+      <div class="kv"><span class="kv-key">real_send_allowed</span><span class="kv-val red">false</span></div>
+      <div class="kv"><span class="kv-key">outreach_sent</span><span class="kv-val red">false</span></div>
+      <div class="kv"><span class="kv-key">sender_provider_called</span><span class="kv-val red">false</span></div>
+    </div>
+
+    <!-- Business readiness score -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Complete Business Readiness</span>
+        <span class="badge badge-amber">Score 72/100</span>
+      </div>
+
+      <div class="score-ring-wrap">
+        <div class="score-num">72</div>
+        <div class="score-meta">
+          <div class="score-label">Readiness score</div>
+          <div class="score-verdict">READY_FOR_OWNER_APPROVAL</div>
+          <div style="font-size:.73rem;color:var(--text3);margin-top:.2rem">Missing: send approval, first data</div>
+        </div>
+      </div>
+
+      <div class="prog-wrap"><div class="prog prog-amber" style="width:72%"></div></div>
+
+      <div class="layer-grid" style="margin-top:.85rem">
+        <div class="layer-row done"><span class="layer-name done-txt">&#10003; Business identity &amp; legal</span><span class="badge badge-green" style="font-size:.65rem">done</span></div>
+        <div class="layer-row done"><span class="layer-name done-txt">&#10003; ICP &amp; offer defined</span><span class="badge badge-green" style="font-size:.65rem">done</span></div>
+        <div class="layer-row done"><span class="layer-name done-txt">&#10003; Landing page live (V6)</span><span class="badge badge-green" style="font-size:.65rem">done</span></div>
+        <div class="layer-row done"><span class="layer-name done-txt">&#10003; Stripe Checkout wired</span><span class="badge badge-green" style="font-size:.65rem">done</span></div>
+        <div class="layer-row done"><span class="layer-name done-txt">&#10003; Legal pages (terms/privacy/DPA)</span><span class="badge badge-green" style="font-size:.65rem">done</span></div>
+        <div class="layer-row done"><span class="layer-name done-txt">&#10003; Onboarding email (Stripe webhook)</span><span class="badge badge-green" style="font-size:.65rem">done</span></div>
+        <div class="layer-row done"><span class="layer-name done-txt">&#10003; Support email live</span><span class="badge badge-green" style="font-size:.65rem">done</span></div>
+        <div class="layer-row done"><span class="layer-name done-txt">&#10003; Prospect list verified (7)</span><span class="badge badge-green" style="font-size:.65rem">done</span></div>
+        <div class="layer-row warn"><span class="layer-name">&#8505; Outreach not yet sent</span><span class="badge badge-amber" style="font-size:.65rem">pending</span></div>
+        <div class="layer-row miss"><span class="layer-name">&#8203;&#10005; First payment / MRR</span><span class="badge badge-gray" style="font-size:.65rem">blocked</span></div>
+        <div class="layer-row miss"><span class="layer-name">&#8203;&#10005; Reply &amp; conversion data</span><span class="badge badge-gray" style="font-size:.65rem">blocked</span></div>
+        <div class="layer-row miss"><span class="layer-name">&#8203;&#10005; Learning loop (open/reply data)</span><span class="badge badge-gray" style="font-size:.65rem">blocked</span></div>
+      </div>
+
+      <hr class="divider">
+      <div style="font-size:.78rem;color:var(--text2);line-height:1.55">
+        <strong style="color:#E8EDFF">Recommendation:</strong> READY_FOR_OWNER_APPROVAL. All technical layers complete. Send the 7-prospect batch with explicit owner approval and collect first conversion data. Readiness will reach 90+ after first send data.
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTREACH BATCH + SENDER CAPACITY -->
+  <div class="two-col" style="margin-bottom:1.5rem" id="outreach">
+
+    <!-- Batch -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Outreach batch</span>
+        <span class="badge badge-red">Send blocked</span>
+      </div>
+      <div style="font-size:.72rem;font-family:var(--mono);color:var(--text3);margin-bottom:.85rem;line-height:1.7">
+        BATCH-SG-STARTER-U0GX5Z7N<br>
+        CAMP-ST-AUYT91DG &middot; product: StoreGuard
+      </div>
+      <div class="kv"><span class="kv-key">Final sendable count</span><span class="kv-val">7 prospects</span></div>
+      <div class="kv"><span class="kv-key">Suppression check</span><span class="kv-val green">passed</span></div>
+      <div class="kv"><span class="kv-key">Duplicate check</span><span class="kv-val green">passed</span></div>
+      <div class="kv"><span class="kv-key">Unsubscribe link</span><span class="kv-val green">required &amp; present</span></div>
+      <div class="kv"><span class="kv-key">Stop-on-reply</span><span class="kv-val green">active</span></div>
+      <div class="kv"><span class="kv-key">Follow-up sequence</span><span class="kv-val" style="color:var(--text3)">not approved</span></div>
+      <div class="kv"><span class="kv-key">Batch expansion</span><span class="kv-val" style="color:var(--text3)">not approved</span></div>
+      <div class="kv"><span class="kv-key">Other product outreach</span><span class="kv-val" style="color:var(--text3)">not approved</span></div>
+      <hr class="divider">
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:.55rem">Sender distribution (balanced)</div>
+      <div class="kv"><span class="kv-key mono" style="font-size:.73rem">fortuepiphany.com</span><span class="kv-val">3</span></div>
+      <div class="kv"><span class="kv-key mono" style="font-size:.73rem">inclinenomics.com</span><span class="kv-val">2</span></div>
+      <div class="kv"><span class="kv-key mono" style="font-size:.73rem">prismgenix.com</span><span class="kv-val">2</span></div>
+      <div style="margin-top:.85rem;padding:.6rem .85rem;border-radius:6px;background:var(--amber-bg);border:1px solid var(--amber-border);font-size:.78rem;color:var(--amber);text-align:center;font-weight:500">
+        Send blocked until explicit owner approval. real_send_allowed = false.
+      </div>
+    </div>
+
+    <!-- Sender capacity -->
+    <div class="card" id="capacity">
+      <div class="card-header">
+        <span class="card-title">Sender capacity</span>
+        <span class="badge badge-green">15 active</span>
+      </div>
+      <div class="kv"><span class="kv-key">Active senders</span><span class="kv-val">15</span></div>
+      <div class="kv"><span class="kv-key">Total daily cap</span><span class="kv-val">450 / day</span></div>
+      <div class="kv"><span class="kv-key">Safe daily cap (72%)</span><span class="kv-val green">324 / day</span></div>
+      <div class="kv"><span class="kv-key">Used today</span><span class="kv-val green">0</span></div>
+      <div class="kv"><span class="kv-key">Dry-run reserved</span><span class="kv-val">10</span></div>
+      <div class="kv"><span class="kv-key">Available now</span><span class="kv-val green">314</span></div>
+      <div class="kv"><span class="kv-key">actual_sent_today</span><span class="kv-val green">0</span></div>
+      <div class="kv"><span class="kv-key">main_domain_protected</span><span class="kv-val green">true</span></div>
+      <div class="kv"><span class="kv-key">qsisto.com in pool</span><span class="kv-val green">false</span></div>
+      <hr class="divider">
+      <div style="margin-bottom:.5rem">
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text3);margin-bottom:.35rem">
+          <span>Daily usage</span><span>0 / 324</span>
+        </div>
+        <div class="prog-wrap"><div class="prog prog-green" style="width:1%"></div></div>
+      </div>
+      <div style="font-size:.75rem;color:var(--text2);margin-bottom:.5rem">Sender domains (5 senders each)</div>
+      <div class="domain-tags">
+        <span class="dtag">fortuepiphany.com &times;5</span>
+        <span class="dtag">inclinenomics.com &times;5</span>
+        <span class="dtag">prismgenix.com &times;5</span>
+      </div>
+      <div style="margin-top:.85rem">
+        <div class="check-item" style="font-size:.78rem"><div class="check-ico ico-green">&#10003;</div><span class="check-text">Warmup score 100 across all senders</span></div>
+        <div class="check-item" style="font-size:.78rem;margin-top:.35rem"><div class="check-ico ico-green">&#10003;</div><span class="check-text">Reply routing configured via Instantly</span></div>
+        <div class="check-item" style="font-size:.78rem;margin-top:.35rem"><div class="check-ico ico-green">&#10003;</div><span class="check-text">Global capacity manager v1 active</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENT LOG -->
+  <div class="card" id="events" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <span class="card-title">Event log</span>
+      <span class="badge badge-gray">Audit trail</span>
+    </div>
+    <div class="event-log">
+      <div class="event"><span class="event-ts">2026-07-01</span><span class="event-dot g"></span><div class="event-text"><strong style="color:#E8EDFF">StoreGuard V6 visual review approved</strong> &middot; Stripe Checkout verified (real browser) &middot; checkout_url = checkout.stripe.com/c/pay/cs_live_...</div></div>
+      <div class="event"><span class="event-ts">2026-07-01</span><span class="event-dot g"></span><div class="event-text"><strong style="color:#E8EDFF">Legal pages deployed</strong> &middot; /legal/terms &middot; /legal/privacy &middot; /legal/dpa &middot; HTTP 200 all</div></div>
+      <div class="event"><span class="event-ts">2026-07-01</span><span class="event-dot g"></span><div class="event-text"><strong style="color:#E8EDFF">Stripe /api/checkout proxy deployed</strong> &middot; CORS fix &middot; same-origin &middot; n8n webhook backend</div></div>
+      <div class="event"><span class="event-ts">2026-07-01</span><span class="event-dot g"></span><div class="event-text"><strong style="color:#E8EDFF">Global Sender Capacity Manager complete</strong> &middot; execution 595 &middot; 15 senders &middot; 324/day safe capacity</div></div>
+      <div class="event"><span class="event-ts">2026-07-01</span><span class="event-dot g"></span><div class="event-text"><strong style="color:#E8EDFF">Batch final check complete</strong> &middot; execution 614 &middot; 7 sendable &middot; suppression passed &middot; duplicate passed &middot; guard_status BLOCKED_PENDING_OWNER_APPROVAL</div></div>
+      <div class="event"><span class="event-ts">2026-07-01</span><span class="event-dot b"></span><div class="event-text"><strong style="color:#E8EDFF">Sender rebalance</strong> &middot; fortuepiphany=3 inclinenomics=2 prismgenix=2 &middot; Bundobust excluded</div></div>
+      <div class="event"><span class="event-ts">2026-07-01</span><span class="event-dot g"></span><div class="event-text"><strong style="color:#E8EDFF">Product Lock issued</strong> &middot; PL-ST-MR1DWPL0 &middot; Business Reality Gate 88.15/88.0 PASS</div></div>
+      <div class="event"><span class="event-ts">all time</span><span class="event-dot g"></span><div class="event-text">outreach_sent = false &middot; actual_sent_today = 0 &middot; real_send_allowed = false &middot; sender_provider_called = false &middot; no secrets exposed</div></div>
+    </div>
+  </div>
+
+  <!-- INTEGRITY FOOTER -->
+</main>
+</div>
+
+<!-- INTEGRITY BAR -->
+<div class="integrity">
+  <div class="int-item">real_send_allowed = <span class="int-red">false</span></div>
+  <div class="int-item">outreach_sent = <span class="int-red">false</span></div>
+  <div class="int-item">sender_provider_called = <span class="int-red">false</span></div>
+  <div class="int-item">actual_sent_today = <span class="int-green">0</span></div>
+  <div class="int-item">MRR = <span class="int-green">&euro;0</span></div>
+  <div class="int-item" style="margin-left:auto">&#128274; Internal staging &mdash; not linked from qsisto.com</div>
+</div>
+
+</body>
+</html>
