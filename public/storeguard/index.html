@@ -4,446 +4,527 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>StoreGuard — Shopify Store Health Monitoring</title>
-<meta name="description" content="StoreGuard runs a weekly read-only health scan on your Shopify store and alerts you when checkout, cart, or trust signals break.">
+<meta name="description" content="StoreGuard runs a weekly read-only health scan on your Shopify store and alerts you the moment checkout, cart, or trust signals break.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* ═══ RESET ═══════════════════════════════════════════════════ */
+/* ====================================================
+   RESET
+   ==================================================== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{font-family:'Inter',system-ui,sans-serif;line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-img,video,svg{max-width:100%;display:block}
-button{font-family:inherit;cursor:pointer}
+img,svg{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
 input{font-family:'JetBrains Mono',monospace}
 a{text-decoration:none;color:inherit}
 
-/* ═══ DESIGN TOKENS ════════════════════════════════════════════
-   DARK sections: --navy bg, text = --on-dark (#F0F4FF)
-   LIGHT sections: --light-bg (#F7F9FF), text = --on-light (#0A0F1E)
-   Never mix: dark text on dark bg, or light text on light bg
-*/
+/* ====================================================
+   TOKENS
+   Dark sections: --navy background, use --dk-* text
+   Light sections: --lt background, use --lt-* text
+   ==================================================== */
 :root{
-  /* backgrounds */
-  --navy:#0A0F1E;
-  --navy-mid:#0F1628;
-  --navy-card:#141C2F;
-  --navy-card2:#1A2340;
-  --light-bg:#F7F9FF;
-  --light-card:#FFFFFF;
+  /* Backgrounds */
+  --navy:#090E1B;
+  --navy2:#0D1525;
+  --navy3:#121C30;
+  --navy4:#1A2540;
+  --lt:#F4F7FF;
+  --lt2:#FFFFFF;
 
-  /* accent */
+  /* Accent */
   --teal:#00E5CC;
+  --teal2:#00C8B4;
+  --teal-glow:rgba(0,229,204,.32);
   --teal-dim:rgba(0,229,204,.10);
-  --teal-glow:rgba(0,229,204,.28);
-  --teal-dark:#00A896;
   --amber:#F59E0B;
   --amber-dim:rgba(245,158,11,.12);
+  --red:#EF4444;
 
-  /* on-dark text */
-  --on-dark:#F0F4FF;
-  --on-dark-muted:rgba(240,244,255,.60);
-  --on-dark-subtle:rgba(240,244,255,.36);
-  --on-dark-border:rgba(240,244,255,.09);
-  --on-dark-border2:rgba(240,244,255,.14);
+  /* Text on DARK bg — always light */
+  --dk:#F0F5FF;
+  --dk2:rgba(240,245,255,.68);
+  --dk3:rgba(240,245,255,.40);
+  --dk-border:rgba(240,245,255,.08);
+  --dk-border2:rgba(240,245,255,.15);
 
-  /* on-light text */
-  --on-light:#0A0F1E;
-  --on-light-muted:#374151;
-  --on-light-subtle:#6B7280;
-  --on-light-border:rgba(10,15,30,.09);
-  --on-light-border2:rgba(10,15,30,.16);
+  /* Text on LIGHT bg — always dark */
+  --lt-txt:#0A0F1E;
+  --lt-txt2:#374151;
+  --lt-txt3:#6B7280;
+  --lt-border:rgba(10,15,30,.08);
+  --lt-border2:rgba(10,15,30,.16);
 
-  /* spacing / radius */
+  --mono:'JetBrains Mono',monospace;
   --r:10px;
-  --r-lg:14px;
-  --ease:.22s ease;
+  --r2:14px;
+  --ease:.2s ease;
 }
 
-/* ═══ UTILITIES ════════════════════════════════════════════════ */
-.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
-.section-dark{background:var(--navy);color:var(--on-dark)}
-.section-mid{background:var(--navy-mid);color:var(--on-dark)}
-.section-light{background:var(--light-bg);color:var(--on-light)}
-.section-white{background:var(--light-card);color:var(--on-light)}
+/* ====================================================
+   LAYOUT
+   ==================================================== */
+.wrap{max-width:1140px;margin:0 auto;padding:0 1.5rem}
+.sec-dark{background:var(--navy);color:var(--dk)}
+.sec-dark2{background:var(--navy2);color:var(--dk)}
+.sec-light{background:var(--lt);color:var(--lt-txt)}
+.sec-white{background:var(--lt2);color:var(--lt-txt)}
+.pad{padding:5rem 0}
+.pad-sm{padding:3.5rem 0}
 
-/* ═══ TYPOGRAPHY ═══════════════════════════════════════════════ */
-.eyebrow{
-  display:inline-flex;align-items:center;gap:.45rem;
-  padding:.28rem .8rem;border-radius:100px;
-  font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-}
-.eyebrow-dark{background:var(--teal-dim);border:1px solid rgba(0,229,204,.22);color:var(--teal)}
-.eyebrow-light{background:rgba(0,168,150,.10);border:1px solid rgba(0,168,150,.22);color:var(--teal-dark)}
-.eyebrow-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;animation:pdot 1.8s ease-in-out infinite}
-.eyebrow-dark .eyebrow-dot{background:var(--teal)}
-.eyebrow-light .eyebrow-dot{background:var(--teal-dark)}
-@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.65)}}
+/* ====================================================
+   EYEBROW
+   ==================================================== */
+.eye{display:inline-flex;align-items:center;gap:.4rem;padding:.26rem .75rem;border-radius:100px;font-size:.71rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.eye-dark{background:var(--teal-dim);border:1px solid rgba(0,229,204,.22);color:var(--teal)}
+.eye-light{background:rgba(0,168,150,.09);border:1px solid rgba(0,168,150,.2);color:#007A6E}
+.eye-dot{width:5px;height:5px;border-radius:50%;animation:blink 2s ease-in-out infinite}
+.eye-dark .eye-dot{background:var(--teal)}
+.eye-light .eye-dot{background:#007A6E}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 
-h1{font-size:clamp(1.9rem,5vw,3.7rem);font-weight:800;line-height:1.09;letter-spacing:-.035em}
-h2{font-size:clamp(1.55rem,3.5vw,2.35rem);font-weight:800;line-height:1.13;letter-spacing:-.03em}
+/* ====================================================
+   TYPOGRAPHY
+   ==================================================== */
+h1{font-size:clamp(2rem,5.2vw,3.9rem);font-weight:800;line-height:1.07;letter-spacing:-.035em}
+h2{font-size:clamp(1.6rem,3.5vw,2.45rem);font-weight:800;line-height:1.12;letter-spacing:-.03em}
 .accent{color:var(--teal)}
+.sec-dark h2,.sec-dark2 h2{color:var(--dk)}
+.sec-light h2,.sec-white h2{color:var(--lt-txt)}
 
-/* ═══ BUTTONS ══════════════════════════════════════════════════ */
+/* ====================================================
+   BUTTONS — explicit, no inheritance from muted vars
+   ==================================================== */
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:.48rem;
   min-height:44px;padding:.72rem 1.35rem;
   border-radius:8px;border:none;
-  font-size:.9rem;font-weight:700;white-space:nowrap;
-  transition:all var(--ease);cursor:pointer;
-  font-family:'Inter',sans-serif;
+  font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;
+  white-space:nowrap;cursor:pointer;
+  transition:all var(--ease);
+  position:relative;
 }
 .btn:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
-.btn:disabled{opacity:.4;pointer-events:none}
+.btn:disabled{opacity:.45;pointer-events:none}
 
-/* Primary — teal bg, dark text. Works on ANY background. */
-.btn-primary{background:var(--teal);color:#0A0F1E !important}
-.btn-primary:hover{opacity:.86;box-shadow:0 0 20px var(--teal-glow),0 4px 10px rgba(0,229,204,.2);transform:translateY(-1px)}
-.nav-links .btn-primary:hover{box-shadow:0 0 32px rgba(0,229,204,.5),0 4px 14px rgba(0,0,0,.3);opacity:1}
-.btn-primary:active{transform:translateY(0)}
+/* Primary: teal bg, DARK text — always readable */
+.btn-primary{
+  background:var(--teal);
+  color:#090E1B !important;   /* hard navy, never inherited */
+  font-weight:800;
+  box-shadow:0 0 0 0 var(--teal-glow);
+}
+.btn-primary:hover{
+  background:#00F0D8;
+  box-shadow:0 0 24px var(--teal-glow),0 4px 12px rgba(0,229,204,.22);
+  transform:translateY(-1px);
+  color:#090E1B !important;
+}
+.btn-primary:active{transform:translateY(0);box-shadow:0 0 10px var(--teal-glow)}
 
-/* Ghost on dark — white border, white text */
-.btn-ghost-dark{background:transparent;color:var(--on-dark) !important;border:1.5px solid var(--on-dark-border2)}
-.btn-ghost-dark:hover{border-color:var(--teal);color:var(--teal) !important}
+/* Nav primary — extra glow */
+.nav-cta.btn-primary{
+  box-shadow:0 0 20px rgba(0,229,204,.38),0 2px 8px rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.14);
+  letter-spacing:.01em;
+  color:#090E1B !important;
+}
+.nav-cta.btn-primary:hover{
+  box-shadow:0 0 32px rgba(0,229,204,.55),0 4px 14px rgba(0,0,0,.28);
+  color:#090E1B !important;
+}
 
-/* Ghost on light — dark border, dark text */
-.btn-ghost-light{background:transparent;color:var(--on-light) !important;border:1.5px solid var(--on-light-border2)}
-.btn-ghost-light:hover{border-color:var(--teal-dark);color:var(--teal-dark) !important}
+/* Ghost on dark bg */
+.btn-ghost-dk{
+  background:transparent;
+  color:var(--dk) !important;
+  border:1.5px solid var(--dk-border2);
+  font-weight:700;
+}
+.btn-ghost-dk:hover{border-color:var(--teal);color:var(--teal) !important}
 
-/* Sm size */
-.btn-sm{min-height:38px;padding:.5rem 1rem;font-size:.84rem}
-.nav-links .btn-primary{font-weight:800;box-shadow:0 0 22px rgba(0,229,204,.35),0 2px 8px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);letter-spacing:.01em;padding:.55rem 1.15rem}
+/* Ghost on light bg */
+.btn-ghost-lt{
+  background:transparent;
+  color:var(--lt-txt) !important;
+  border:1.5px solid var(--lt-border2);
+  font-weight:700;
+}
+.btn-ghost-lt:hover{border-color:#007A6E;color:#007A6E !important}
 
-/* ═══ NAV ═══════════════════════════════════════════════════════ */
+.btn-sm{min-height:38px;padding:.48rem .95rem;font-size:.84rem}
+
+/* Stripe button loading state */
+.btn-loading{opacity:.8;pointer-events:none}
+.btn-loading::after{
+  content:'';width:14px;height:14px;
+  border:2px solid rgba(9,14,27,.25);border-top-color:#090E1B;
+  border-radius:50%;animation:spin .65s linear infinite;
+  margin-left:.4rem;display:inline-block;flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ====================================================
+   NAV
+   ==================================================== */
 .nav{
   display:flex;align-items:center;justify-content:space-between;
-  padding:1rem 1.5rem;
-  background:rgba(10,15,30,.94);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--on-dark-border);
+  padding:.9rem 1.5rem;height:58px;
+  background:rgba(9,14,27,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--dk-border);
   position:sticky;top:0;z-index:200;
 }
-.nav-logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1rem;color:var(--on-dark) !important}
-.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;animation:pdot 2s ease-in-out infinite}
-.nav-links{display:flex;align-items:center;gap:1.75rem}
-/* nav links are on dark background */
-.nav-links a{color:var(--on-dark-muted) !important;font-size:.875rem;transition:color var(--ease)}
-.nav-links a:hover{color:var(--on-dark) !important}
+.nav-logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1rem;color:var(--dk) !important}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;animation:blink 2.2s ease-in-out infinite}
+.nav-links{display:flex;align-items:center;gap:1.6rem}
+.nav-links a:not(.btn){color:var(--dk2) !important;font-size:.88rem;transition:color var(--ease)}
+.nav-links a:not(.btn):hover{color:var(--dk) !important}
 
-/* ═══ HERO ══════════════════════════════════════════════════════ */
+/* ====================================================
+   HERO
+   ==================================================== */
 .hero{
-  background:var(--navy);color:var(--on-dark);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;
-  padding:4.5rem 1.5rem 4rem;
+  background:var(--navy);color:var(--dk);
+  min-height:calc(100vh - 58px);
+  display:flex;align-items:center;
+  padding:4rem 1.5rem 3.5rem;
   position:relative;overflow:hidden;
-  min-height:88vh;
+}
+/* Subtle grid */
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,229,204,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,204,.04) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 30%,transparent 100%);
+  pointer-events:none;
 }
 .hero-glow{
-  position:absolute;top:-15%;left:50%;transform:translateX(-50%);
-  width:900px;height:600px;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 30%,rgba(0,229,204,.07) 0%,transparent 60%);
+  position:absolute;top:-20%;left:50%;transform:translateX(-50%);
+  width:1000px;height:700px;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 20%,rgba(0,229,204,.07) 0%,transparent 60%);
 }
-.hero-inner{position:relative;z-index:1;max-width:780px;width:100%}
-.hero h1{color:var(--on-dark) !important;margin:1.5rem 0 1.1rem}
-.hero-sub{font-size:clamp(.95rem,2vw,1.15rem);color:var(--on-dark-muted) !important;max-width:560px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-content{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+  width:100%;max-width:1140px;margin:0 auto;
+}
+.hero-text .eye{margin-bottom:1.5rem}
+.hero-text h1{margin-bottom:1.1rem}
+.hero-text h1 .accent{
+  background:linear-gradient(135deg,var(--teal),#00A896);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{font-size:clamp(.95rem,1.8vw,1.1rem);color:var(--dk2) !important;max-width:480px;line-height:1.7;margin-bottom:2rem}
+.hero-trust{display:flex;flex-wrap:wrap;gap:1.25rem;margin-top:1.75rem}
+.trust-badge{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:var(--dk3) !important;white-space:nowrap}
+.trust-badge svg{width:13px;height:13px;color:var(--teal) !important;flex-shrink:0}
 
-/* ═══ SCAN WIDGET ═══════════════════════════════════════════════ */
-.scan-wrap{width:100%;max-width:600px;margin:0 auto}
+/* ====================================================
+   SCAN WIDGET (in hero)
+   ==================================================== */
+.scan-wrap{width:100%;max-width:520px}
 .scan-box{
   display:flex;align-items:center;
-  background:var(--navy-card);
-  border:1.5px solid var(--on-dark-border2);
+  background:var(--navy3);border:1.5px solid var(--dk-border2);
   border-radius:var(--r);overflow:hidden;
   transition:border-color var(--ease),box-shadow var(--ease);
 }
-.scan-box:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,204,.18)}
-.scan-box.scanning{border-color:var(--amber);animation:spulse 1.4s ease-in-out infinite}
-.scan-box.s-ok{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,204,.15)}
-.scan-box.s-warn{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,.18)}
-@keyframes spulse{0%,100%{box-shadow:0 0 0 3px rgba(245,158,11,.18)}50%{box-shadow:0 0 0 6px rgba(245,158,11,.06)}}
-.scan-ico{display:flex;align-items:center;padding:.9rem 0 .9rem 1rem;color:var(--on-dark-subtle);flex-shrink:0}
-.scan-ico svg{width:16px;height:16px}
+.scan-box:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,204,.15)}
+.scan-box.s-ok{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,204,.12)}
+.scan-box.s-warn{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+.scan-box.scanning{border-color:var(--amber);animation:pulse-border 1.5s ease-in-out infinite}
+@keyframes pulse-border{0%,100%{box-shadow:0 0 0 3px rgba(245,158,11,.15)}50%{box-shadow:0 0 0 6px rgba(245,158,11,.05)}}
+.scan-ico{display:flex;align-items:center;padding:.85rem 0 .85rem .95rem;color:var(--dk3);flex-shrink:0}
+.scan-ico svg{width:15px;height:15px}
 #scanUrl{
   flex:1;min-width:0;background:transparent;border:none;outline:none;
-  color:var(--on-dark) !important;font-family:'JetBrains Mono',monospace;font-size:.88rem;
-  padding:.9rem .7rem;
+  color:var(--dk) !important;font-family:var(--mono);font-size:.86rem;
+  padding:.85rem .65rem;
 }
-#scanUrl::placeholder{color:var(--on-dark-subtle) !important}
-.scan-btn-wrap{padding:.35rem .35rem .35rem 0;flex-shrink:0}
+#scanUrl::placeholder{color:var(--dk3) !important}
+.scan-btn-area{padding:.32rem .32rem .32rem 0;flex-shrink:0}
 #scanBtn{
-  background:var(--teal);color:#0A0F1E !important;
-  border:none;border-radius:7px;padding:.6rem 1.1rem;
-  font-weight:700;font-size:.88rem;
-  display:flex;align-items:center;gap:.45rem;
-  min-height:40px;white-space:nowrap;
-  transition:opacity var(--ease),box-shadow var(--ease),transform var(--ease);
-  cursor:pointer;font-family:'Inter',sans-serif;
+  background:var(--teal);color:#090E1B !important;
+  border:none;border-radius:7px;
+  padding:.58rem 1rem;font-weight:800;font-size:.86rem;
+  display:flex;align-items:center;gap:.4rem;min-height:38px;
+  white-space:nowrap;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all var(--ease);
 }
-#scanBtn:hover{opacity:.84;box-shadow:0 0 16px rgba(0,229,204,.28);transform:translateY(-1px)}
+#scanBtn:hover{background:#00F0D8;box-shadow:0 0 16px rgba(0,229,204,.3);transform:translateY(-1px)}
 #scanBtn:active{transform:translateY(0)}
-#scanBtn:disabled{opacity:.4;cursor:not-allowed}
-.spin{width:13px;height:13px;border:2px solid rgba(10,15,30,.22);border-top-color:#0A0F1E;border-radius:50%;animation:rot .65s linear infinite;display:none;flex-shrink:0}
-@keyframes rot{to{transform:rotate(360deg)}}
+#scanBtn:disabled{opacity:.4;pointer-events:none}
+.spin{width:12px;height:12px;border:2px solid rgba(9,14,27,.2);border-top-color:#090E1B;border-radius:50%;animation:spin .65s linear infinite;display:none;flex-shrink:0}
 .scanning .spin{display:block}
 .scanning .sarrow{display:none}
-.scan-hint{font-size:.76rem;color:var(--on-dark-subtle) !important;margin-top:.65rem;text-align:center}
+.scan-hint{font-size:.74rem;color:var(--dk3) !important;margin-top:.6rem;text-align:center}
 .scan-hint a{color:var(--teal) !important}
 
-/* ═══ SCAN RESULT ═══════════════════════════════════════════════ */
+/* ====================================================
+   SCAN RESULT
+   ==================================================== */
 #scanResult{
-  display:none;margin:1.25rem auto 0;max-width:600px;
-  background:var(--navy-card);border:1px solid var(--on-dark-border2);
-  border-radius:var(--r);padding:1.2rem 1.4rem;text-align:left;
+  display:none;margin-top:1.1rem;
+  background:var(--navy3);border:1px solid var(--dk-border2);
+  border-radius:var(--r);padding:1.1rem 1.25rem;
 }
-/* ALL text inside scanResult is on dark background */
-#scanResult *{color:var(--on-dark-muted) !important}
-#scanResult strong,#scanResult .r-score{color:var(--on-dark) !important}
-#scanResult .ck-ok,#scanResult .r-badge-ok,.r-score-ok{color:var(--teal) !important}
-#scanResult .ck-warn,.r-score-warn{color:var(--amber) !important}
-.r-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem}
-.r-score{font-family:'JetBrains Mono',monospace;font-size:2.1rem;font-weight:700;line-height:1}
-.r-badge{font-size:.72rem;font-weight:700;letter-spacing:.07em;padding:.28rem .7rem;border-radius:100px;text-transform:uppercase}
-.r-badge-ok{background:rgba(0,229,204,.1);color:var(--teal) !important;border:1px solid rgba(0,229,204,.22)}
-.r-badge-warn{background:var(--amber-dim);color:var(--amber) !important;border:1px solid rgba(245,158,11,.24)}
-.r-checks{list-style:none;margin-bottom:.9rem}
-.r-checks li{display:flex;align-items:center;gap:.55rem;font-size:.84rem;padding:.28rem 0;border-bottom:1px solid rgba(240,244,255,.04)}
-.r-checks li:last-child{border-bottom:none}
-.r-ctas{display:flex;gap:.6rem;flex-wrap:wrap}
-.r-note{font-size:.73rem;margin-top:.6rem;line-height:1.5;color:var(--on-dark-subtle) !important}
+/* All result text on dark bg */
+#scanResult{color:var(--dk2) !important}
+#scanResult .r-score{color:var(--teal) !important;font-family:var(--mono);font-size:2rem;font-weight:700;line-height:1}
+#scanResult .r-score-warn{color:var(--amber) !important}
+#scanResult .r-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem}
+#scanResult .r-badge{font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:.24rem .65rem;border-radius:100px;text-transform:uppercase}
+#scanResult .r-badge-ok{background:rgba(0,229,204,.1);color:var(--teal) !important;border:1px solid rgba(0,229,204,.22)}
+#scanResult .r-badge-warn{background:var(--amber-dim);color:var(--amber) !important;border:1px solid rgba(245,158,11,.24)}
+#scanResult .r-checks{list-style:none;margin-bottom:.85rem}
+#scanResult .r-checks li{display:flex;align-items:center;gap:.5rem;font-size:.83rem;padding:.25rem 0;border-bottom:1px solid rgba(240,245,255,.04);color:var(--dk2) !important}
+#scanResult .r-checks li:last-child{border-bottom:none}
+#scanResult .r-checks .ok{color:var(--teal) !important}
+#scanResult .r-checks .warn{color:var(--amber) !important}
+#scanResult .r-note{font-size:.72rem;color:var(--dk3) !important;margin-top:.6rem;line-height:1.5}
+.r-ctas{display:flex;gap:.55rem;flex-wrap:wrap}
 
-/* ═══ TRUST STRIP ═══════════════════════════════════════════════ */
-.trust{display:flex;align-items:center;justify-content:center;gap:1.75rem;margin-top:2.25rem;flex-wrap:wrap}
-.trust-i{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--on-dark-muted) !important;white-space:nowrap}
-.trust-i svg{width:14px;height:14px;color:var(--teal) !important;flex-shrink:0}
-
-/* ═══ SECTIONS ══════════════════════════════════════════════════ */
-section,.section-pad{padding:5rem 0}
-.section-top{padding-top:0}
-
-/* ═══ WHY CARDS (light bg) ══════════════════════════════════════ */
-.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-top:2.75rem}
-.why-card{
-  background:var(--light-card);
-  border:1px solid var(--on-light-border);
-  border-radius:var(--r-lg);padding:1.4rem;
-  color:var(--on-light) !important;
-  transition:box-shadow var(--ease),transform var(--ease);
-}
-.why-card:hover{box-shadow:0 6px 24px rgba(0,229,204,.10);transform:translateY(-2px)}
-.why-ico{width:38px;height:38px;background:rgba(0,168,150,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:.85rem;flex-shrink:0}
-.why-ico svg{width:19px;height:19px;color:var(--teal-dark) !important}
-.why-card h3{font-size:.95rem;font-weight:700;margin-bottom:.35rem;color:var(--on-light) !important}
-.why-card p{font-size:.84rem;color:var(--on-light-muted) !important;line-height:1.6}
-
-/* ═══ HOW STEPS (dark) ══════════════════════════════════════════ */
-.how-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:2.75rem}
-.hs{padding:1.4rem 1.2rem;border-left:1px solid var(--on-dark-border2)}
-.hs:first-child{border-left:none;padding-left:0}
-.hs-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--teal) !important;font-weight:600;letter-spacing:.05em;margin-bottom:.65rem}
-.hs h3{font-size:.94rem;font-weight:700;margin-bottom:.4rem;color:var(--on-dark) !important}
-.hs p{font-size:.84rem;color:var(--on-dark-muted) !important;line-height:1.6}
-
-/* ═══ SAMPLE REPORT (light bg) ═════════════════════════════════ */
-.rcard{
-  max-width:620px;margin:2.75rem auto 0;
-  background:var(--navy-card);border:1px solid var(--on-dark-border2);
+/* ====================================================
+   HERO RIGHT: LIVE MONITOR CARD
+   ==================================================== */
+.monitor-card{
+  background:var(--navy3);border:1px solid var(--dk-border2);
   border-radius:16px;overflow:hidden;
-  box-shadow:0 20px 56px rgba(0,0,0,.28),0 0 0 1px rgba(0,229,204,.06);
+  box-shadow:0 24px 64px rgba(0,0,0,.4),0 0 0 1px rgba(0,229,204,.06);
 }
-/* rcard is always dark */
-.rcard *{color:var(--on-dark-muted) !important}
-.rcard-top{
-  background:linear-gradient(135deg,var(--navy-mid),var(--navy-card2));
-  padding:1.4rem 1.7rem;border-bottom:1px solid var(--on-dark-border);
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;
+.mc-top{
+  background:linear-gradient(135deg,var(--navy2),var(--navy4));
+  padding:1.1rem 1.4rem;border-bottom:1px solid var(--dk-border);
+  display:flex;align-items:center;justify-content:space-between;
 }
-.rcard-store{font-family:'JetBrains Mono',monospace;font-size:.82rem}
-.rcard-ts{font-size:.72rem;color:var(--on-dark-subtle) !important}
-.rcard-score-row{padding:1.6rem 1.7rem;display:flex;align-items:center;gap:1.6rem;border-bottom:1px solid var(--on-dark-border)}
-.big-sc{font-family:'JetBrains Mono',monospace;font-size:3.6rem;font-weight:700;line-height:1;color:var(--teal) !important}
-.sc-meta{flex:1;min-width:0}
-.sc-lbl{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dark-subtle) !important;margin-bottom:.2rem}
-.sc-st{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.45rem;color:var(--on-dark) !important}
-.bar-wrap{height:3px;background:rgba(240,244,255,.07);border-radius:2px;margin-top:.6rem;overflow:hidden}
-.bar{height:100%;background:linear-gradient(90deg,var(--teal),rgba(0,229,204,.55));border-radius:2px}
-.rcard-rows{padding:1.1rem 1.7rem;border-bottom:1px solid var(--on-dark-border)}
-.rci{display:flex;align-items:center;justify-content:space-between;padding:.48rem 0;font-size:.84rem;border-bottom:1px solid rgba(240,244,255,.03)}
-.rci:last-child{border-bottom:none}
-.rcn{display:flex;align-items:center;gap:.55rem}
-.dok{width:6px;height:6px;background:var(--teal);border-radius:50%;flex-shrink:0}
-.dwarn{width:6px;height:6px;background:var(--amber);border-radius:50%;flex-shrink:0}
-.dna{width:6px;height:6px;background:rgba(240,244,255,.18);border-radius:50%;flex-shrink:0}
-.rcs{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600}
-.rcs-ok{color:var(--teal) !important}
-.rcs-warn{color:var(--amber) !important}
-.rcs-na{color:var(--on-dark-subtle) !important}
-.rcard-finding{padding:1.1rem 1.7rem;display:flex;gap:.7rem;align-items:flex-start}
-.fi-ico{width:27px;height:27px;background:var(--amber-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.fi-ico svg{width:13px;height:13px;color:var(--amber) !important}
-.fi-txt{font-size:.84rem;line-height:1.55}
-.fi-txt strong{color:var(--on-dark) !important}
-.rcard-sample{display:flex;justify-content:center;padding:.6rem;background:rgba(240,244,255,.02);border-top:1px solid var(--on-dark-border)}
-.rcard-sample span{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(240,244,255,.22) !important;letter-spacing:.06em;text-transform:uppercase}
+.mc-title{font-size:.78rem;font-weight:600;color:var(--dk) !important}
+.mc-live{display:flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:700;color:var(--teal) !important;letter-spacing:.05em;text-transform:uppercase}
+.mc-live-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:blink .9s ease-in-out infinite}
+.mc-score{
+  padding:1.2rem 1.4rem;border-bottom:1px solid var(--dk-border);
+  display:flex;align-items:center;gap:1.2rem;
+}
+.mc-num{font-family:var(--mono);font-size:3.2rem;font-weight:700;line-height:1;color:var(--teal) !important}
+.mc-meta{flex:1}
+.mc-label{font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--dk3) !important;margin-bottom:.18rem}
+.mc-status{font-size:.9rem;font-weight:700;color:var(--dk) !important;display:flex;align-items:center;gap:.4rem}
+.mc-bar-wrap{height:3px;background:rgba(240,245,255,.07);border-radius:2px;margin-top:.6rem;overflow:hidden}
+.mc-bar{height:100%;background:linear-gradient(90deg,var(--teal),rgba(0,229,204,.5));border-radius:2px;transition:width 1.5s ease}
+.mc-rows{padding:.9rem 1.4rem;border-bottom:1px solid var(--dk-border)}
+.mc-row{display:flex;align-items:center;justify-content:space-between;padding:.38rem 0;font-size:.81rem;color:var(--dk2) !important;border-bottom:1px solid rgba(240,245,255,.03)}
+.mc-row:last-child{border-bottom:none}
+.mc-row-name{display:flex;align-items:center;gap:.5rem}
+.dot-ok{width:5px;height:5px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.dot-warn{width:5px;height:5px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.dot-na{width:5px;height:5px;border-radius:50%;background:rgba(240,245,255,.2);flex-shrink:0}
+.mc-val{font-family:var(--mono);font-size:.7rem;font-weight:600}
+.mc-val-ok{color:var(--teal) !important}
+.mc-val-warn{color:var(--amber) !important}
+.mc-val-na{color:var(--dk3) !important}
+.mc-alert{padding:.85rem 1.4rem;display:flex;gap:.65rem;align-items:flex-start}
+.mc-alert-ico{width:26px;height:26px;border-radius:6px;background:var(--amber-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mc-alert-ico svg{width:12px;height:12px;color:var(--amber) !important}
+.mc-alert-txt{font-size:.8rem;color:var(--dk2) !important;line-height:1.55}
+.mc-alert-txt strong{color:var(--dk) !important}
+.mc-footer{display:flex;justify-content:center;padding:.55rem;background:rgba(240,245,255,.02);border-top:1px solid var(--dk-border)}
+.mc-footer span{font-family:var(--mono);font-size:.65rem;color:rgba(240,245,255,.22) !important;letter-spacing:.05em;text-transform:uppercase}
 
-/* ═══ CHECKS (light) ════════════════════════════════════════════ */
-.checks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem;margin-top:2.25rem}
-.cc{
-  background:var(--light-bg);border:1px solid var(--on-light-border);
-  border-radius:var(--r);padding:1.15rem;
-  display:flex;gap:.75rem;align-items:flex-start;
-  color:var(--on-light) !important;
+/* ====================================================
+   WHY (light)
+   ==================================================== */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1.2rem;margin-top:2.75rem}
+.why-card{
+  background:var(--lt2);border:1px solid var(--lt-border);border-radius:var(--r2);
+  padding:1.4rem;color:var(--lt-txt) !important;
   transition:box-shadow var(--ease),transform var(--ease);
 }
-.cc:hover{box-shadow:0 4px 16px rgba(0,229,204,.08);transform:translateY(-1px)}
-.cc-ico{width:30px;height:30px;background:rgba(0,168,150,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cc-ico svg{width:15px;height:15px;color:var(--teal-dark) !important}
-.cc h4{font-size:.84rem;font-weight:700;margin-bottom:.18rem;color:var(--on-light) !important}
-.cc p{font-size:.78rem;color:var(--on-light-muted) !important;line-height:1.5}
+.why-card:hover{box-shadow:0 6px 24px rgba(0,168,150,.1);transform:translateY(-2px)}
+.why-ico{width:36px;height:36px;border-radius:8px;background:rgba(0,168,150,.09);display:flex;align-items:center;justify-content:center;margin-bottom:.85rem;flex-shrink:0}
+.why-ico svg{width:18px;height:18px;color:#007A6E !important}
+.why-card h3{font-size:.93rem;font-weight:700;margin-bottom:.3rem;color:var(--lt-txt) !important}
+.why-card p{font-size:.82rem;color:var(--lt-txt2) !important;line-height:1.6}
 
-/* ═══ NOT CHECKED (light) ═══════════════════════════════════════ */
-.nc-list{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.75rem}
-.nc-tag{
-  background:var(--light-card);border:1px solid var(--on-light-border);
-  border-radius:100px;padding:.3rem .75rem;
-  font-size:.78rem;color:var(--on-light-subtle) !important;
-  display:flex;align-items:center;gap:.35rem;
+/* ====================================================
+   HOW (dark)
+   ==================================================== */
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));margin-top:2.75rem}
+.how-step{padding:1.35rem 1.1rem;border-left:1px solid var(--dk-border2)}
+.how-step:first-child{border-left:none;padding-left:0}
+.how-num{font-family:var(--mono);font-size:.68rem;color:var(--teal) !important;font-weight:600;letter-spacing:.05em;margin-bottom:.6rem}
+.how-step h3{font-size:.92rem;font-weight:700;margin-bottom:.35rem;color:var(--dk) !important}
+.how-step p{font-size:.82rem;color:var(--dk2) !important;line-height:1.6}
+
+/* ====================================================
+   CHECKS (light)
+   ==================================================== */
+.checks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:.82rem;margin-top:2.25rem}
+.cc{
+  background:var(--lt);border:1px solid var(--lt-border);border-radius:var(--r);
+  padding:1.1rem;display:flex;gap:.72rem;align-items:flex-start;
+  color:var(--lt-txt) !important;
+  transition:box-shadow var(--ease),transform var(--ease);
 }
-.nc-tag::before{content:'';width:4px;height:4px;background:var(--on-light-border2);border-radius:50%;flex-shrink:0}
+.cc:hover{box-shadow:0 4px 16px rgba(0,168,150,.08);transform:translateY(-1px)}
+.cc-ico{width:28px;height:28px;border-radius:7px;background:rgba(0,168,150,.09);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cc-ico svg{width:14px;height:14px;color:#007A6E !important}
+.cc h4{font-size:.82rem;font-weight:700;margin-bottom:.15rem;color:var(--lt-txt) !important}
+.cc p{font-size:.76rem;color:var(--lt-txt2) !important;line-height:1.5}
 
-/* ═══ PRICING ═══════════════════════════════════════════════════ */
-.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.4rem;margin-top:2.75rem;align-items:start}
+/* ====================================================
+   PRICING
+   ==================================================== */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:1.35rem;margin-top:2.75rem;align-items:start}
 .pc{
-  background:var(--light-card);border:1px solid var(--on-light-border);
-  border-radius:var(--r-lg);padding:1.8rem;
-  position:relative;color:var(--on-light) !important;
+  background:var(--lt2);border:1px solid var(--lt-border);border-radius:var(--r2);
+  padding:1.75rem;position:relative;
+  color:var(--lt-txt) !important;
   transition:box-shadow var(--ease),transform var(--ease);
 }
 .pc:hover{box-shadow:0 8px 28px rgba(10,15,30,.08);transform:translateY(-2px)}
-.pc.featured{
-  background:var(--navy-card);border:1px solid rgba(0,229,204,.18);
-  color:var(--on-dark) !important;
-  box-shadow:0 0 0 1px rgba(0,229,204,.08),0 12px 44px rgba(0,0,0,.28);
+.pc.feat{
+  background:var(--navy3);border:1px solid rgba(0,229,204,.2);
+  color:var(--dk) !important;
+  box-shadow:0 0 0 1px rgba(0,229,204,.08),0 12px 48px rgba(0,0,0,.3);
 }
-.pc.featured:hover{box-shadow:0 0 0 1px rgba(0,229,204,.2),0 16px 52px rgba(0,0,0,.3),0 0 28px rgba(0,229,204,.07);transform:translateY(-2px)}
-.pc.soon{opacity:.62}
-.pc-star{
+.pc.feat:hover{box-shadow:0 0 0 1px rgba(0,229,204,.22),0 16px 56px rgba(0,0,0,.32),0 0 32px rgba(0,229,204,.08);transform:translateY(-2px)}
+.pc.soon{opacity:.6}
+.pc-badge{
   position:absolute;top:-12px;left:50%;transform:translateX(-50%);
-  background:var(--teal);color:#0A0F1E !important;
-  font-size:.68rem;font-weight:700;letter-spacing:.06em;padding:.25rem .7rem;border-radius:100px;white-space:nowrap;text-transform:uppercase;
+  background:var(--teal);color:#090E1B !important;
+  font-size:.67rem;font-weight:800;letter-spacing:.06em;padding:.24rem .7rem;border-radius:100px;white-space:nowrap;text-transform:uppercase;
 }
-.pc-tier{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.45rem}
-.pc:not(.featured) .pc-tier{color:var(--on-light-subtle) !important}
-.pc.featured .pc-tier{color:var(--teal) !important}
-.pc-price{font-size:2.35rem;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:.2rem}
-.pc:not(.featured) .pc-price{color:var(--on-light) !important}
-.pc.featured .pc-price{color:var(--on-dark) !important}
-.pc-per{font-size:.82rem;margin-bottom:1.15rem}
-.pc:not(.featured) .pc-per{color:var(--on-light-subtle) !important}
-.pc.featured .pc-per{color:var(--on-dark-muted) !important}
-.pc-feats{list-style:none;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:.5rem}
-.pc-feats li{display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem}
-.pc:not(.featured) .pc-feats li{color:var(--on-light-muted) !important}
-.pc.featured .pc-feats li{color:var(--on-dark-muted) !important}
+.pc-tier{font-size:.69rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.45rem}
+.pc:not(.feat) .pc-tier{color:var(--lt-txt3) !important}
+.pc.feat .pc-tier{color:var(--teal) !important}
+.pc-price{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:.18rem}
+.pc:not(.feat) .pc-price{color:var(--lt-txt) !important}
+.pc.feat .pc-price{color:var(--dk) !important}
+.pc-per{font-size:.81rem;margin-bottom:1.1rem}
+.pc:not(.feat) .pc-per{color:var(--lt-txt3) !important}
+.pc.feat .pc-per{color:var(--dk2) !important}
+.pc-feats{list-style:none;margin-bottom:1.4rem;display:flex;flex-direction:column;gap:.48rem}
+.pc-feats li{display:flex;align-items:flex-start;gap:.48rem;font-size:.82rem}
+.pc:not(.feat) .pc-feats li{color:var(--lt-txt2) !important}
+.pc.feat .pc-feats li{color:var(--dk2) !important}
 .pc-feats li::before{content:'';width:5px;height:5px;background:var(--teal);border-radius:50%;flex-shrink:0;margin-top:7px}
-.pc-soon-tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:100px}
-.pc:not(.featured) .pc-soon-tag{color:var(--on-light-subtle) !important;border:1px solid var(--on-light-border2)}
-.pc.featured .pc-soon-tag{color:var(--on-dark-subtle) !important;border:1px solid var(--on-dark-border2)}
+.pc-soon-tag{display:inline-block;font-size:.69rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.22rem .55rem;border-radius:100px}
+.pc:not(.feat) .pc-soon-tag{color:var(--lt-txt3) !important;border:1px solid var(--lt-border2)}
+.pc.feat .pc-soon-tag{color:var(--dk3) !important;border:1px solid var(--dk-border2)}
 
-/* ═══ LEGAL CHECKBOX ════════════════════════════════════════════ */
-/* on featured card (dark) */
-.legal-gate{margin-top:.9rem;display:flex;align-items:flex-start;gap:.6rem;font-size:.8rem;cursor:pointer}
-.legal-gate input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:var(--teal);cursor:pointer}
-.pc.featured .legal-gate{color:var(--on-dark-muted) !important}
-.pc.featured .legal-gate a{color:var(--teal) !important;text-decoration:underline}
-.legal-err{font-size:.74rem;margin-top:.3rem;display:none}
-.pc.featured .legal-err{color:var(--amber) !important}
+/* ====================================================
+   LEGAL GATE (on feat dark card)
+   ==================================================== */
+.legal-gate{
+  display:flex;align-items:flex-start;gap:.55rem;
+  font-size:.78rem;margin-top:.9rem;cursor:pointer;
+  color:var(--dk2) !important;
+}
+.legal-gate input[type=checkbox]{width:15px;height:15px;flex-shrink:0;margin-top:2px;accent-color:var(--teal);cursor:pointer}
+.legal-gate a{color:var(--teal) !important;text-decoration:underline}
+.legal-err{font-size:.73rem;color:var(--amber) !important;margin-top:.28rem;display:none}
+.stripe-note{font-size:.71rem;color:var(--dk3) !important;text-align:center;margin-top:.5rem}
 
-/* ═══ STRIPE CTA (on featured/dark card) ═══════════════════════ */
-.stripe-note{font-size:.72rem;text-align:center;margin-top:.55rem}
-.pc.featured .stripe-note{color:var(--on-dark-subtle) !important}
+/* ====================================================
+   CHECKOUT ERROR / STATUS
+   ==================================================== */
+#checkoutStatus{
+  margin-top:.65rem;font-size:.78rem;border-radius:8px;padding:.65rem .85rem;display:none;
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);
+  color:#FCA5A5 !important;line-height:1.5;
+}
+#checkoutStatus.ok{background:rgba(0,229,204,.08);border-color:rgba(0,229,204,.2);color:var(--teal) !important}
 
-/* ═══ FAQ (light) ════════════════════════════════════════════════ */
-.faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.65rem;margin-top:2.75rem}
-.fq h4{font-size:.92rem;font-weight:700;margin-bottom:.35rem;color:var(--on-light) !important}
-.fq p{font-size:.84rem;color:var(--on-light-muted) !important;line-height:1.65}
+/* ====================================================
+   FAQ (white)
+   ==================================================== */
+.faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.6rem;margin-top:2.75rem}
+.fq h4{font-size:.9rem;font-weight:700;margin-bottom:.32rem;color:var(--lt-txt) !important}
+.fq p{font-size:.82rem;color:var(--lt-txt2) !important;line-height:1.65}
 
-/* ═══ CTA STRIP (dark) ══════════════════════════════════════════ */
+/* ====================================================
+   NC TAGS (light)
+   ==================================================== */
+.nc-tags{display:flex;flex-wrap:wrap;gap:.48rem;margin-top:1.75rem}
+.nc-tag{background:var(--lt2);border:1px solid var(--lt-border);border-radius:100px;padding:.28rem .72rem;font-size:.76rem;color:var(--lt-txt3) !important;display:flex;align-items:center;gap:.32rem}
+.nc-tag::before{content:'';width:4px;height:4px;background:var(--lt-border2);border-radius:50%;flex-shrink:0}
+
+/* ====================================================
+   CTA STRIP (dark)
+   ==================================================== */
 .cta-strip{
-  background:linear-gradient(180deg,var(--navy-mid) 0%,var(--navy) 100%);
-  color:var(--on-dark);
-  padding:5rem 1.5rem;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--navy2) 0%,var(--navy) 100%);
+  color:var(--dk);padding:5rem 1.5rem;text-align:center;
+  position:relative;overflow:hidden;
 }
 .cta-strip::before{
   content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);
   width:800px;height:600px;pointer-events:none;
   background:radial-gradient(ellipse,rgba(0,229,204,.06) 0%,transparent 60%);
 }
-.cta-strip h2{color:var(--on-dark) !important}
-.cta-strip p{color:var(--on-dark-muted) !important}
-.cta-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem}
+.cta-strip h2{color:var(--dk) !important}
+.cta-strip p{color:var(--dk2) !important;margin:0.7rem auto 0;max-width:520px}
+.cta-actions{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem}
 
-/* ═══ SECTION HEADINGS: contextual color ════════════════════════ */
-.section-dark h2,.section-mid h2{color:var(--on-dark) !important}
-.section-dark p,.section-mid p{color:var(--on-dark-muted) !important}
-.section-light h2,.section-white h2{color:var(--on-light) !important}
-.section-light p,.section-white p{color:var(--on-light-muted) !important}
-.section-light .eyebrow-light,.section-white .eyebrow-light{}
+/* ====================================================
+   FOOTER (dark)
+   ==================================================== */
+footer{background:var(--navy);border-top:1px solid var(--dk-border);padding:2rem 1.5rem;font-size:.79rem;color:var(--dk3) !important}
+.ft-inner{max-width:1140px;margin:0 auto}
+.ft-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.85rem;margin-bottom:.85rem}
+.ft-logo{font-weight:700;font-size:.9rem;color:var(--dk) !important}
+.ft-links{display:flex;gap:1.35rem;flex-wrap:wrap}
+.ft-links a{color:var(--dk3) !important;transition:color var(--ease)}
+.ft-links a:hover{color:var(--dk) !important}
+.ft-legal{font-size:.73rem;color:rgba(240,245,255,.25) !important;line-height:1.65}
+.ft-legal a{color:rgba(240,245,255,.25) !important;text-decoration:underline}
 
-/* ═══ FOOTER (dark) ══════════════════════════════════════════════ */
-footer{
-  background:var(--navy);border-top:1px solid var(--on-dark-border);
-  padding:2.25rem 1.5rem;font-size:.8rem;color:var(--on-dark-subtle) !important;
-}
-.ft-inner{max-width:1120px;margin:0 auto}
-.ft-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.9rem;margin-bottom:.9rem}
-.ft-logo{font-weight:700;font-size:.9rem;color:var(--on-dark) !important}
-.ft-links{display:flex;gap:1.4rem;flex-wrap:wrap}
-.ft-links a{color:var(--on-dark-subtle) !important;transition:color var(--ease)}
-.ft-links a:hover{color:var(--on-dark) !important}
-.ft-legal{font-size:.75rem;color:rgba(240,244,255,.26) !important;line-height:1.65}
-.ft-legal a{color:rgba(240,244,255,.26) !important;text-decoration:underline}
-
-/* ═══ TOAST ══════════════════════════════════════════════════════ */
+/* ====================================================
+   TOAST
+   ==================================================== */
 #toast{
-  position:fixed;bottom:1.5rem;right:1.5rem;
-  background:var(--navy-card2);border:1px solid var(--on-dark-border2);
-  color:var(--on-dark) !important;
-  padding:.75rem 1.1rem;border-radius:var(--r);font-size:.84rem;
-  box-shadow:0 8px 28px rgba(0,0,0,.38);
+  position:fixed;bottom:1.4rem;right:1.4rem;
+  background:var(--navy4);border:1px solid var(--dk-border2);
+  color:var(--dk) !important;
+  padding:.7rem 1rem;border-radius:var(--r);font-size:.83rem;
+  box-shadow:0 8px 28px rgba(0,0,0,.4);
   opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;
   pointer-events:none;z-index:999;max-width:320px;
 }
 #toast.show{opacity:1;transform:translateY(0)}
 
-/* ═══ RESPONSIVE ═════════════════════════════════════════════════ */
+/* ====================================================
+   RESPONSIVE
+   ==================================================== */
+@media(max-width:900px){
+  .hero-content{grid-template-columns:1fr;gap:2.5rem}
+  .monitor-card{max-width:520px;margin:0 auto}
+  .hero{min-height:auto;padding:3rem 1.5rem}
+}
 @media(max-width:768px){
-  section,.section-pad{padding:3.75rem 0}
+  .pad{padding:3.75rem 0}
   .nav-links a:not(.btn){display:none}
   .scan-box{flex-wrap:wrap}
-  .scan-ico{padding:.85rem 0 .85rem 1rem}
-  .scan-btn-wrap{width:100%;padding:.35rem}
+  .scan-btn-area{width:100%;padding:.3rem}
   #scanBtn{width:100%;border-radius:7px;justify-content:center}
-  .rcard-score-row{flex-direction:column;align-items:flex-start;gap:1rem}
-  .how-steps{grid-template-columns:1fr}
-  .hs{border-left:none;border-top:1px solid var(--on-dark-border2);padding:1.2rem 0}
-  .hs:first-child{border-top:none;padding-top:0}
+  .how-grid{grid-template-columns:1fr}
+  .how-step{border-left:none;border-top:1px solid var(--dk-border2);padding:1.1rem 0}
+  .how-step:first-child{border-top:none;padding-top:0}
   .price-grid{grid-template-columns:1fr}
   .ft-row{flex-direction:column;align-items:flex-start}
   .cta-actions{flex-direction:column;align-items:center}
   .cta-actions .btn{width:100%;max-width:340px}
-  .trust{gap:1.1rem}
-  .rcard-top{flex-direction:column;align-items:flex-start}
   .r-ctas{flex-direction:column}
   .r-ctas .btn{width:100%}
 }
 @media(max-width:480px){
-  h1{font-size:1.8rem}
-  h2{font-size:1.5rem}
+  h1{font-size:1.85rem}h2{font-size:1.55rem}
   .wrap{padding:0 1rem}
-  .nav{padding:.9rem 1rem}
-  .hero{padding:3.25rem 1rem 3rem;min-height:auto}
-  .rcard-rows,.rcard-finding,.rcard-score-row,.rcard-top{padding-left:1.1rem;padding-right:1.1rem}
-  .big-sc{font-size:2.9rem}
+  .nav{padding:.85rem 1rem}
+  .hero{padding:2.75rem 1rem}
+  .mc-score{padding:.95rem 1.1rem}
+  .mc-rows,.mc-alert,.mc-top{padding-left:1.1rem;padding-right:1.1rem}
+  .mc-num{font-size:2.6rem}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -454,176 +535,159 @@ footer{
 
 <!-- NAV -->
 <nav class="nav" role="navigation" aria-label="Main navigation">
-  <a href="/" class="nav-logo"><span class="nav-dot"></span>Qsisto</a>
+  <a href="/" class="nav-logo"><span class="logo-dot"></span>Qsisto</a>
   <div class="nav-links">
     <a href="#how">How it works</a>
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
-    <a href="#scan" class="btn btn-primary btn-sm" onclick="scrollToScan(event)">Run free scan</a>
+    <button class="btn btn-primary btn-sm nav-cta" onclick="scrollToScan()" type="button">Run free scan</button>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero" id="scan">
+<section class="hero" id="scan" aria-label="Hero">
   <div class="hero-glow" aria-hidden="true"></div>
-  <div class="hero-inner">
-    <div class="eyebrow eyebrow-dark"><span class="eyebrow-dot"></span>Shopify Store Health Monitoring</div>
-    <h1>Stop losing paid ad revenue<br>to <span class="accent">silent checkout issues</span></h1>
-    <p class="hero-sub">StoreGuard runs a lightweight weekly health scan on your Shopify store and alerts you the moment checkout, cart, or trust signals break &mdash; before your customers notice.</p>
+  <div class="hero-content">
 
-    <div class="scan-wrap">
-      <div class="scan-box" id="scanBox">
-        <span class="scan-ico" aria-hidden="true">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M11 11l3 3" stroke-linecap="round"/></svg>
-        </span>
-        <input type="text" id="scanUrl" placeholder="Enter your Shopify store URL" autocomplete="off" spellcheck="false" aria-label="Your Shopify store URL">
-        <div class="scan-btn-wrap">
-          <button id="scanBtn" onclick="runScan()" aria-label="Run free health scan">
-            <div class="spin" id="spin" aria-hidden="true"></div>
-            <svg id="sarrow" class="sarrow" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2.5 6.5h8M7 2.5l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Run free scan
-          </button>
+    <!-- Left: copy + scan -->
+    <div class="hero-text">
+      <div class="eye eye-dark"><span class="eye-dot"></span>Shopify Store Health Monitor</div>
+      <h1>Stop burning ad spend on a <span class="accent">broken checkout</span></h1>
+      <p class="hero-sub">StoreGuard runs a weekly read-only scan on your Shopify store and alerts you the instant checkout, cart, or trust signals break &mdash; before your customers notice.</p>
+
+      <div class="scan-wrap">
+        <div class="scan-box" id="scanBox">
+          <span class="scan-ico" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M11 11l3 3" stroke-linecap="round"/></svg>
+          </span>
+          <input type="text" id="scanUrl" placeholder="yourstore.myshopify.com" autocomplete="off" spellcheck="false" aria-label="Your Shopify store URL">
+          <div class="scan-btn-area">
+            <button id="scanBtn" onclick="runScan()" type="button" aria-label="Run free scan">
+              <div class="spin" id="scanSpin" aria-hidden="true"></div>
+              <svg id="sarrow" class="sarrow" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2.5 6.5h8M7 2.5l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Run free scan
+            </button>
+          </div>
         </div>
+        <p class="scan-hint">No Shopify app. No admin access. Read-only. <a href="#faq">How?</a></p>
       </div>
-      <p class="scan-hint">No Shopify app. No admin access. Read-only. <a href="#faq">How does it work?</a></p>
+
+      <div id="scanResult" role="region" aria-live="polite"></div>
+
+      <div class="hero-trust">
+        <span class="trust-badge"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 1.5L2 4.5v5l5 3 5-3v-5L7 1.5z"/></svg>No app install</span>
+        <span class="trust-badge"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="8" height="6" rx="1"/><path d="M5 6V4.5a2 2 0 014 0V6"/></svg>Read-only scan</span>
+        <span class="trust-badge"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v3l2 1.5"/></svg>Weekly alerts</span>
+        <span class="trust-badge"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 1l1.5 4h4L9 8l1.5 4L7 10l-3.5 2L5 8 1.5 5h4z"/></svg>GDPR-compliant</span>
+      </div>
     </div>
 
-    <div id="scanResult" role="region" aria-live="polite"></div>
-
-    <div class="trust" aria-label="Trust signals">
-      <span class="trust-i"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 1l1.5 4h4L9 8l1.5 4L7 10l-3.5 2L5 8 1.5 5h4z"/></svg>No app install</span>
-      <span class="trust-i"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="8" height="6" rx="1"/><path d="M5 6V4.5a2 2 0 014 0V6"/></svg>Read-only scan</span>
-      <span class="trust-i"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v3l2 1.5"/></svg>Weekly monitoring</span>
-      <span class="trust-i"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 1.5L2 4.5v5l5 3 5-3v-5L7 1.5z"/></svg>GDPR-compliant</span>
+    <!-- Right: live monitor card -->
+    <div>
+      <div class="monitor-card" role="img" aria-label="Sample StoreGuard health report">
+        <div class="mc-top">
+          <span class="mc-title">Store Health Report</span>
+          <span class="mc-live"><span class="mc-live-dot"></span>Live monitoring</span>
+        </div>
+        <div class="mc-score">
+          <div class="mc-num" id="heroScore" aria-label="Health score">--</div>
+          <div class="mc-meta">
+            <div class="mc-label">Overall health score</div>
+            <div class="mc-status"><span style="width:7px;height:7px;background:var(--amber);border-radius:50%;display:inline-block" aria-hidden="true"></span>Warning &mdash; 1 issue</div>
+            <div class="mc-bar-wrap"><div class="mc-bar" id="heroBar" style="width:0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
+          </div>
+        </div>
+        <div class="mc-rows">
+          <div class="mc-row"><span class="mc-row-name"><span class="dot-ok" aria-hidden="true"></span>Homepage reachable</span><span class="mc-val mc-val-ok">PASS</span></div>
+          <div class="mc-row"><span class="mc-row-name"><span class="dot-ok" aria-hidden="true"></span>HTTPS / SSL valid</span><span class="mc-val mc-val-ok">PASS</span></div>
+          <div class="mc-row"><span class="mc-row-name"><span class="dot-ok" aria-hidden="true"></span>Shopify detected</span><span class="mc-val mc-val-ok">PASS</span></div>
+          <div class="mc-row"><span class="mc-row-name"><span class="dot-ok" aria-hidden="true"></span>Cart path accessible</span><span class="mc-val mc-val-ok">PASS</span></div>
+          <div class="mc-row"><span class="mc-row-name"><span class="dot-ok" aria-hidden="true"></span>Checkout signals</span><span class="mc-val mc-val-ok">PASS</span></div>
+          <div class="mc-row"><span class="mc-row-name"><span class="dot-warn" aria-hidden="true"></span>Trust signals</span><span class="mc-val mc-val-warn">WARNING</span></div>
+          <div class="mc-row"><span class="mc-row-name"><span class="dot-ok" aria-hidden="true"></span>Response time</span><span class="mc-val mc-val-ok">812 ms</span></div>
+          <div class="mc-row"><span class="mc-row-name"><span class="dot-na" aria-hidden="true"></span>vs. last week</span><span class="mc-val mc-val-na">&minus;2 pts</span></div>
+        </div>
+        <div class="mc-alert">
+          <div class="mc-alert-ico" aria-hidden="true"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 1.5L1 11h11L6.5 1.5zm0 4v2.5"/><circle cx="6.5" cy="9" r=".5" fill="currentColor"/></svg></div>
+          <div class="mc-alert-txt"><strong>Trust signal degraded.</strong> Refund policy link not detected on checkout page. May reduce first-time buyer confidence.</div>
+        </div>
+        <div class="mc-footer"><span>Sample data &mdash; not a real scan</span></div>
+      </div>
     </div>
+
   </div>
 </section>
 
 <!-- WHY -->
-<section class="section-light" aria-labelledby="why-h">
+<section class="sec-light pad" aria-labelledby="why-h">
   <div class="wrap">
-    <div class="eyebrow eyebrow-light">Why StoreGuard</div>
+    <div class="eye eye-light"><span class="eye-dot"></span>Why StoreGuard</div>
     <h2 id="why-h" style="margin-top:.65rem;max-width:500px">Your customers rarely tell you when things break</h2>
-    <p style="margin-top:.7rem;max-width:580px">Silent checkout failures cost real revenue &mdash; especially when paid ads are running. Most store owners find out days later, via chargebacks or a message from a friend.</p>
+    <p style="margin-top:.65rem;max-width:580px;color:var(--lt-txt2)">Silent checkout failures cost real revenue &mdash; especially when paid ads are running. Most store owners find out days later, via chargebacks or a message from a friend.</p>
     <div class="why-grid">
-      <div class="why-card">
-        <div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3" stroke-linecap="round"/></svg></div>
-        <h3>Issues go unnoticed for days</h3>
-        <p>Cart errors and broken scripts silently lose sales while your Meta and Google campaigns keep spending.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l14 14M8.5 5.5A6 6 0 0114.5 11.5"/><path d="M5.5 5.5A9 9 0 0114.5 14.5"/></svg></div>
-        <h3>Ad spend keeps burning</h3>
-        <p>When checkout breaks, campaigns don&rsquo;t pause. You pay for traffic that cannot convert &mdash; often for 24&ndash;72 hours before anyone catches it.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 2l2 5h5l-4 3 1.5 5L10 12l-4.5 3L7 10 3 7h5z"/></svg></div>
-        <h3>Trust signals silently break</h3>
-        <p>SSL expiry, missing badges, broken refund links &mdash; small breakages that convert first-time visitors erode slowly and invisibly.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="14" height="12" rx="1"/><path d="M3 9h14M7 5V3M13 5V3"/></svg></div>
-        <h3>Weekly reports, not noise</h3>
-        <p>A clean weekly health report &mdash; and an instant alert only when something actually changes. No daily pings, no dashboards to check.</p>
-      </div>
+      <div class="why-card"><div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3" stroke-linecap="round"/></svg></div><h3>Issues go unnoticed for days</h3><p>Cart errors and broken checkout scripts silently lose sales while your ads keep spending.</p></div>
+      <div class="why-card"><div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l14 14M8.5 5.5A6 6 0 0114.5 11.5"/><path d="M5.5 5.5A9 9 0 0114.5 14.5"/></svg></div><h3>Ad spend keeps burning</h3><p>Campaigns don&rsquo;t pause when checkout breaks. You pay for traffic that cannot convert.</p></div>
+      <div class="why-card"><div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 2l2 5h5l-4 3 1.5 5L10 12l-4.5 3L7 10 3 7h5z"/></svg></div><h3>Trust signals silently erode</h3><p>SSL expiry, missing badges, broken refund links &mdash; small breakages that cost conversions.</p></div>
+      <div class="why-card"><div class="why-ico"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="14" height="12" rx="1"/><path d="M3 9h14M7 5V3M13 5V3"/></svg></div><h3>Weekly reports, not noise</h3><p>One clean weekly health report and an instant alert only when something actually changes.</p></div>
     </div>
   </div>
 </section>
 
 <!-- HOW -->
-<section class="section-mid" id="how" aria-labelledby="how-h">
+<section class="sec-dark2 pad" id="how" aria-labelledby="how-h">
   <div class="wrap">
-    <div class="eyebrow eyebrow-dark">How it works</div>
+    <div class="eye eye-dark"><span class="eye-dot"></span>How it works</div>
     <h2 id="how-h" style="margin-top:.65rem">Simple. Non-invasive. Weekly.</h2>
-    <p style="margin-top:.7rem;max-width:560px">No app installation. No Shopify admin access. StoreGuard reads your store the same way your customers do.</p>
-    <div class="how-steps">
-      <div class="hs"><p class="hs-num">01 &mdash; Add</p><h3>Enter your store URL</h3><p>Paste your Shopify domain. No app, no admin credentials, no OAuth required.</p></div>
-      <div class="hs"><p class="hs-num">02 &mdash; Scan</p><h3>Weekly read-only scan</h3><p>Every week, StoreGuard checks your homepage, cart, checkout signals, trust indicators, and response time.</p></div>
-      <div class="hs"><p class="hs-num">03 &mdash; Alert</p><h3>Instant alerts on changes</h3><p>If a check fails or degrades since last week, you receive an alert immediately &mdash; not at end of month.</p></div>
-      <div class="hs"><p class="hs-num">04 &mdash; Report</p><h3>Monthly trend summary</h3><p>Once a month, a clean summary of health trends so you can spot patterns over time and prove uptime.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- SAMPLE REPORT -->
-<section class="section-light" id="sample" aria-labelledby="sample-h">
-  <div class="wrap" style="text-align:center">
-    <div class="eyebrow eyebrow-light">Sample report</div>
-    <h2 id="sample-h" style="margin-top:.65rem">What a health report looks like</h2>
-    <p style="margin:.7rem auto 0;max-width:520px">Designed to be actionable at a glance. One status. Clear findings. No noise.</p>
-    <div class="rcard" role="img" aria-label="Sample StoreGuard health report">
-      <div class="rcard-top">
-        <span class="rcard-store">example-store.com</span>
-        <span class="rcard-ts">Weekly scan &mdash; sample data only</span>
-      </div>
-      <div class="rcard-score-row">
-        <div class="big-sc" id="animScore" aria-label="Health score">--</div>
-        <div class="sc-meta">
-          <div class="sc-lbl">Overall health score</div>
-          <div class="sc-st"><span style="width:7px;height:7px;background:var(--amber);border-radius:50%;display:inline-block" aria-hidden="true"></span>Warning &mdash; 1 issue found</div>
-          <div class="bar-wrap"><div class="bar" id="scoreBar" style="width:0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
-        </div>
-      </div>
-      <div class="rcard-rows">
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Homepage reachable</span><span class="rcs rcs-ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>HTTPS / SSL valid</span><span class="rcs rcs-ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Shopify platform detected</span><span class="rcs rcs-ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>/cart path accessible</span><span class="rcs rcs-ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Checkout signals present</span><span class="rcs rcs-ok">PASS</span></div>
-        <div class="rci"><span class="rcn"><span class="dwarn" aria-hidden="true"></span>Trust signals (refund / shipping)</span><span class="rcs rcs-warn">WARNING</span></div>
-        <div class="rci"><span class="rcn"><span class="dok" aria-hidden="true"></span>Response time</span><span class="rcs rcs-ok">812 ms</span></div>
-        <div class="rci"><span class="rcn"><span class="dna" aria-hidden="true"></span>vs. last week</span><span class="rcs rcs-na">&minus;2 pts</span></div>
-      </div>
-      <div class="rcard-finding">
-        <div class="fi-ico" aria-hidden="true"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 1.5L1 11h11L6.5 1.5zm0 4v2.5"/><circle cx="6.5" cy="9" r=".5" fill="currentColor"/></svg></div>
-        <div class="fi-txt"><strong>Trust signal degraded since last scan.</strong> Refund policy link not detected on checkout page. This may reduce first-time buyer confidence. Verify policy links in your Shopify theme settings.</div>
-      </div>
-      <div class="rcard-sample"><span>Sample report &mdash; not real scan data</span></div>
+    <p style="margin-top:.65rem;max-width:560px;color:var(--dk2)">No app installation. No Shopify admin access. StoreGuard reads your store the same way your customers do.</p>
+    <div class="how-grid">
+      <div class="how-step"><p class="how-num">01 &mdash; Add</p><h3>Enter your store URL</h3><p>Paste your Shopify domain. No app, no admin credentials, no OAuth.</p></div>
+      <div class="how-step"><p class="how-num">02 &mdash; Scan</p><h3>Weekly read-only scan</h3><p>Every week, StoreGuard checks homepage, cart, checkout signals, trust indicators, and speed.</p></div>
+      <div class="how-step"><p class="how-num">03 &mdash; Alert</p><h3>Instant alerts on changes</h3><p>If a check fails or degrades, you receive an alert immediately &mdash; not at end of month.</p></div>
+      <div class="how-step"><p class="how-num">04 &mdash; Report</p><h3>Monthly trend summary</h3><p>A clean monthly summary of health trends to spot patterns and prove uptime over time.</p></div>
     </div>
   </div>
 </section>
 
 <!-- WHAT WE CHECK -->
-<section class="section-white" aria-labelledby="checks-h">
+<section class="sec-white pad" aria-labelledby="checks-h">
   <div class="wrap">
-    <div class="eyebrow eyebrow-light">What we check</div>
+    <div class="eye eye-light"><span class="eye-dot"></span>What we check</div>
     <h2 id="checks-h" style="margin-top:.65rem">Every scan covers these signals</h2>
     <div class="checks-grid">
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8.5l2 2 3-4"/></svg></div><div><h4>Homepage reachability</h4><p>Is your store loading? We check HTTP 200 and fast first response.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8.5l2 2 3-4"/></svg></div><div><h4>Homepage reachability</h4><p>HTTP 200 and fast first response.</p></div></div>
       <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3.5" y="7" width="9" height="7" rx=".75"/><path d="M5.5 7V5.5a2.5 2.5 0 015 0V7"/></svg></div><div><h4>HTTPS &amp; SSL validity</h4><p>Expired SSL silently blocks checkout in modern browsers.</p></div></div>
       <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 5h12l-1 8H3L2 5zm0 0l1-2h10l1 2"/></svg></div><div><h4>Shopify detection</h4><p>Confirms your store is running Shopify and core assets load.</p></div></div>
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3h10v3l-5 3-5-3V3z"/><path d="M8 9v4M5 13h6"/></svg></div><div><h4>Cart path accessible</h4><p>We verify /cart returns a valid response as a proxy for cart functionality.</p></div></div>
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="1"/><path d="M5 7h6M5 9.5h4"/></svg></div><div><h4>Checkout signals</h4><p>Checks for Shopify checkout script presence and cart action signals.</p></div></div>
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.5l1.5 4h4L10 8l1.5 4L8 10l-3.5 2L6 8 2.5 5h4z"/></svg></div><div><h4>Trust signals</h4><p>Refund policy, shipping info, and trust badge presence &mdash; key conversion elements.</p></div></div>
-      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3l2 2"/></svg></div><div><h4>Response time</h4><p>Slow stores lose mobile shoppers. We track load speed and flag regressions.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3h10v3l-5 3-5-3V3z"/><path d="M8 9v4M5 13h6"/></svg></div><div><h4>Cart path</h4><p>/cart returns a valid response as a proxy for cart functionality.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="1"/><path d="M5 7h6M5 9.5h4"/></svg></div><div><h4>Checkout signals</h4><p>Shopify checkout script presence and cart action signals in page HTML.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.5l1.5 4h4L10 8l1.5 4L8 10l-3.5 2L6 8 2.5 5h4z"/></svg></div><div><h4>Trust signals</h4><p>Refund policy, shipping info, and trust badge presence.</p></div></div>
+      <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3l2 2"/></svg></div><div><h4>Response time</h4><p>Slow stores lose mobile shoppers. We flag week-over-week regressions.</p></div></div>
       <div class="cc"><div class="cc-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 8h4l2-4 2 8 2-4h2"/></svg></div><div><h4>Week-over-week diff</h4><p>Every check is compared to last week. We surface regressions, not just failures.</p></div></div>
     </div>
   </div>
 </section>
 
 <!-- NOT CHECKED -->
-<section class="section-light section-top" aria-labelledby="nc-h">
-  <div class="wrap" style="padding-top:3rem">
-    <div class="eyebrow eyebrow-light">Scope</div>
-    <h2 id="nc-h" style="margin-top:.65rem;max-width:480px">What we do not check</h2>
-    <p style="margin-top:.7rem;max-width:580px">StoreGuard is a lightweight external monitor &mdash; not a full QA suite. We never access your Shopify admin, place test orders, or log into anything.</p>
-    <div class="nc-list">
-      <span class="nc-tag">Real checkout transactions</span><span class="nc-tag">Shopify admin / backend</span><span class="nc-tag">App performance</span><span class="nc-tag">Payment gateway config</span><span class="nc-tag">Inventory or product data</span><span class="nc-tag">Customer accounts</span><span class="nc-tag">Email deliverability</span><span class="nc-tag">Third-party integrations</span><span class="nc-tag">A/B test performance</span>
+<section class="sec-light pad-sm" aria-labelledby="nc-h">
+  <div class="wrap">
+    <div class="eye eye-light"><span class="eye-dot"></span>Scope</div>
+    <h2 id="nc-h" style="margin-top:.65rem;max-width:460px">What we do not check</h2>
+    <p style="margin-top:.65rem;max-width:580px;color:var(--lt-txt2)">StoreGuard is a lightweight external monitor &mdash; not a full QA suite. We never access your Shopify admin, place test orders, or log into anything.</p>
+    <div class="nc-tags">
+      <span class="nc-tag">Real checkout transactions</span><span class="nc-tag">Shopify admin</span><span class="nc-tag">App performance</span><span class="nc-tag">Payment gateway config</span><span class="nc-tag">Inventory data</span><span class="nc-tag">Customer accounts</span><span class="nc-tag">Email deliverability</span><span class="nc-tag">Third-party integrations</span>
     </div>
   </div>
 </section>
 
 <!-- PRICING -->
-<section class="section-light" id="pricing" aria-labelledby="pricing-h">
+<section class="sec-white pad" id="pricing" aria-labelledby="pricing-h">
   <div class="wrap">
-    <div class="eyebrow eyebrow-light">Pricing</div>
+    <div class="eye eye-light"><span class="eye-dot"></span>Pricing</div>
     <h2 id="pricing-h" style="margin-top:.65rem">One store or twenty, we&rsquo;ve got you</h2>
-    <p style="margin-top:.7rem;max-width:560px">Start with weekly monitoring on a single store. Scale as your portfolio grows.</p>
+    <p style="margin-top:.65rem;max-width:560px;color:var(--lt-txt2)">Start with weekly monitoring on a single store. Scale as your portfolio grows.</p>
     <div class="price-grid">
 
-      <!-- STARTER (featured = dark card) -->
-      <div class="pc featured">
-        <div class="pc-star">Most popular</div>
+      <div class="pc feat">
+        <div class="pc-badge">Most popular</div>
         <div class="pc-tier">Starter</div>
         <div class="pc-price">&euro;49</div>
         <div class="pc-per">per month &middot; 1 store</div>
@@ -637,16 +701,21 @@ footer{
         </ul>
         <label class="legal-gate" id="legalGate">
           <input type="checkbox" id="termsCheck" onchange="onTermsChange()" aria-required="true">
-          <span>I agree to the <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+          <span>I agree to the <a href="/legal/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
         </label>
-        <div class="legal-err" id="legalErr" role="alert">Please accept the Terms and Privacy Policy to continue.</div>
-        <button id="checkoutBtn" onclick="startCheckout()" class="btn btn-primary" style="width:100%;margin-top:.85rem" aria-label="Start monitoring &mdash; Starter plan &euro;49/month">
-          Start monitoring
-        </button>
+        <div class="legal-err" id="legalErr" role="alert">Please accept Terms and Privacy Policy to continue.</div>
+        <div id="checkoutStatus" role="alert"></div>
+        <button
+          id="checkoutBtn"
+          type="button"
+          onclick="startCheckout()"
+          class="btn btn-primary"
+          style="width:100%;margin-top:.85rem"
+          aria-label="Start Starter plan monitoring for 49 euros per month"
+        >Start monitoring &mdash; &euro;49/mo</button>
         <p class="stripe-note">Checkout via Stripe &middot; Cancel anytime</p>
       </div>
 
-      <!-- GROWTH -->
       <div class="pc soon">
         <div class="pc-tier">Growth</div>
         <div class="pc-price">&euro;129</div>
@@ -655,30 +724,29 @@ footer{
         <span class="pc-soon-tag">Coming soon</span>
       </div>
 
-      <!-- AGENCY -->
       <div class="pc soon">
         <div class="pc-tier">Agency</div>
         <div class="pc-price">&euro;299</div>
         <div class="pc-per">per month &middot; up to 20 stores</div>
         <ul class="pc-feats"><li>Everything in Growth</li><li>Up to 20 stores</li><li>Client-ready reports</li><li>Agency dashboard</li><li>White-label export</li></ul>
-        <a href="mailto:support@qsisto.com?subject=StoreGuard Agency early access" class="btn btn-ghost-light btn-sm" style="display:inline-flex;margin-top:.5rem">Contact for early access</a>
+        <a href="mailto:support@qsisto.com?subject=StoreGuard Agency early access" class="btn btn-ghost-lt btn-sm" style="display:inline-flex;margin-top:.5rem" type="button">Contact for early access</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section class="section-white" id="faq" aria-labelledby="faq-h">
+<section class="sec-light pad" id="faq" aria-labelledby="faq-h">
   <div class="wrap">
-    <div class="eyebrow eyebrow-light">FAQ</div>
+    <div class="eye eye-light"><span class="eye-dot"></span>FAQ</div>
     <h2 id="faq-h" style="margin-top:.65rem">Common questions</h2>
     <div class="faq-grid">
-      <div class="fq"><h4>Do I need to install a Shopify app?</h4><p>No. StoreGuard works entirely from the outside &mdash; a read-only scan against your public store URL, exactly like a customer browsing. Nothing is installed in your Shopify admin.</p></div>
-      <div class="fq"><h4>Do you access my Shopify admin?</h4><p>Never. We have no access to your backend, orders, customers, or settings. We read your public-facing HTML only, the same as any browser would.</p></div>
+      <div class="fq"><h4>Do I need to install a Shopify app?</h4><p>No. StoreGuard works entirely from the outside &mdash; a read-only scan against your public store URL, exactly like a customer browsing.</p></div>
+      <div class="fq"><h4>Do you access my Shopify admin?</h4><p>Never. We read your public-facing HTML only, the same as any browser would. No backend, no orders, no customer data.</p></div>
       <div class="fq"><h4>Do you complete test purchases?</h4><p>No. We don&rsquo;t add items to cart, submit payment forms, or initiate any transaction. Our scan is entirely read-only.</p></div>
-      <div class="fq"><h4>What happens if an issue is found?</h4><p>You receive an email alert immediately with the specific check that changed and what to investigate first. You take action &mdash; we don&rsquo;t make changes to your store.</p></div>
-      <div class="fq"><h4>Can I cancel anytime?</h4><p>Yes. No annual commitments or lock-in. Cancel from your account or email support@qsisto.com &mdash; confirmed within one business day.</p></div>
-      <div class="fq"><h4>Is this a replacement for full QA testing?</h4><p>No. StoreGuard is an early-warning monitoring layer, not a QA substitute. Think of it as your store&rsquo;s smoke alarm &mdash; not a full fire suppression system.</p></div>
+      <div class="fq"><h4>What happens if an issue is found?</h4><p>You receive an email alert immediately with the specific check that changed. You take action &mdash; we don&rsquo;t make changes to your store.</p></div>
+      <div class="fq"><h4>Can I cancel anytime?</h4><p>Yes. No annual commitments. Cancel from your account or email support@qsisto.com &mdash; confirmed within one business day.</p></div>
+      <div class="fq"><h4>Is this a replacement for QA testing?</h4><p>No. StoreGuard is an early-warning monitoring layer, not a QA substitute. Think of it as your store&rsquo;s smoke alarm.</p></div>
     </div>
   </div>
 </section>
@@ -686,12 +754,12 @@ footer{
 <!-- CTA -->
 <div class="cta-strip" aria-labelledby="cta-h">
   <div style="position:relative;z-index:1">
-    <div class="eyebrow eyebrow-dark" style="display:inline-flex;margin-bottom:.65rem">Get started free</div>
-    <h2 id="cta-h" style="margin-bottom:.7rem">Run your first scan in 30 seconds</h2>
+    <div class="eye eye-dark" style="display:inline-flex;margin-bottom:.6rem">Get started free</div>
+    <h2 id="cta-h">Run your first scan in 30 seconds</h2>
     <p>No account needed. No Shopify app. No admin access.</p>
     <div class="cta-actions">
-      <button class="btn btn-primary" onclick="scrollToScan(event)">Run free health scan</button>
-      <a href="mailto:support@qsisto.com" class="btn btn-ghost-dark">Talk to us</a>
+      <button class="btn btn-primary" onclick="scrollToScan()" type="button">Run free health scan</button>
+      <a href="mailto:support@qsisto.com" class="btn btn-ghost-dk" type="button">Talk to us</a>
     </div>
   </div>
 </div>
@@ -714,66 +782,66 @@ footer{
 
 <script>
 'use strict';
-// ── Score animation ────────────────────────────────────────────
+// ── Score animation ──────────────────────────────────────────
 window.addEventListener('load', () => {
-  const el = document.getElementById('animScore');
-  const bar = document.getElementById('scoreBar');
+  const el = document.getElementById('heroScore');
+  const bar = document.getElementById('heroBar');
   if (!el || !bar) return;
   let n = 0;
   const iv = setInterval(() => {
-    n = Math.min(n + 3, 82);
+    n = Math.min(n + 2, 82);
     el.textContent = n;
     bar.style.width = n + '%';
     bar.setAttribute('aria-valuenow', n);
     if (n >= 82) clearInterval(iv);
-  }, 28);
+  }, 32);
 });
 
-// ── Toast ──────────────────────────────────────────────────────
+// ── Toast ────────────────────────────────────────────────────
 function toast(msg, dur) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur || 3800);
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), dur || 4000);
 }
 
-// ── Nav scroll helper ──────────────────────────────────────────
-function scrollToScan(e) {
-  if (e) e.preventDefault();
-  const el = document.getElementById('scan');
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
-  setTimeout(() => {
-    const inp = document.getElementById('scanUrl');
-    if (inp) inp.focus();
-  }, 420);
+// ── Scroll helpers ───────────────────────────────────────────
+function scrollToScan() {
+  document.getElementById('scan').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => { const i = document.getElementById('scanUrl'); if(i) i.focus(); }, 420);
+}
+function scrollToPricing() {
+  document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' });
+}
+function scrollToHeroReport() {
+  document.getElementById('scan').scrollIntoView({ behavior: 'smooth' });
 }
 
-// ── Domain validation ──────────────────────────────────────────
-function sanitize(raw) {
+// ── Domain helpers ───────────────────────────────────────────
+function cleanDomain(raw) {
   return raw.replace(/^https?:\/\//i,'').replace(/\/.*/,'').replace(/\s/g,'').toLowerCase().trim();
 }
 function isPrivate(d) {
   return /^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.|0\.0\.0\.0|::1)/.test(d);
 }
-function isValid(d) {
+function isValidDomain(d) {
   return d.length >= 4 && d.includes('.') && !/[<>'"\\]/.test(d);
 }
 function esc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Scan ───────────────────────────────────────────────────────
+// ── Scan ─────────────────────────────────────────────────────
 async function runScan() {
   const urlEl = document.getElementById('scanUrl');
   const box   = document.getElementById('scanBox');
   const btn   = document.getElementById('scanBtn');
   const res   = document.getElementById('scanResult');
   const raw   = (urlEl.value || '').trim();
-
   if (!raw) { urlEl.focus(); return; }
-  const domain = sanitize(raw);
-
-  if (!isValid(domain)) { showScanErr('Please enter a valid store domain, e.g. yourstore.com'); return; }
+  const domain = cleanDomain(raw);
+  if (!isValidDomain(domain)) { showScanErr('Please enter a valid store domain, e.g. yourstore.myshopify.com'); return; }
   if (isPrivate(domain)) { showScanErr('Private or local addresses are not supported.'); return; }
 
   box.className = 'scan-box scanning';
@@ -782,165 +850,167 @@ async function runScan() {
 
   try {
     const r = await fetch('https://jmhzzzefiyvplwxvuuxo.supabase.co/functions/v1/monitor-alert-builder', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-Qsisto-Test-Secret':'qsisto-sg-test-2026-xK9mP3nR7vQ2wL5j'},
-      body:JSON.stringify({store_url:'https://'+domain,scan_mode:'quick_health_check',source:'storeguard_landing'})
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Qsisto-Test-Secret': 'qsisto-sg-test-2026-xK9mP3nR7vQ2wL5j' },
+      body: JSON.stringify({ store_url: 'https://' + domain, scan_mode: 'quick_health_check', source: 'storeguard_landing' })
     });
     const data = await r.json().catch(() => ({}));
     const score = data?.score ?? data?.health_score ?? null;
     const status = data?.status ?? (score != null ? (score >= 80 ? 'healthy' : 'warning') : 'demo');
-    showResult(domain, score, status);
-  } catch(e) {
-    showDemo(domain);
-  }
+    showScanResult(domain, score, status);
+  } catch(e) { showScanDemo(domain); }
 
   box.className = 'scan-box s-ok';
   btn.disabled = false;
 }
 
+document.getElementById('scanUrl').addEventListener('keydown', e => { if(e.key==='Enter') runScan(); });
+
 function showScanErr(msg) {
   document.getElementById('scanBox').className = 'scan-box s-warn';
   document.getElementById('scanBtn').disabled = false;
   const res = document.getElementById('scanResult');
-  res.innerHTML = '<p style="color:var(--amber)!important;font-size:.85rem;padding:.2rem 0">' + esc(msg) + '</p>';
+  res.innerHTML = '<p style="color:var(--amber)!important;font-size:.84rem;padding:.2rem 0">' + esc(msg) + '</p>';
   res.style.display = 'block';
 }
 
-function showResult(domain, score, status) {
-  const isOk = status === 'healthy' || (score != null && score >= 75);
-  const s    = score ?? (isOk ? 88 : 62);
-  const bc   = isOk ? 'r-badge-ok' : 'r-badge-warn';
-  const bt   = isOk ? 'Healthy' : 'Warning — review recommended';
-  const res  = document.getElementById('scanResult');
+function showScanResult(domain, score, status) {
+  const ok = status === 'healthy' || (score != null && score >= 75);
+  const s  = score ?? (ok ? 88 : 62);
+  const res = document.getElementById('scanResult');
   res.innerHTML =
-    '<div class="r-head"><div class="r-score ' + (isOk?'r-score-ok':'r-score-warn') + '">' + s + '</div><div class="r-badge ' + bc + '">' + bt + '</div></div>' +
+    '<div class="r-head"><div class="r-score' + (ok?'':' r-score-warn') + '">' + s + '</div>' +
+    '<div class="r-badge ' + (ok?'r-badge-ok':'r-badge-warn') + '">' + (ok?'Healthy':'Warning') + '</div></div>' +
     '<ul class="r-checks">' +
-    '<li><span class="ck-ok">&#10003;</span>Homepage reachable</li>' +
-    '<li><span class="ck-ok">&#10003;</span>HTTPS detected</li>' +
-    '<li><span class="ck-ok">&#10003;</span>Shopify platform confirmed</li>' +
-    (isOk ? '<li><span class="ck-ok">&#10003;</span>Cart &amp; checkout signals present</li>' : '<li><span class="ck-warn">&#9888;</span>Trust signals need review</li>') +
+    '<li><span class="ok">&#10003;</span>Homepage reachable</li>' +
+    '<li><span class="ok">&#10003;</span>HTTPS detected</li>' +
+    '<li><span class="ok">&#10003;</span>Shopify confirmed</li>' +
+    (ok ? '<li><span class="ok">&#10003;</span>Cart &amp; checkout signals present</li>' : '<li><span class="warn">&#9888;</span>Trust signals need review</li>') +
     '</ul>' +
-    '<p style="font-family:var(--mono,monospace);font-size:.78rem;margin-bottom:.85rem">' + esc(domain) + '</p>' +
+    '<p style="font-family:var(--mono);font-size:.75rem;margin-bottom:.8rem;color:var(--dk3)!important">' + esc(domain) + '</p>' +
     '<div class="r-ctas">' +
-    '<button class="btn btn-primary btn-sm" onclick="scrollToPricing()">Start weekly monitoring &mdash; &euro;49/mo</button>' +
-    '<button class="btn btn-ghost-dark btn-sm" onclick="scrollToSample()">View sample report</button>' +
+    '<button class="btn btn-primary btn-sm" onclick="scrollToPricing()" type="button">Start monitoring &mdash; &euro;49/mo</button>' +
+    '<button class="btn btn-ghost-dk btn-sm" onclick="scrollToHeroReport()" type="button">View full sample</button>' +
     '</div>' +
-    '<p class="r-note">Quick preview. Full weekly monitoring includes 8 signal checks, week-over-week diff, and instant alerts.</p>';
+    '<p class="r-note">Quick preview. Full scan includes 8 checks, week-over-week diff, and instant alerts.</p>';
   res.style.display = 'block';
-  document.getElementById('scanBox').className = isOk ? 'scan-box s-ok' : 'scan-box s-warn';
+  document.getElementById('scanBox').className = ok ? 'scan-box s-ok' : 'scan-box s-warn';
 }
 
-function showDemo(domain) {
+function showScanDemo(domain) {
   const res = document.getElementById('scanResult');
   res.innerHTML =
     '<div class="r-head"><div class="r-score">&#8212;</div><div class="r-badge r-badge-ok">Domain captured</div></div>' +
     '<ul class="r-checks">' +
-    '<li><span class="ck-ok">&#10003;</span>Domain format valid</li>' +
-    '<li><span class="ck-ok">&#10003;</span>Store URL noted</li>' +
-    '<li>&#8594; Full scan runs after activation</li>' +
+    '<li><span class="ok">&#10003;</span>Domain format valid</li>' +
+    '<li><span class="ok">&#10003;</span>Store URL noted</li>' +
+    '<li>&#8594; Full scan runs on activation</li>' +
     '</ul>' +
-    '<p style="font-family:var(--mono,monospace);font-size:.78rem;margin-bottom:.85rem">' + esc(domain) + '</p>' +
+    '<p style="font-family:var(--mono);font-size:.75rem;margin-bottom:.8rem;color:var(--dk3)!important">' + esc(domain) + '</p>' +
     '<div class="r-ctas">' +
-    '<button class="btn btn-primary btn-sm" onclick="scrollToPricing()">Start monitoring &mdash; &euro;49/mo</button>' +
-    '<button class="btn btn-ghost-dark btn-sm" onclick="scrollToSample()">View sample report</button>' +
+    '<button class="btn btn-primary btn-sm" onclick="scrollToPricing()" type="button">Start monitoring &mdash; &euro;49/mo</button>' +
+    '<button class="btn btn-ghost-dk btn-sm" onclick="scrollToHeroReport()" type="button">View full sample</button>' +
     '</div>' +
     '<p class="r-note" style="color:var(--amber)!important">Scan endpoint connecting. Full scan runs on activation. <a href="mailto:support@qsisto.com" style="color:var(--teal)!important">Contact us</a> to start immediately.</p>';
   res.style.display = 'block';
   document.getElementById('scanBox').className = 'scan-box s-ok';
 }
 
-// ── Scroll helpers ─────────────────────────────────────────────
-function scrollToPricing() {
-  document.getElementById('pricing').scrollIntoView({behavior:'smooth'});
-}
-function scrollToSample() {
-  document.getElementById('sample').scrollIntoView({behavior:'smooth'});
-}
-
-// ── Enter key ──────────────────────────────────────────────────
-document.getElementById('scanUrl').addEventListener('keydown', e => {
-  if (e.key === 'Enter') runScan();
-});
-
-// ── Terms checkbox ─────────────────────────────────────────────
+// ── Terms ────────────────────────────────────────────────────
 function onTermsChange() {
-  const checked = document.getElementById('termsCheck').checked;
-  if (checked) document.getElementById('legalErr').style.display = 'none';
+  if (document.getElementById('termsCheck').checked) {
+    document.getElementById('legalErr').style.display = 'none';
+    hideCheckoutStatus();
+  }
 }
 
-// ── Checkout via Stripe ────────────────────────────────────────
+function showCheckoutStatus(msg, isOk) {
+  const el = document.getElementById('checkoutStatus');
+  el.textContent = msg;
+  el.className = isOk ? 'ok' : '';
+  el.style.display = 'block';
+}
+function hideCheckoutStatus() {
+  document.getElementById('checkoutStatus').style.display = 'none';
+}
+
+// ── Checkout — calls /api/checkout (same-origin, no CORS) ────
 async function startCheckout() {
+  // 1. Check terms
   if (!document.getElementById('termsCheck').checked) {
     document.getElementById('legalErr').style.display = 'block';
     document.getElementById('termsCheck').focus();
-    toast('Please accept Terms and Privacy Policy to continue.');
+    showCheckoutStatus('Please accept Terms and Privacy Policy to continue.', false);
     return;
   }
 
   const btn = document.getElementById('checkoutBtn');
-  const origText = btn.textContent;
+  const origText = btn.innerHTML;
   btn.disabled = true;
-  btn.textContent = 'Opening checkout…';
+  btn.innerHTML = 'Opening secure checkout&hellip;';
+  btn.classList.add('btn-loading');
+  hideCheckoutStatus();
 
+  const storeUrl = (document.getElementById('scanUrl').value || '').trim();
+  const now = new Date().toISOString();
+
+  const payload = {
+    plan: 'starter',
+    product_lock_id: 'PL-ST-MR1DWPL0',
+    store_url: storeUrl || null,
+    terms_accepted: true,
+    privacy_accepted: true,
+    terms_accepted_at: now,
+    privacy_accepted_at: now,
+    origin: window.location.origin,
+    success_url: window.location.origin + '/storeguard?checkout=success',
+    cancel_url: window.location.origin + '/storeguard?checkout=cancelled'
+  };
+
+  // 2. Call same-origin proxy — no CORS issues
   try {
-    const storeUrl = (document.getElementById('scanUrl').value || '').trim();
-    const now = new Date().toISOString();
-    // Secure n8n checkout endpoint — no Stripe secret key in frontend
-    const r = await fetch('https://qsisto.app.n8n.cloud/webhook/storeguard-create-checkout-v2', {
+    const r = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        plan: 'starter',
-        product_lock_id: 'PL-ST-MR1DWPL0',
-        store_url: storeUrl || null,
-        terms_accepted: true,
-        privacy_accepted: true,
-        terms_accepted_at: now,
-        privacy_accepted_at: now,
-        origin: window.location.origin,
-        success_url: window.location.origin + '/storeguard?checkout=success',
-        cancel_url: window.location.origin + '/storeguard?checkout=cancelled'
-      })
+      body: JSON.stringify(payload)
     });
 
-    if (!r.ok && r.status !== 200) {
-      throw new Error('backend_error_' + r.status);
-    }
-
     const data = await r.json().catch(() => ({}));
-
-    // Redirect to Stripe Checkout
     const checkoutUrl = data.checkout_url || data.url;
-    if (checkoutUrl) {
-      window.location.href = checkoutUrl;
-      return; // page navigates away
+
+    if (checkoutUrl && checkoutUrl.startsWith('https://checkout.stripe.com')) {
+      // ✅ Redirect to Stripe — no popup, no blank target
+      window.location.assign(checkoutUrl);
+      return; // browser navigates away
     }
 
-    // Backend responded but no URL
-    const errMsg = data.error || data.message || 'no_checkout_url';
-    console.error('Checkout error:', errMsg, data);
-    throw new Error(errMsg);
-
-  } catch(e) {
+    // Backend error
+    const errMsg = data.message || data.error || 'Could not start checkout.';
     btn.disabled = false;
-    btn.textContent = origText;
+    btn.innerHTML = origText;
+    btn.classList.remove('btn-loading');
+    showCheckoutStatus('Checkout could not be started: ' + errMsg + ' Please try again or contact support@qsisto.com.', false);
+    console.warn('[StoreGuard] Checkout failed:', data);
+
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = origText;
+    btn.classList.remove('btn-loading');
     const msg = String(e?.message || e);
-    console.error('startCheckout failed:', msg);
-    if (msg.includes('terms_not_accepted')) {
-      toast('Please accept Terms and Privacy Policy to continue.');
-    } else if (msg.includes('401') || msg.includes('403') || msg.includes('credential')) {
-      toast('Stripe checkout is being connected. Email support@qsisto.com to subscribe now.');
+    console.error('[StoreGuard] Checkout error:', msg);
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch')) {
+      showCheckoutStatus('Could not reach checkout service. Check your connection and try again.', false);
     } else {
-      toast('Checkout could not be started. Please try again or email support@qsisto.com.');
+      showCheckoutStatus('Checkout error. Please try again or email support@qsisto.com.', false);
     }
   }
 }
 
-// ── Checkout result param ──────────────────────────────────────
+// ── Handle success/cancel params ─────────────────────────────
 (function() {
   const p = new URLSearchParams(window.location.search);
   if (p.get('checkout') === 'success') {
-    setTimeout(() => toast('Subscription started successfully. Check your email for confirmation.', 6000), 500);
+    setTimeout(() => toast('Subscription activated! Check your email for confirmation.', 7000), 600);
   }
 })();
 </script>
