@@ -1,510 +1,542 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Qsisto Founder Dashboard v3 — Internal Staging</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>Qsisto — Perustajapaneeli</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,sans-serif;background:#070C1A;color:#C4CFEA;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:#07091A;color:#BEC8E4;min-height:100vh;-webkit-font-smoothing:antialiased}
 :root{
-  --bg:#070C1A;--bg2:#0B1020;--bg3:#0F1528;
-  --card:#111828;--card2:#141E34;--card3:#192440;
-  --b:rgba(82,110,172,.14);--b2:rgba(82,110,172,.24);--b3:rgba(82,110,172,.38);
-  --t:#C4CFEA;--t2:#7A90BE;--t3:#3A4E7A;
-  --g:#22C55E;--ga:rgba(34,197,94,.08);--gb:rgba(34,197,94,.22);
-  --a:#F59E0B;--aa:rgba(245,158,11,.08);--ab:rgba(245,158,11,.22);
-  --r:#EF4444;--ra:rgba(239,68,68,.08);--rb:rgba(239,68,68,.22);
-  --bl:#3B82F6;--bla:rgba(59,130,246,.08);--blb:rgba(59,130,246,.22);
-  --teal:#06B6D4;--tea:rgba(6,182,212,.08);
+  --bg:#07091A;--card:#0F1526;--card2:#141D32;
+  --b:rgba(80,105,170,.14);--b2:rgba(80,105,170,.26);
+  --t:#BEC8E4;--t2:#7585AA;--t3:#374567;
+  --g:#22C55E;--ga:rgba(34,197,94,.09);--gb:rgba(34,197,94,.24);
+  --a:#F59E0B;--aa:rgba(245,158,11,.09);--ab:rgba(245,158,11,.24);
+  --r:#EF4444;--ra:rgba(239,68,68,.09);--rb:rgba(239,68,68,.24);
+  --bl:#3B82F6;--bla:rgba(59,130,246,.09);
   --mono:'JetBrains Mono',monospace;
 }
-/* STAGING BANNER */
-.stg{background:linear-gradient(90deg,#14080A,#241200,#14080A);border-bottom:1px solid rgba(245,158,11,.25);padding:5px 1.5rem;display:flex;align-items:center;justify-content:center;gap:.65rem;font-size:.69rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--a)}
-.stg-dot{width:5px;height:5px;border-radius:50%;background:var(--a);animation:blink 1.6s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* AUTH WARNING */
+.auth-warn{
+  background:linear-gradient(90deg,#1C0D00,#2A1500,#1C0D00);
+  border-bottom:1px solid rgba(245,158,11,.3);
+  padding:8px 1.5rem;display:flex;align-items:center;justify-content:center;
+  gap:.75rem;font-size:.75rem;font-weight:600;color:var(--a);
+  letter-spacing:.03em;flex-wrap:wrap;text-align:center;
+}
+.aw-dot{width:6px;height:6px;border-radius:50%;background:var(--a);flex-shrink:0;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
 /* LAYOUT */
-.layout{display:flex;min-height:calc(100vh - 31px)}
-.sidebar{width:210px;background:var(--bg2);border-right:1px solid var(--b);padding:1.1rem 0;flex-shrink:0;position:sticky;top:31px;height:calc(100vh - 31px);overflow-y:auto}
-.main{flex:1;padding:1.5rem;overflow-x:hidden}
-/* SIDEBAR */
-.sb-logo{padding:.2rem 1rem .9rem;border-bottom:1px solid var(--b);margin-bottom:.75rem}
-.sb-logo-name{font-size:.92rem;font-weight:700;color:#E6EEFF}
-.sb-logo-sub{font-size:.65rem;color:var(--t3);font-family:var(--mono);margin-top:1px}
-.sb-grp{padding:0 .65rem;margin-bottom:.2rem}
-.sb-lbl{font-size:.63rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);padding:.45rem .4rem .3rem;display:block}
-.sb-link{display:flex;align-items:center;gap:.48rem;padding:.38rem .4rem;border-radius:5px;font-size:.79rem;color:var(--t2);cursor:pointer;transition:all .15s;text-decoration:none}
-.sb-link:hover,.sb-link.on{background:rgba(59,130,246,.07);color:#E6EEFF}
-.sb-link.on{color:var(--bl)}
-.sdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.sdot-g{background:var(--g)}.sdot-a{background:var(--a)}.sdot-r{background:var(--r)}.sdot-gr{background:var(--t3)}
-.sb-foot{padding:.85rem 1rem;margin-top:1.5rem;border-top:1px solid var(--b);font-size:.67rem;color:var(--t3);line-height:1.65}
-/* INTEGRITY BAR */
-.int-bar{background:var(--bg2);border-top:1px solid var(--b);padding:.55rem 1.5rem;display:flex;flex-wrap:wrap;gap:1.1rem;align-items:center;font-size:.71rem;color:var(--t3);position:sticky;bottom:0;z-index:100}
-.iv{display:flex;align-items:center;gap:.35rem}
-.iv-red{color:var(--r);font-weight:700}.iv-green{color:var(--g);font-weight:700}.iv-amber{color:var(--a);font-weight:700}
+.shell{display:flex;min-height:calc(100vh - 37px)}
+
+/* NAV */
+.nav{
+  width:200px;background:rgba(10,13,26,.95);border-right:1px solid var(--b);
+  padding:1.25rem 0;flex-shrink:0;position:sticky;top:37px;
+  height:calc(100vh - 37px);overflow-y:auto;
+}
+.nav-logo{padding:.1rem 1.1rem .9rem;border-bottom:1px solid var(--b);margin-bottom:.75rem}
+.nav-logo-name{font-size:.95rem;font-weight:700;color:#E8EEFF}
+.nav-logo-sub{font-size:.65rem;color:var(--t3);margin-top:2px}
+.nav-grp{padding:0 .65rem;margin-bottom:.15rem}
+.nav-lbl{font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);padding:.4rem .4rem .25rem;display:block}
+.nav-btn{
+  display:flex;align-items:center;gap:.5rem;width:100%;
+  padding:.4rem .5rem;border-radius:6px;font-size:.8rem;
+  color:var(--t2);cursor:pointer;border:none;background:none;
+  font-family:inherit;text-align:left;transition:all .15s;
+}
+.nav-btn:hover,.nav-btn.on{background:rgba(59,130,246,.08);color:#E8EEFF}
+.nav-btn.on{color:var(--bl);font-weight:500}
+.nav-ic{font-size:.85rem;opacity:.7}
+
+/* MAIN */
+.main{flex:1;padding:1.65rem;overflow-x:hidden}
+
+/* PAGES */
+.page{display:none}
+.page.on{display:block}
+
+/* SECTION HEADER */
+.pg-title{font-size:1.25rem;font-weight:700;color:#E8EEFF;margin-bottom:.25rem}
+.pg-sub{font-size:.8rem;color:var(--t3);margin-bottom:1.5rem}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:.9rem 1.05rem}
+.kpi-lbl{font-size:.72rem;color:var(--t2);margin-bottom:.3rem}
+.kpi-val{font-size:1.65rem;font-weight:700;color:#E8EEFF;line-height:1;font-family:var(--mono)}
+.kpi-note{font-size:.69rem;color:var(--t3);margin-top:.25rem}
+.kpi-val.ok{color:var(--g)}.kpi-val.warn{color:var(--a)}.kpi-val.dim{color:var(--t3)}
+
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:1rem 1.15rem}
-.card-sm{padding:.8rem .95rem}
+.card{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:10px}
+.card-title{font-size:.9rem;font-weight:600;color:#E8EEFF;margin-bottom:.85rem}
+.card-row{display:flex;align-items:flex-start;justify-content:space-between;padding:.32rem 0;border-bottom:1px solid rgba(80,105,170,.06);font-size:.82rem;gap:.5rem}
+.card-row:last-child{border-bottom:none}
+.cr-key{color:var(--t2);flex-shrink:0}
+.cr-val{color:#E8EEFF;font-weight:500;text-align:right}
+.cr-val.ok{color:var(--g)}.cr-val.warn{color:var(--a)}.cr-val.bad{color:var(--r)}
+
 /* BADGES */
-.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .55rem;border-radius:100px;font-size:.67rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.bg-g{background:var(--ga);border:1px solid var(--gb);color:var(--g)}
-.bg-a{background:var(--aa);border:1px solid var(--ab);color:var(--a)}
-.bg-r{background:var(--ra);border:1px solid var(--rb);color:var(--r)}
-.bg-b{background:var(--bla);border:1px solid var(--blb);color:var(--bl)}
-.bg-gr{background:rgba(58,78,122,.1);border:1px solid var(--b);color:var(--t2)}
-/* DATA LABELS */
-.dl{display:inline-block;font-size:.6rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.1rem .38rem;border-radius:3px;margin-left:.35rem;vertical-align:middle}
-.dl-live{background:rgba(6,182,212,.1);color:var(--teal)}
-.dl-snap{background:rgba(59,130,246,.08);color:var(--bl)}
-.dl-manual{background:rgba(245,158,11,.08);color:var(--a)}
-.dl-stale{background:rgba(239,68,68,.08);color:var(--r)}
-.dl-blocked{background:rgba(58,78,122,.1);color:var(--t2)}
-/* KPI GRID */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:1.35rem}
-.kpi{background:var(--card);border:1px solid var(--b);border-radius:9px;padding:.75rem .9rem}
-.kpi-lbl{font-size:.67rem;color:var(--t3);margin-bottom:.28rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
-.kpi-val{font-size:1.55rem;font-weight:700;color:#E6EEFF;line-height:1;font-family:var(--mono)}
-.kpi-sub{font-size:.68rem;color:var(--t3);margin-top:.22rem}
-.kpi-val.g{color:var(--g)}.kpi-val.a{color:var(--a)}.kpi-val.r{color:var(--r)}.kpi-val.dim{color:var(--t3)}
-/* SECTION HDR */
-.sec{font-size:.74rem;font-weight:600;color:var(--t2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem;margin-top:1.5rem;display:flex;align-items:center;gap:.55rem}
-.sec:first-child{margin-top:0}
-.sec-line{flex:1;height:1px;background:var(--b)}
-/* CARD HDR */
-.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.4rem}
-.ct{font-size:.87rem;font-weight:600;color:#E6EEFF}
-/* KV */
-.kv{display:flex;justify-content:space-between;align-items:center;padding:.28rem 0;border-bottom:1px solid rgba(82,110,172,.06);font-size:.78rem}
-.kv:last-child{border-bottom:none}
-.kk{color:var(--t3)}.kv-v{color:#E6EEFF;font-weight:500}
-.kv-v.g{color:var(--g)}.kv-v.a{color:var(--a)}.kv-v.r{color:var(--r)}.kv-v.mono{font-family:var(--mono);font-size:.72rem}
-/* CHECK LIST */
-.cl{display:flex;flex-direction:column;gap:.38rem}
-.ci{display:flex;align-items:flex-start;gap:.45rem;font-size:.79rem}
-.cico{width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:.6rem;font-weight:700}
-.ico-g{background:rgba(34,197,94,.1);color:var(--g);border:1px solid rgba(34,197,94,.22)}
-.ico-a{background:rgba(245,158,11,.1);color:var(--a);border:1px solid rgba(245,158,11,.22)}
-.ico-r{background:rgba(239,68,68,.1);color:var(--r);border:1px solid rgba(239,68,68,.22)}
-.ico-gr{background:rgba(58,78,122,.1);color:var(--t3);border:1px solid var(--b)}
-.ct2{color:var(--t2);line-height:1.42}.ct2 b{color:#E6EEFF;font-weight:500}
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:100px;font-size:.69rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.badge-g{background:var(--ga);border:1px solid var(--gb);color:var(--g)}
+.badge-a{background:var(--aa);border:1px solid var(--ab);color:var(--a)}
+.badge-r{background:var(--ra);border:1px solid var(--rb);color:var(--r)}
+.badge-b{background:var(--bla);border:1px solid rgba(59,130,246,.22);color:var(--bl)}
+.badge-gr{background:rgba(55,69,103,.15);border:1px solid var(--b2);color:var(--t2)}
+
+/* TWO COL */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:10px;margin-bottom:10px}
+
+/* ATTENTION CARD */
+.attn{border-radius:9px;padding:.85rem 1rem;margin-bottom:.5rem;border:1px solid;display:flex;gap:.75rem;align-items:flex-start}
+.attn.warn{background:var(--aa);border-color:var(--ab)}
+.attn.ok{background:var(--ga);border-color:var(--gb)}
+.attn.info{background:var(--bla);border-color:rgba(59,130,246,.22)}
+.attn.bad{background:var(--ra);border-color:var(--rb)}
+.attn-ico{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.attn-body{}
+.attn-title{font-size:.82rem;font-weight:600;margin-bottom:.15rem}
+.attn.warn .attn-title{color:var(--a)}
+.attn.ok .attn-title{color:var(--g)}
+.attn.info .attn-title{color:var(--bl)}
+.attn.bad .attn-title{color:var(--r)}
+.attn-desc{font-size:.76rem;color:var(--t3);line-height:1.5}
+
+/* CHECKLIST */
+.cklist{display:flex;flex-direction:column;gap:.38rem}
+.ck{display:flex;align-items:flex-start;gap:.5rem;font-size:.81rem}
+.ck-ico{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:.62rem;font-weight:700}
+.ck-g{background:rgba(34,197,94,.1);color:var(--g);border:1px solid rgba(34,197,94,.2)}
+.ck-a{background:rgba(245,158,11,.1);color:var(--a);border:1px solid rgba(245,158,11,.2)}
+.ck-r{background:rgba(239,68,68,.1);color:var(--r);border:1px solid rgba(239,68,68,.2)}
+.ck-gr{background:rgba(55,69,103,.12);color:var(--t3);border:1px solid var(--b)}
+.ck-txt{color:var(--t2);line-height:1.42}
+.ck-txt b{color:#E8EEFF;font-weight:500}
+
+/* APPROVAL PANEL */
+.approval-panel{border:1px solid var(--ab);border-radius:10px;background:var(--aa);padding:1.1rem 1.25rem}
+.ap-title{font-size:.88rem;font-weight:600;color:var(--a);margin-bottom:.65rem}
+.ap-scope{background:rgba(0,0,0,.2);border-radius:6px;padding:.6rem .8rem;font-size:.77rem;color:var(--t);font-family:var(--mono);line-height:1.75;margin-bottom:.75rem}
+.disabled-btn{
+  display:block;width:100%;padding:.62rem;border-radius:7px;
+  background:rgba(80,105,170,.08);border:1px solid var(--b2);
+  color:var(--t3);font-size:.8rem;font-weight:600;text-align:center;
+  cursor:not-allowed;margin-bottom:.4rem;font-family:inherit;
+}
+
+/* EMAIL PREVIEW */
+.email-preview{background:#0C0F1E;border:1px solid var(--b2);border-radius:8px;padding:1rem 1.1rem;font-size:.8rem}
+.ep-field{display:flex;gap:.65rem;margin-bottom:.4rem;font-size:.76rem}
+.ep-key{color:var(--t3);min-width:60px;flex-shrink:0}
+.ep-val{color:var(--t)}
+.ep-divider{border:none;border-top:1px solid var(--b);margin:.65rem 0}
+.ep-body{color:var(--t2);line-height:1.65;white-space:pre-wrap}
+
+/* LEADERBOARD */
+.lb-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.lb-table th{font-size:.67rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);padding:.45rem .6rem;border-bottom:1px solid var(--b);text-align:left}
+.lb-table td{padding:.5rem .6rem;border-bottom:1px solid rgba(80,105,170,.05);color:var(--t2);vertical-align:middle}
+.lb-table tr:last-child td{border-bottom:none}
+.lb-table td:first-child{color:#E8EEFF;font-weight:500}
+
+/* SYSTEM PAGE */
+.sys-field{font-family:var(--mono);font-size:.75rem;color:var(--t2);background:rgba(0,0,0,.2);border-radius:5px;padding:.35rem .6rem;margin:.2rem 0;display:flex;gap:.5rem}
+.sf-key{color:var(--t3);min-width:160px;flex-shrink:0}
+.sf-val{color:var(--t)}
+.sf-val.ok{color:var(--g)}.sf-val.warn{color:var(--a)}.sf-val.bad{color:var(--r)}
+
+/* INTEGRITY */
+.integrity{
+  background:rgba(8,10,22,.96);border-top:1px solid var(--b);
+  padding:.5rem 1.5rem;display:flex;flex-wrap:wrap;gap:1rem;
+  align-items:center;font-size:.72rem;color:var(--t3);
+  position:sticky;bottom:0;z-index:100;
+}
+.int-item{display:flex;align-items:center;gap:.35rem}
+.iv-r{color:var(--r);font-weight:700}.iv-g{color:var(--g);font-weight:700}.iv-a{color:var(--a);font-weight:700}
+
 /* DIVIDER */
 hr{border:none;border-top:1px solid var(--b);margin:.75rem 0}
-/* GRIDS */
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;margin-bottom:10px}
-.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin-bottom:10px}
-/* SCORE */
-.score-row{display:flex;align-items:center;gap:1rem;margin:.75rem 0}
-.score-big{font-size:2.4rem;font-weight:700;font-family:var(--mono);line-height:1}
-.score-big.a{color:var(--a)}.score-big.g{color:var(--g)}
-.score-lbl{font-size:.63rem;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.15rem}
-.score-verdict{font-size:.84rem;font-weight:600}
-/* PROGRESS */
-.prog-wrap{height:4px;background:rgba(82,110,172,.1);border-radius:2px;overflow:hidden;margin:.4rem 0}
-.prog{height:100%;border-radius:2px}
-.prog.g{background:var(--g)}.prog.a{background:var(--a)}.prog.r{background:var(--r)}
-/* LAYERS */
-.layers{display:flex;flex-direction:column;gap:.3rem}
-.layer{display:flex;align-items:center;justify-content:space-between;padding:.27rem .45rem;border-radius:4px;font-size:.76rem}
-.layer.done{background:rgba(34,197,94,.04)}.layer.warn{background:rgba(245,158,11,.04)}.layer.miss{background:rgba(239,68,68,.03)}
-.ln{display:flex;align-items:center;gap:.42rem;color:var(--t2)}
-.ln.done-c{color:#E6EEFF}
-/* BLOCKER */
-.blk{border-radius:7px;padding:.65rem .8rem;margin-bottom:.45rem;border:1px solid}
-.blk.hard{background:var(--aa);border-color:var(--ab)}
-.blk.soft{background:rgba(82,110,172,.04);border-color:var(--b2)}
-.blk.ok{background:var(--ga);border-color:var(--gb)}
-.blk-title{font-size:.77rem;font-weight:600;margin-bottom:.15rem}
-.blk.hard .blk-title{color:var(--a)}.blk.soft .blk-title{color:var(--t)}.blk.ok .blk-title{color:var(--g)}
-.blk-sub{font-size:.7rem;color:var(--t3)}
-/* PORTFOLIO TABLE */
-.ptable{width:100%;border-collapse:collapse;font-size:.78rem}
-.ptable th{font-size:.65rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);padding:.5rem .65rem;border-bottom:1px solid var(--b);text-align:left}
-.ptable td{padding:.5rem .65rem;border-bottom:1px solid rgba(82,110,172,.06);color:var(--t2)}
-.ptable tr:last-child td{border-bottom:none}
-.ptable tr:hover td{background:rgba(82,110,172,.04)}
-.ptable td:first-child{color:#E6EEFF;font-weight:500}
-/* EVENT LOG */
-.evlog{display:flex;flex-direction:column}
-.ev{display:flex;align-items:flex-start;gap:.65rem;padding:.48rem 0;border-bottom:1px solid rgba(82,110,172,.05)}
-.ev:last-child{border-bottom:none}
-.ev-ts{font-size:.67rem;color:var(--t3);font-family:var(--mono);white-space:nowrap;min-width:75px;padding-top:2px}
-.ev-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.ev-dot.g{background:var(--g)}.ev-dot.a{background:var(--a)}.ev-dot.b{background:var(--bl)}.ev-dot.t{background:var(--teal)}
-.ev-txt{font-size:.77rem;color:var(--t2);line-height:1.42}
-.ev-txt b{color:#E6EEFF;font-weight:500}
-/* AUTH BANNER */
-.auth-banner{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;background:var(--ra);border:1px solid var(--rb);display:flex;align-items:flex-start;gap:.65rem}
-.auth-ico{font-size:1rem;flex-shrink:0;margin-top:1px}
-.auth-txt h4{font-size:.8rem;font-weight:600;color:var(--r);margin-bottom:.18rem}
-.auth-txt p{font-size:.73rem;color:var(--t3)}
-/* APPROVAL BLOCK */
-.approval-block{border:1px solid var(--ab);border-radius:9px;padding:1rem 1.1rem;background:var(--aa);margin-top:.75rem}
-.approval-block h4{font-size:.82rem;font-weight:600;color:var(--a);margin-bottom:.5rem}
-.approval-scope{font-family:var(--mono);font-size:.72rem;color:var(--t);background:rgba(0,0,0,.2);border-radius:5px;padding:.5rem .7rem;line-height:1.7}
-.disabled-btn{background:rgba(82,110,172,.08);border:1px solid var(--b);border-radius:7px;padding:.55rem 1rem;font-size:.8rem;font-weight:600;color:var(--t3);text-align:center;margin-top:.65rem;cursor:not-allowed;opacity:.6}
-/* RESP */
-@media(max-width:900px){.sidebar{display:none}.main{max-width:100%}.layout{display:block}}
-@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.two,.three{grid-template-columns:1fr}}
+
+/* RESPONSIVE */
+@media(max-width:800px){.nav{display:none}.main{max-width:100%}.shell{display:block}}
+@media(max-width:560px){.kpi-row{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<div class="stg"><span class="stg-dot"></span>Internal Staging — empire-products.vercel.app/founder-dashboard — Auth: PENDING — NOT linked from qsisto.com<span class="stg-dot"></span></div>
+<!-- AUTH WARNING -->
+<div class="auth-warn">
+  <span class="aw-dot"></span>
+  ⚠ Ei kirjautumissuojausta — kuka tahansa URLin tietävä pääsee tänne &mdash; ÄLÄ jaa tätä linkkiä &mdash; ÄLÄ julkaise qsisto.com/founder
+  <span class="aw-dot"></span>
+</div>
 
-<div class="layout">
-<aside class="sidebar">
-  <div class="sb-logo"><div class="sb-logo-name">Qsisto</div><div class="sb-logo-sub">Dashboard v3 · Staging</div></div>
-  <div class="sb-grp"><span class="sb-lbl">Cockpit</span>
-    <a class="sb-link on" href="#top">&#9632; Overview</a>
-    <a class="sb-link" href="#auth">&#9632; Auth status</a>
-    <a class="sb-link" href="#portfolio">&#9632; Portfolio</a>
-    <a class="sb-link" href="#storeguard">&#9632; StoreGuard</a>
-  </div>
-  <div class="sb-grp"><span class="sb-lbl">Operations</span>
-    <a class="sb-link" href="#outreach">&#9632; Outreach</a>
-    <a class="sb-link" href="#capacity">&#9632; Senders</a>
-    <a class="sb-link" href="#blockers">&#9632; Blockers</a>
-    <a class="sb-link" href="#events">&#9632; Event log</a>
-  </div>
-  <div class="sb-grp"><span class="sb-lbl">System</span>
-    <div class="sb-link"><span class="sdot sdot-g"></span>Stripe live</div>
-    <div class="sb-link"><span class="sdot sdot-g"></span>Event log fixed</div>
-    <div class="sb-link"><span class="sdot sdot-g"></span>Sender pool</div>
-    <div class="sb-link"><span class="sdot sdot-a"></span>Auth: pending</div>
-    <div class="sb-link"><span class="sdot sdot-a"></span>Send: blocked</div>
-  </div>
-  <div class="sb-foot">AB Empire Oy<br>Business ID 3499735-5<br>Finland</div>
-</aside>
+<div class="shell">
 
-<main class="main" id="top">
+<!-- SIDEBAR NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-name">Qsisto</div>
+    <div class="nav-logo-sub">Perustajapaneeli v4.1</div>
+  </div>
 
-  <!-- AUTH WARNING -->
-  <div class="auth-banner" id="auth">
-    <div class="auth-ico">&#128274;</div>
-    <div class="auth-txt">
-      <h4>Auth status: PENDING — qsisto.com/founder NOT published</h4>
-      <p>Authentication not yet implemented. Dashboard accessible only at staging URL. Do not link from public pages. Recommended: Vercel password protection or Supabase Auth + middleware before publication.</p>
+  <div class="nav-grp">
+    <span class="nav-lbl">Näkymät</span>
+    <button class="nav-btn on" onclick="showPage('summary',this)">
+      <span class="nav-ic">📊</span> Yhteenveto
+    </button>
+    <button class="nav-btn" onclick="showPage('control',this)">
+      <span class="nav-ic">🎛</span> Toimintakeskus
+    </button>
+    <button class="nav-btn" onclick="showPage('system',this)">
+      <span class="nav-ic">⚙️</span> Järjestelmä
+    </button>
+  </div>
+
+  <div class="nav-grp" style="margin-top:.5rem">
+    <span class="nav-lbl">Bisnekset</span>
+    <button class="nav-btn" onclick="showPage('control',this)">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--a);display:inline-block;flex-shrink:0"></span>
+      StoreGuard
+    </button>
+  </div>
+
+  <div style="padding:.85rem 1rem;margin-top:auto;border-top:1px solid var(--b);margin-top:2rem">
+    <div style="font-size:.66rem;color:var(--t3);line-height:1.65">AB Empire Oy<br>Business ID 3499735-5<br>Finland</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ═══ YHTEENVETO ═══════════════════════════════════════════════ -->
+<div class="page on" id="page-summary">
+  <div class="pg-title">Hei 👋</div>
+  <div class="pg-sub">Tässä kaikki oleellinen tänään — 1. heinäkuuta 2026</div>
+
+  <!-- KPI -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-lbl">Kuukausitulot (MRR)</div>
+      <div class="kpi-val dim">€0</div>
+      <div class="kpi-note">Ei vielä maksavia asiakkaita</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Asiakkaat</div>
+      <div class="kpi-val dim">0</div>
+      <div class="kpi-note">Odottaa ensimmäistä myyntiä</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Bisnekset live</div>
+      <div class="kpi-val">1</div>
+      <div class="kpi-note">StoreGuard</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Sähköpostit tänään</div>
+      <div class="kpi-val dim">0</div>
+      <div class="kpi-note">Ei lähetetty vielä</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Vastaukset</div>
+      <div class="kpi-val dim">0</div>
+      <div class="kpi-note">Ei lähettyjä viestejä</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Odottaa sinua</div>
+      <div class="kpi-val warn">1</div>
+      <div class="kpi-note">Päätös tarvitaan</div>
     </div>
   </div>
 
-  <!-- PAGE HEADER -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.6rem">
-    <div>
-      <div style="font-size:1.15rem;font-weight:700;color:#E6EEFF;letter-spacing:-.01em">Founder Cockpit</div>
-      <div style="font-size:.71rem;color:var(--t3)">2026-07-01 &middot; Empire Engine v1 &middot; Internal staging only</div>
+  <!-- ATTENTION -->
+  <div class="card">
+    <div class="card-title">Mitä tarvitsee huomiotasi</div>
+
+    <div class="attn warn">
+      <div class="attn-ico">⚡</div>
+      <div class="attn-body">
+        <div class="attn-title">StoreGuard — Hyväksy tai hylkää testilähetys</div>
+        <div class="attn-desc">7 tarkistettua prospektia odottaa. Yksi sähköpostiviesti, ei jatkotoimenpiteitä, ei laajennus. Pienin mahdollinen testi — ennen kuin voit nähdä toimiiko koko systeemi.</div>
+      </div>
     </div>
-    <div style="display:flex;gap:.4rem;flex-wrap:wrap">
-      <span class="badge bg-r">real_send_allowed = false</span>
-      <span class="badge bg-a">Send approval pending</span>
-      <span class="badge bg-g">Supabase log fixed</span>
+
+    <div class="attn bad">
+      <div class="attn-ico">🔓</div>
+      <div class="attn-body">
+        <div class="attn-title">Tämä paneeli ei ole suojattu kirjautumisella</div>
+        <div class="attn-desc">Kuka tahansa URLin tietävä pääsee tänne. Älä jaa linkkiä. Cloudflare-tili tarvitaan suojaamiseen.</div>
+      </div>
+    </div>
+
+    <div class="attn info">
+      <div class="attn-ico">📧</div>
+      <div class="attn-body">
+        <div class="attn-title">Tarkista sähköpostiviesti ennen lähetystä</div>
+        <div class="attn-desc">Katso Toimintakeskuksessa miltä viesti näyttää. Muokkaa tarvittaessa ennen hyväksyntää.</div>
+      </div>
+    </div>
+
+    <div class="attn ok">
+      <div class="attn-ico">✅</div>
+      <div class="attn-body">
+        <div class="attn-title">StoreGuard on teknisesti valmis</div>
+        <div class="attn-desc">Sivu toimii, Stripe toimii, lakisivut live, tapahtumaloki kunnossa. Vain sinun hyväksyntäsi puuttuu.</div>
+      </div>
     </div>
   </div>
 
-  <!-- KPI ROW -->
-  <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-lbl">Total MRR<span class="dl dl-snap">snapshot</span></div><div class="kpi-val dim">&euro;0</div><div class="kpi-sub">0 customers</div></div>
-    <div class="kpi"><div class="kpi-lbl">Products live<span class="dl dl-manual">manual</span></div><div class="kpi-val">1</div><div class="kpi-sub">StoreGuard</div></div>
-    <div class="kpi"><div class="kpi-lbl">Emails sent<span class="dl dl-snap">snapshot</span></div><div class="kpi-val dim">0</div><div class="kpi-sub">today &middot; all time</div></div>
-    <div class="kpi"><div class="kpi-lbl">Replies<span class="dl dl-snap">snapshot</span></div><div class="kpi-val dim">0</div><div class="kpi-sub">no sends yet</div></div>
-    <div class="kpi"><div class="kpi-lbl">Payments<span class="dl dl-snap">snapshot</span></div><div class="kpi-val dim">0</div><div class="kpi-sub">Stripe connected</div></div>
-    <div class="kpi"><div class="kpi-lbl">Capacity<span class="dl dl-snap">snapshot</span></div><div class="kpi-val g">324</div><div class="kpi-sub">safe/day</div></div>
-    <div class="kpi"><div class="kpi-lbl">Batch ready<span class="dl dl-snap">snapshot</span></div><div class="kpi-val a">7</div><div class="kpi-sub">locked prospects</div></div>
-    <div class="kpi"><div class="kpi-lbl">Blockers<span class="dl dl-manual">manual</span></div><div class="kpi-val a">3</div><div class="kpi-sub">1 hard · 2 soft</div></div>
-  </div>
-
-  <!-- PORTFOLIO -->
-  <div class="sec" id="portfolio">Portfolio <span class="sec-line"></span></div>
-  <div class="card" style="margin-bottom:10px">
-    <div class="ch"><span class="ct">Business portfolio</span><span class="badge bg-gr">1 product locked</span></div>
-    <table class="ptable">
-      <thead><tr><th>Business</th><th>Category</th><th>Score</th><th>MRR</th><th>State</th><th>Next action</th><th>Blockers</th></tr></thead>
+  <!-- BISNESLEADERBOARD -->
+  <div class="card">
+    <div class="card-title">Bisnekset</div>
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>Bisnes</th>
+          <th>MRR</th>
+          <th>Asiakkaat</th>
+          <th>Tila</th>
+          <th>Seuraava askel</th>
+        </tr>
+      </thead>
       <tbody>
         <tr>
           <td>StoreGuard</td>
-          <td style="color:var(--t2)">Monitor / Alert</td>
-          <td><span style="color:var(--a);font-family:var(--mono);font-weight:600">72</span>/100</td>
-          <td style="font-family:var(--mono)">&euro;0</td>
-          <td><span class="badge bg-a">Awaiting send approval</span></td>
-          <td style="color:var(--t2);font-size:.74rem">Owner send approval</td>
-          <td><span style="color:var(--a)">1 hard · 2 soft</span></td>
+          <td style="font-family:var(--mono)">€0</td>
+          <td style="font-family:var(--mono)">0</td>
+          <td><span class="badge badge-a">Valmis pieneeen testiin</span></td>
+          <td style="color:var(--t2);font-size:.77rem">Tarkista sähköposti → hyväksy lähetys</td>
         </tr>
         <tr>
-          <td style="color:var(--t3)">Next product</td>
-          <td style="color:var(--t3)">TBD</td>
-          <td style="color:var(--t3)">—</td>
-          <td style="color:var(--t3);font-family:var(--mono)">&euro;0</td>
-          <td><span class="badge bg-gr">Not started</span></td>
-          <td style="color:var(--t3);font-size:.74rem">After first StoreGuard MRR</td>
-          <td style="color:var(--t3)">—</td>
+          <td style="color:var(--t3)">Seuraava bisnes</td>
+          <td style="color:var(--t3);font-family:var(--mono)">—</td>
+          <td style="color:var(--t3);font-family:var(--mono)">—</td>
+          <td><span class="badge badge-gr">Ei aloitettu</span></td>
+          <td style="color:var(--t3);font-size:.77rem">Ensimmäinen MRR ensin</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- STOREGUARD DETAILED -->
-  <div class="sec" id="storeguard">StoreGuard <span class="sec-line"></span></div>
+  <!-- TODAY -->
+  <div class="card">
+    <div class="card-title">Tänään tapahtunut</div>
+    <div class="cklist">
+      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>StoreGuard-sivu</b> live ja toimii — qsisto.com/storeguard</span></div>
+      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Stripe-maksu</b> toimii oikeassa selaimessa</span></div>
+      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Lakisivut</b> live — ehdot, tietosuoja, DPA</span></div>
+      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tapahtumaloki</b> korjattu ja toimii</span></div>
+      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Perustajapaneeli</b> yksinkertaistettu suomeksi</span></div>
+      <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Kirjautumissuojaus</b> puuttuu — tarvitaan Cloudflare</span></div>
+      <div class="ck"><div class="ck-ico ck-gr">-</div><span class="ck-txt">Yhtään sähköpostia ei lähetetty</span></div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div style="background:var(--card2);border:1px solid var(--b2);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:10px">
+    <div style="font-size:.75rem;font-weight:600;color:var(--bl);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">Suositus</div>
+    <div style="font-size:.9rem;color:#E8EEFF;line-height:1.6">StoreGuard on valmis pieneeen 7 prospektin testilähetykseen heti kun olet tarkastanut sähköpostiviestin. Älä skaalaa vielä — odota ensimmäinen vastaus tai maksu ensin.</div>
+  </div>
+</div>
+
+<!-- ═══ TOIMINTAKESKUS ═══════════════════════════════════════════ -->
+<div class="page" id="page-control">
+  <div class="pg-title">Toimintakeskus</div>
+  <div class="pg-sub">Hyväksy, hylkää tai muuta — kaikki toiminnot yhdessä paikassa</div>
+
   <div class="two">
 
-    <!-- Status card -->
-    <div class="card">
-      <div class="ch"><span class="ct">StoreGuard V6 status</span><span class="badge bg-a">Awaiting send</span></div>
-      <div style="font-size:.69rem;font-family:var(--mono);color:var(--t3);margin-bottom:.8rem">PL-ST-MR1DWPL0 &middot; qsisto.com/storeguard<span class="dl dl-snap">verified</span></div>
-      <div class="cl">
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>V6 visual review approved</b> — owner confirmed</span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Stripe Checkout verified</b> — opens in real browser → checkout.stripe.com<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Legal pages live</b> — /legal/terms · /legal/privacy · /legal/dpa HTTP 200<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Business ID 3499735-5</b> in footer — no Finnish registration number on English page</span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Product Lock PL-ST-MR1DWPL0</b> — gate 88.15/88.0 PASS</span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>7-prospect batch verified</b> — suppression + duplicate passed</span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Event log fixed</b> — event_id e25a7893 written to Supabase<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Support path</b> — support@qsisto.com live</span></div>
-        <div class="ci"><div class="cico ico-a">!</div><span class="ct2"><b>Owner send approval pending</b> — batch blocked</span></div>
-        <div class="ci"><div class="cico ico-gr">-</div><span class="ct2">First payment — not yet<span class="dl dl-blocked">blocked</span></span></div>
-        <div class="ci"><div class="cico ico-gr">-</div><span class="ct2">Reply data — not yet (no sends)<span class="dl dl-blocked">blocked</span></span></div>
-      </div>
-      <hr>
-      <div class="kv"><span class="kk">product_lock_id</span><span class="kv-v mono">PL-ST-MR1DWPL0</span></div>
-      <div class="kv"><span class="kk">pipeline_status</span><span class="kv-v mono">launch_prep_candidate</span></div>
-      <div class="kv"><span class="kk">real_send_allowed</span><span class="kv-v r">false</span></div>
-      <div class="kv"><span class="kk">outreach_sent</span><span class="kv-v r">false</span></div>
-      <div class="kv"><span class="kk">sender_provider_called</span><span class="kv-v r">false</span></div>
-      <div class="kv"><span class="kk">event_log_health</span><span class="kv-v g">GREEN</span></div>
-      <div class="kv"><span class="kk">event_id (healthcheck)</span><span class="kv-v mono" style="font-size:.7rem">e25a7893</span></div>
-    </div>
-
-    <!-- Readiness score + gate -->
-    <div class="card">
-      <div class="ch"><span class="ct">Complete Business Readiness Gate v2</span><span class="badge bg-a">72/100</span></div>
-      <div class="score-row">
-        <div class="score-big a">72</div>
-        <div>
-          <div class="score-lbl">Readiness score</div>
-          <div class="score-verdict" style="color:var(--a)">READY_FOR_OWNER_APPROVAL</div>
-          <div style="font-size:.7rem;color:var(--t3);margin-top:.15rem">Pending: send, first data, learning loop</div>
+    <!-- HYVÄKSYNTÄ -->
+    <div>
+      <div class="card">
+        <div class="card-title">⚡ Odottaa hyväksyntääsi</div>
+        <div class="approval-panel">
+          <div class="ap-title">StoreGuard — Ensimmäinen kontrolloitu testilähetys</div>
+          <div class="ap-scope">Bisnes: StoreGuard
+Prospekteja: 7 tarkistettua
+Jatkotoimenpiteitä: ei
+Lisäprospekteja: ei
+Muita bisneksiä: ei
+Tila: EI LÄHETETTY</div>
+          <button class="disabled-btn">🔒 Hyväksy lähetys (vaatii erillisen toiminnon)</button>
+          <button class="disabled-btn">🚫 Pidä estettynä</button>
+          <button class="disabled-btn">❌ Peruuta erä</button>
+          <div style="font-size:.73rem;color:var(--t3);margin-top:.5rem;line-height:1.5">Napit vaativat turvallisen hyväksyntävirran — aktivoitavissa erikseen kun olet valmis lähettämään.</div>
         </div>
       </div>
-      <div class="prog-wrap"><div class="prog a" style="width:72%"></div></div>
-      <div class="layers" style="margin-top:.75rem">
-        <div class="layer done"><span class="ln done-c">&#10003; Business identity &amp; legal</span><span class="badge bg-g" style="font-size:.62rem">10/10</span></div>
-        <div class="layer done"><span class="ln done-c">&#10003; ICP &amp; offer defined</span><span class="badge bg-g" style="font-size:.62rem">10/10</span></div>
-        <div class="layer done"><span class="ln done-c">&#10003; Landing page V6 live</span><span class="badge bg-g" style="font-size:.62rem">9/10</span></div>
-        <div class="layer done"><span class="ln done-c">&#10003; Stripe Checkout wired</span><span class="badge bg-g" style="font-size:.62rem">10/10</span></div>
-        <div class="layer done"><span class="ln done-c">&#10003; Legal compliance complete</span><span class="badge bg-g" style="font-size:.62rem">10/10</span></div>
-        <div class="layer done"><span class="ln done-c">&#10003; Onboarding path defined</span><span class="badge bg-g" style="font-size:.62rem">8/10</span></div>
-        <div class="layer done"><span class="ln done-c">&#10003; Support path live</span><span class="badge bg-g" style="font-size:.62rem">7/10</span></div>
-        <div class="layer done"><span class="ln done-c">&#10003; Prospect list quality passed</span><span class="badge bg-g" style="font-size:.62rem">8/10</span></div>
-        <div class="layer warn"><span class="ln">&#8505; Outreach not sent yet</span><span class="badge bg-a" style="font-size:.62rem">0/10</span></div>
-        <div class="layer miss"><span class="ln">&#10005; First payment / MRR</span><span class="badge bg-gr" style="font-size:.62rem">blocked</span></div>
-        <div class="layer miss"><span class="ln">&#10005; Learning loop (reply data)</span><span class="badge bg-gr" style="font-size:.62rem">blocked</span></div>
-        <div class="layer miss"><span class="ln">&#10005; Event log write verified</span><span class="badge bg-g" style="font-size:.62rem">now fixed</span></div>
+
+      <!-- CHECKLIST -->
+      <div class="card">
+        <div class="card-title">StoreGuard — Valmiustarkistus</div>
+        <div class="cklist">
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Laskeutumissivu toimii</b> — qsisto.com/storeguard</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Stripe-maksu toimii</b> — testattu oikealla selaimella</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Lakisivut live</b> — ehdot, tietosuoja, DPA</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tuki toimii</b> — support@qsisto.com</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tapahtumaloki toimii</b> — kirjaukset Supabaseen</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>7 prospektia valmis</b> — tarkistettu, deduplikoitu</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Peruutuslinkki</b> jokaisessa viestissä</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Ei vääriä väitteitä</b> — ei testattuja logoja, ei tulostakuita</span></div>
+          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Sähköpostiviesti</b> — tarkista alta ennen hyväksyntää</span></div>
+          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Sinun hyväksyntäsi</b> — puuttuu</span></div>
+          <div class="ck"><div class="ck-ico ck-gr">-</div><span class="ck-txt">Yhtään viestiä ei lähetetty</span></div>
+        </div>
       </div>
-      <hr>
-      <div style="font-size:.76rem;color:var(--t2);line-height:1.5">
-        <b style="color:#E6EEFF">Recommendation:</b> READY_FOR_OWNER_APPROVAL. Send 7-prospect batch with explicit approval. Score reaches 90+ after first send data and payment confirmation.
+    </div>
+
+    <!-- EMAIL PREVIEW -->
+    <div>
+      <div class="card">
+        <div class="card-title">📧 Sähköpostiviestin esikatselu</div>
+        <div class="email-preview">
+          <div class="ep-field"><span class="ep-key">Lähettäjä:</span><span class="ep-val">frank@fortuepiphany.com</span></div>
+          <div class="ep-field"><span class="ep-key">Vastaa:</span><span class="ep-val">support@qsisto.com</span></div>
+          <div class="ep-field"><span class="ep-key">Aihe:</span><span class="ep-val">Quick question about your Shopify checkout</span></div>
+          <div class="ep-divider"></div>
+          <div class="ep-body">Hi [First Name],
+
+I built a small tool called StoreGuard that does a weekly read-only health check on Shopify stores — it checks if checkout signals, trust badges, and cart paths are still working.
+
+It's helped catch issues before customers notice them.
+
+Would a quick weekly health report be useful for your store?
+
+Happy to run a free check first if you want to see what it finds.
+
+— Frank
+
+<span style="color:var(--t3);font-size:.73rem">To unsubscribe, click here: [unsubscribe_link]</span></div>
+        </div>
+        <div style="margin-top:.75rem">
+          <div style="font-size:.74rem;font-weight:600;color:var(--t2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em">Vaatimustenmukaisuus</div>
+          <div class="cklist">
+            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Ei vääreitä väitteitä</span></div>
+            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Ei testattuja logoja tai arvosteluja</span></div>
+            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Ei tulostakuita</span></div>
+            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Peruutuslinkki mukana</span></div>
+            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Inhimillinen, ei myyntirobotti-sävy</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BISNESNAPIT -->
+      <div class="card">
+        <div class="card-title">StoreGuard — Nopeat linkit</div>
+        <div style="display:flex;flex-direction:column;gap:.4rem">
+          <a href="https://qsisto.com/storeguard" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='#3B82F6'" onmouseout="this.style.borderColor=''">
+            🌐 Avaa laskeutumissivu
+          </a>
+          <a href="https://dashboard.stripe.com" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='#3B82F6'" onmouseout="this.style.borderColor=''">
+            💳 Avaa Stripe
+          </a>
+          <a href="https://qsisto.app.n8n.cloud" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='#3B82F6'" onmouseout="this.style.borderColor=''">
+            ⚙️ Avaa n8n
+          </a>
+          <div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--b)">
+            <button class="disabled-btn" style="margin-bottom:.35rem">⏸ Keskeytä StoreGuard</button>
+            <button class="disabled-btn" style="margin-bottom:.35rem">🔧 Merkitse korjattavaksi</button>
+            <button class="disabled-btn">☠️ Lopeta bisnes</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- BUSINESS OPERATING SYSTEM CARD -->
-  <div class="card" style="margin-bottom:10px">
-    <div class="ch"><span class="ct">StoreGuard — Complete Business Operating System</span><span class="badge bg-a">72/100</span></div>
-    <div class="three">
-      <div>
-        <div style="font-size:.72rem;font-weight:600;color:var(--bl);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">1. Business Identity</div>
-        <div class="kv"><span class="kk">Brand</span><span class="kv-v">StoreGuard</span></div>
-        <div class="kv"><span class="kk">Category</span><span class="kv-v">Monitor / Alert</span></div>
-        <div class="kv"><span class="kk">ICP</span><span class="kv-v" style="font-size:.74rem">Shopify DTC, €50k+/mo</span></div>
-        <div class="kv"><span class="kk">Pain</span><span class="kv-v" style="font-size:.73rem">Silent checkout failures</span></div>
-        <div class="kv"><span class="kk">Promise</span><span class="kv-v" style="font-size:.72rem">Weekly read-only health scan + instant alerts</span></div>
-        <div class="kv"><span class="kk">Operator</span><span class="kv-v" style="font-size:.73rem">AB Empire Oy · 3499735-5</span></div>
-        <div class="kv"><span class="kk">Canonical URL</span><span class="kv-v mono" style="font-size:.7rem">qsisto.com/storeguard</span></div>
-      </div>
-      <div>
-        <div style="font-size:.72rem;font-weight:600;color:var(--bl);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">2. Product &amp; Fulfillment</div>
-        <div class="kv"><span class="kk">Product</span><span class="kv-v" style="font-size:.73rem">External read-only Shopify scan</span></div>
-        <div class="kv"><span class="kk">First value</span><span class="kv-v" style="font-size:.73rem">Health report on activation</span></div>
-        <div class="kv"><span class="kk">Recurring loop</span><span class="kv-v" style="font-size:.73rem">Weekly scan + alert email</span></div>
-        <div class="kv"><span class="kk">AI-autonomous</span><span class="kv-v g">Yes</span></div>
-        <div class="kv"><span class="kk">Founder-required</span><span class="kv-v g">No</span></div>
-        <div class="kv"><span class="kk">Onboarding email</span><span class="kv-v g">Wired (Stripe webhook)</span></div>
-        <div class="kv"><span class="kk">Cancellation path</span><span class="kv-v a">Stripe + support email</span></div>
-      </div>
-      <div>
-        <div style="font-size:.72rem;font-weight:600;color:var(--bl);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">3. Payments &amp; Legal</div>
-        <div class="kv"><span class="kk">Stripe price</span><span class="kv-v mono">&euro;49/mo recurring</span></div>
-        <div class="kv"><span class="kk">Checkout</span><span class="kv-v g">Verified (real browser)</span></div>
-        <div class="kv"><span class="kk">Terms acceptance</span><span class="kv-v g">Required before checkout</span></div>
-        <div class="kv"><span class="kk">Webhook path</span><span class="kv-v g">gpV1JZk2YQc8h3bz active</span></div>
-        <div class="kv"><span class="kk">Terms</span><span class="kv-v g">Live HTTP 200</span></div>
-        <div class="kv"><span class="kk">Privacy</span><span class="kv-v g">Live HTTP 200</span></div>
-        <div class="kv"><span class="kk">DPA</span><span class="kv-v g">Live HTTP 200</span></div>
-      </div>
-    </div>
-    <hr>
-    <div class="three" style="margin-top:0">
-      <div>
-        <div style="font-size:.72rem;font-weight:600;color:var(--bl);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">4. Outreach</div>
-        <div class="kv"><span class="kk">ICP match</span><span class="kv-v g">Domain-verified</span></div>
-        <div class="kv"><span class="kk">Prospect source</span><span class="kv-v" style="font-size:.73rem">Manual + domain verify</span></div>
-        <div class="kv"><span class="kk">Quality gate</span><span class="kv-v g">Passed</span></div>
-        <div class="kv"><span class="kk">Suppression</span><span class="kv-v g">Active</span></div>
-        <div class="kv"><span class="kk">Duplicate guard</span><span class="kv-v g">Active</span></div>
-        <div class="kv"><span class="kk">Unsubscribe</span><span class="kv-v g">Present</span></div>
-        <div class="kv"><span class="kk">Owner approval</span><span class="kv-v a">Pending</span></div>
-      </div>
-      <div>
-        <div style="font-size:.72rem;font-weight:600;color:var(--bl);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">5. Metrics<span class="dl dl-snap" style="margin-left:.35rem">snapshot</span></div>
-        <div class="kv"><span class="kk">MRR</span><span class="kv-v mono">&euro;0</span></div>
-        <div class="kv"><span class="kk">Customers</span><span class="kv-v mono">0</span></div>
-        <div class="kv"><span class="kk">Emails sent</span><span class="kv-v mono">0</span></div>
-        <div class="kv"><span class="kk">Replies</span><span class="kv-v mono">0</span></div>
-        <div class="kv"><span class="kk">Payments</span><span class="kv-v mono">0</span></div>
-        <div class="kv"><span class="kk">Checkout sessions</span><span class="kv-v mono">0</span></div>
-        <div class="kv"><span class="kk">Churn</span><span class="kv-v mono">0</span></div>
-      </div>
-      <div>
-        <div style="font-size:.72rem;font-weight:600;color:var(--bl);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">6. Founder Decision</div>
-        <div class="kv"><span class="kk">State</span><span class="kv-v a">ready_for_owner_approval</span></div>
-        <div class="kv"><span class="kk">Kill / Fix / Scale</span><span class="kv-v">Awaiting first data</span></div>
-        <div class="kv"><span class="kk">Learning loop</span><span class="kv-v a">Not started (no sends)</span></div>
-        <div class="kv"><span class="kk">ICP validation</span><span class="kv-v a">Pending</span></div>
-        <div class="kv"><span class="kk">Offer validation</span><span class="kv-v a">Pending</span></div>
-        <div class="kv"><span class="kk">Recommended</span><span class="kv-v g">Send batch → learn</span></div>
-        <div class="kv"><span class="kk">Next milestone</span><span class="kv-v" style="font-size:.73rem">First reply or payment</span></div>
-      </div>
-    </div>
-  </div>
+<!-- ═══ JÄRJESTELMÄ ══════════════════════════════════════════════ -->
+<div class="page" id="page-system">
+  <div class="pg-title">Järjestelmätiedot</div>
+  <div class="pg-sub">Tekniset yksityiskohdat — ei tarvita normaalissa käytössä</div>
 
-  <!-- PRE-SEND REVIEW -->
-  <div class="sec" id="outreach">Pre-send review <span class="sec-line"></span></div>
   <div class="two">
-    <div class="card">
-      <div class="ch"><span class="ct">Outreach pre-send checklist</span><span class="badge bg-r">Send blocked</span></div>
-      <div class="cl">
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>qsisto.com/storeguard HTTP 200</b><span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Stripe Checkout opens in browser</b><span class="dl dl-snap">verified</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Legal pages HTTP 200</b> — all three<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Business ID 3499735-5</b> correct</span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>No Finnish registration number</b> on English page</span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>No fake claims / logos / guarantees</b></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Unsubscribe link required &amp; present</b></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Suppression check passed</b></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Duplicate check passed</b></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Prospect quality gate passed</b></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Sender allocation balanced</b></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Stop-on-reply active</b></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Event log working</b> — e25a7893 written<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-a">!</div><span class="ct2"><b>Final email copy review</b> — recommended before send<span class="dl dl-manual">manual</span></span></div>
-        <div class="ci"><div class="cico ico-a">!</div><span class="ct2"><b>Owner send approval</b> — explicit approval required<span class="dl dl-blocked">blocked</span></span></div>
+    <div>
+      <div class="card">
+        <div class="card-title">StoreGuard — Tekniset tunnisteet</div>
+        <div class="sys-field"><span class="sf-key">product_lock_id</span><span class="sf-val">PL-ST-MR1DWPL0</span></div>
+        <div class="sys-field"><span class="sf-key">campaign_id</span><span class="sf-val">CAMP-ST-AUYT91DG</span></div>
+        <div class="sys-field"><span class="sf-key">batch_id</span><span class="sf-val">BATCH-SG-STARTER-U0GX5Z7N</span></div>
+        <div class="sys-field"><span class="sf-key">pipeline_id</span><span class="sf-val">10c57820</span></div>
+        <div class="sys-field"><span class="sf-key">business_id</span><span class="sf-val">9e52f687</span></div>
+        <div class="sys-field"><span class="sf-key">trust_layer_id</span><span class="sf-val">08d47b26</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Lähettäjäkapasiteetti</div>
+        <div class="sys-field"><span class="sf-key">active_senders</span><span class="sf-val ok">15</span></div>
+        <div class="sys-field"><span class="sf-key">safe_daily_capacity</span><span class="sf-val ok">324/day</span></div>
+        <div class="sys-field"><span class="sf-key">used_today</span><span class="sf-val ok">0</span></div>
+        <div class="sys-field"><span class="sf-key">actual_sent_today</span><span class="sf-val ok">0</span></div>
+        <div class="sys-field"><span class="sf-key">dry_run_reserved</span><span class="sf-val">10</span></div>
+        <div class="sys-field"><span class="sf-key">available_now</span><span class="sf-val ok">314</span></div>
+        <div class="sys-field"><span class="sf-key">main_domain_protected</span><span class="sf-val ok">true</span></div>
+        <div class="sys-field"><span class="sf-key">qsisto.com_in_pool</span><span class="sf-val ok">false</span></div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="ch"><span class="ct">Outreach batch</span><span class="badge bg-r">Blocked</span></div>
-      <div style="font-size:.69rem;font-family:var(--mono);color:var(--t3);margin-bottom:.75rem;line-height:1.7">
-        BATCH-SG-STARTER-U0GX5Z7N<br>CAMP-ST-AUYT91DG &middot; StoreGuard Starter
+    <div>
+      <div class="card">
+        <div class="card-title">Eheyden valvonta</div>
+        <div class="sys-field"><span class="sf-key">real_send_allowed</span><span class="sf-val bad">false</span></div>
+        <div class="sys-field"><span class="sf-key">outreach_sent</span><span class="sf-val bad">false</span></div>
+        <div class="sys-field"><span class="sf-key">sender_provider_called</span><span class="sf-val bad">false</span></div>
+        <div class="sys-field"><span class="sf-key">secrets_logged</span><span class="sf-val ok">false</span></div>
+        <div class="sys-field"><span class="sf-key">frozen_components_modified</span><span class="sf-val ok">false</span></div>
+        <div class="sys-field"><span class="sf-key">event_log_health</span><span class="sf-val ok">GREEN</span></div>
+        <div class="sys-field"><span class="sf-key">event_id (healthcheck)</span><span class="sf-val">e25a7893</span></div>
       </div>
-      <div class="kv"><span class="kk">Final sendable count</span><span class="kv-v">7 prospects</span></div>
-      <div class="kv"><span class="kk">Suppression</span><span class="kv-v g">passed</span></div>
-      <div class="kv"><span class="kk">Duplicate check</span><span class="kv-v g">passed</span></div>
-      <div class="kv"><span class="kk">Follow-up sequence</span><span class="kv-v r">not approved</span></div>
-      <div class="kv"><span class="kk">Batch expansion</span><span class="kv-v r">not approved</span></div>
-      <div class="kv"><span class="kk">Other product outreach</span><span class="kv-v r">not approved</span></div>
-      <hr>
-      <div style="font-size:.74rem;color:var(--t2);margin-bottom:.45rem">Sender distribution</div>
-      <div class="kv"><span class="kk mono" style="font-size:.71rem">fortuepiphany.com</span><span class="kv-v">3</span></div>
-      <div class="kv"><span class="kk mono" style="font-size:.71rem">inclinenomics.com</span><span class="kv-v">2</span></div>
-      <div class="kv"><span class="kk mono" style="font-size:.71rem">prismgenix.com</span><span class="kv-v">2</span></div>
 
-      <!-- SAFE APPROVAL FLOW -->
-      <div class="approval-block">
-        <h4>&#128274; Safe owner approval flow</h4>
-        <div class="approval-scope">product_lock_id = PL-ST-MR1DWPL0<br>campaign_id = CAMP-ST-AUYT91DG<br>batch_id = BATCH-SG-STARTER-U0GX5Z7N<br>final_sendable_count = 7<br>no_follow_up = true<br>no_expansion = true<br>real_send_allowed = false</div>
-        <div class="disabled-btn">&#9940; Send disabled — explicit owner approval required in separate action</div>
+      <div class="card">
+        <div class="card-title">n8n Workflowit</div>
+        <div class="sys-field"><span class="sf-key">Checkout Session v2</span><span class="sf-val ok">0Pk2wKhHqC2I6UbX ✓</span></div>
+        <div class="sys-field"><span class="sf-key">Stripe Webhook</span><span class="sf-val ok">gpV1JZk2YQc8h3bz ✓</span></div>
+        <div class="sys-field"><span class="sf-key">Deploy workflow</span><span class="sf-val">carWOQx7tD9REdyr</span></div>
+        <div class="sys-field"><span class="sf-key">Event Logger v1</span><span class="sf-val ok">MVcSc24JSEYqYpIP ✓</span></div>
+        <div class="sys-field"><span class="sf-key">Unsubscribe v2</span><span class="sf-val ok">XXchd8RFYDZSWg3W ✓</span></div>
+        <div class="sys-field"><span class="sf-key">Batch Final Check</span><span class="sf-val">ZheYF61PPfR4N9KO</span></div>
       </div>
-    </div>
-  </div>
 
-  <!-- SENDER CAPACITY -->
-  <div class="sec" id="capacity">Sender capacity <span class="sec-line"></span></div>
-  <div class="two" style="margin-bottom:10px">
-    <div class="card">
-      <div class="ch"><span class="ct">Sender pool</span><span class="badge bg-g">15 active</span></div>
-      <div class="kv"><span class="kk">Active senders</span><span class="kv-v">15</span></div>
-      <div class="kv"><span class="kk">Total daily cap</span><span class="kv-v">450 / day</span></div>
-      <div class="kv"><span class="kk">Safe daily cap</span><span class="kv-v g">324 / day</span></div>
-      <div class="kv"><span class="kk">Used today</span><span class="kv-v g">0</span></div>
-      <div class="kv"><span class="kk">Dry-run reserved</span><span class="kv-v">10</span></div>
-      <div class="kv"><span class="kk">Available</span><span class="kv-v g">314</span></div>
-      <div class="kv"><span class="kk">actual_sent_today</span><span class="kv-v g">0</span></div>
-      <div class="kv"><span class="kk">main_domain_protected</span><span class="kv-v g">true</span></div>
-      <div class="kv"><span class="kk">qsisto.com in sender pool</span><span class="kv-v g">false</span></div>
-      <hr>
-      <div style="font-size:.73rem;color:var(--t2);margin-bottom:.4rem">Usage today — 0 / 324</div>
-      <div class="prog-wrap"><div class="prog g" style="width:1%"></div></div>
-      <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.6rem">
-        <span style="font-size:.69rem;font-family:var(--mono);padding:.18rem .48rem;border-radius:4px;background:rgba(82,110,172,.07);border:1px solid var(--b);color:var(--t2)">fortuepiphany.com &times;5</span>
-        <span style="font-size:.69rem;font-family:var(--mono);padding:.18rem .48rem;border-radius:4px;background:rgba(82,110,172,.07);border:1px solid var(--b);color:var(--t2)">inclinenomics.com &times;5</span>
-        <span style="font-size:.69rem;font-family:var(--mono);padding:.18rem .48rem;border-radius:4px;background:rgba(82,110,172,.07);border:1px solid var(--b);color:var(--t2)">prismgenix.com &times;5</span>
-      </div>
-    </div>
-    <div class="card">
-      <div class="ch"><span class="ct">System health</span><span class="badge bg-g">Mostly green</span></div>
-      <div class="cl">
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Stripe Live API</b> — checkout sessions creating<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>n8n checkout workflow</b> 0Pk2wKhHqC2I6UbX — active<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>n8n Stripe webhook</b> gpV1JZk2YQc8h3bz — active<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Supabase event log</b> — FIXED, writing via native node<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Vercel /api/checkout proxy</b> — CORS fix live<span class="dl dl-live">live</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>qsisto.com DNS</b> — canonical route verified<span class="dl dl-snap">verified</span></span></div>
-        <div class="ci"><div class="cico ico-a">!</div><span class="ct2"><b>Auth</b> — not implemented<span class="dl dl-stale">pending</span></span></div>
-        <div class="ci"><div class="cico ico-g">&#10003;</div><span class="ct2"><b>Legal pages</b> — all HTTP 200<span class="dl dl-live">live</span></span></div>
+      <div class="card">
+        <div class="card-title">Auth-tila</div>
+        <div class="sys-field"><span class="sf-key">auth_method</span><span class="sf-val bad">none</span></div>
+        <div class="sys-field"><span class="sf-key">cloudflare_account</span><span class="sf-val bad">not_set_up</span></div>
+        <div class="sys-field"><span class="sf-key">qsisto_com_founder</span><span class="sf-val bad">NOT_PUBLISHED</span></div>
+        <div class="sys-field"><span class="sf-key">staging_url</span><span class="sf-val">empire-products.vercel.app/...</span></div>
+        <div class="sys-field"><span class="sf-key">noindex</span><span class="sf-val ok">true</span></div>
+        <div style="margin-top:.65rem;padding:.55rem .7rem;border-radius:6px;background:var(--ra);border:1px solid var(--rb);font-size:.75rem;color:var(--r)">
+          ⚠ Tämä paneeli ei ole suojattu. Älä jaa URLia.
+        </div>
       </div>
     </div>
   </div>
-
-  <!-- BLOCKERS -->
-  <div class="sec" id="blockers">Blockers <span class="sec-line"></span></div>
-  <div class="blk hard"><div class="blk-title">&#9888; [HARD] Owner send approval pending</div><div class="blk-sub">real_send_allowed = false. Explicit owner send approval required for BATCH-SG-STARTER-U0GX5Z7N. Batch remains blocked until separate action.</div></div>
-  <div class="blk soft"><div class="blk-title">&#8505; [SOFT] Auth not implemented</div><div class="blk-sub">Dashboard accessible only at staging URL. Do NOT publish qsisto.com/founder until auth complete. Recommended: Vercel password protection or Supabase Auth + middleware.</div></div>
-  <div class="blk soft"><div class="blk-title">&#8505; [SOFT] Final email copy review recommended</div><div class="blk-sub">Optional manual review of outreach copy before first real send to 7 prospects.</div></div>
-  <div class="blk ok"><div class="blk-title">&#10003; Supabase event log — FIXED</div><div class="blk-sub">event_id e25a7893-92ed-4214-acd9-0f1e0f858371 written successfully via Supabase native node (service role). event_log_health = GREEN.</div></div>
-  <div class="blk ok"><div class="blk-title">&#10003; All automated guards active</div><div class="blk-sub">Suppression · duplicate · stop-on-reply · global capacity manager · prospect quality gate · product lock</div></div>
-
-  <!-- EVENT LOG -->
-  <div class="sec" id="events">Event log <span class="sec-line"></span><span class="badge bg-g" style="font-size:.64rem">DB write verified</span></div>
-  <div class="card" style="margin-bottom:60px">
-    <div class="ch"><span class="ct">Latest events</span><span class="badge bg-g">event_log_health = GREEN</span></div>
-    <div class="evlog">
-      <div class="ev"><span class="ev-ts">18:54 UTC</span><span class="ev-dot g"></span><div class="ev-txt"><b>founder_dashboard_v3_healthcheck</b> — event_id e25a7893 written to Supabase usage_events. Event log FIXED.</div></div>
-      <div class="ev"><span class="ev-ts">2026-07-01</span><span class="ev-dot g"></span><div class="ev-txt"><b>StoreGuard V6 visual review approved</b> — Stripe Checkout verified in real browser. checkout_url = checkout.stripe.com/c/pay/cs_live_...</div></div>
-      <div class="ev"><span class="ev-ts">2026-07-01</span><span class="ev-dot g"></span><div class="ev-txt"><b>Legal pages deployed</b> — /legal/terms · /legal/privacy · /legal/dpa HTTP 200</div></div>
-      <div class="ev"><span class="ev-ts">2026-07-01</span><span class="ev-dot g"></span><div class="ev-txt"><b>Stripe /api/checkout proxy deployed</b> — CORS fix · same-origin · Vercel serverless → n8n</div></div>
-      <div class="ev"><span class="ev-ts">2026-07-01</span><span class="ev-dot g"></span><div class="ev-txt"><b>Global Sender Capacity Manager</b> — 15 senders · 324/day safe capacity verified</div></div>
-      <div class="ev"><span class="ev-ts">2026-07-01</span><span class="ev-dot g"></span><div class="ev-txt"><b>Batch final check complete</b> — 7 sendable · suppression passed · duplicate passed · guard_status BLOCKED_PENDING_OWNER_APPROVAL</div></div>
-      <div class="ev"><span class="ev-ts">2026-07-01</span><span class="ev-dot b"></span><div class="ev-txt"><b>Sender rebalance</b> — fortuepiphany=3 · inclinenomics=2 · prismgenix=2 · Bundobust excluded</div></div>
-      <div class="ev"><span class="ev-ts">2026-07-01</span><span class="ev-dot g"></span><div class="ev-txt"><b>Product Lock PL-ST-MR1DWPL0</b> — Business Reality Gate 88.15/88.0 PASS</div></div>
-      <div class="ev"><span class="ev-ts">all time</span><span class="ev-dot t"></span><div class="ev-txt">outreach_sent = false · actual_sent_today = 0 · real_send_allowed = false · sender_provider_called = false · no secrets exposed</div></div>
-    </div>
-  </div>
+</div>
 
 </main>
 </div>
 
 <!-- INTEGRITY BAR -->
-<div class="int-bar">
-  <div class="iv">real_send_allowed <span class="iv-red">false</span></div>
-  <div class="iv">outreach_sent <span class="iv-red">false</span></div>
-  <div class="iv">sender_provider_called <span class="iv-red">false</span></div>
-  <div class="iv">actual_sent_today <span class="iv-green">0</span></div>
-  <div class="iv">MRR <span class="iv-green">&euro;0</span></div>
-  <div class="iv">event_log <span class="iv-green">GREEN</span></div>
-  <div class="iv">auth <span class="iv-amber">PENDING</span></div>
-  <div class="iv" style="margin-left:auto">&#128274; Internal staging · qsisto.com/founder NOT published</div>
+<div class="integrity">
+  <div class="int-item">Lähetys <span class="iv-r">lukittu</span></div>
+  <div class="int-item">Sähköposteja lähetetty <span class="iv-g">0</span></div>
+  <div class="int-item">MRR <span class="iv-g">€0</span></div>
+  <div class="int-item">Tapahtumaloki <span class="iv-g">toimii</span></div>
+  <div class="int-item">Auth <span class="iv-r">puuttuu</span></div>
+  <div class="int-item" style="margin-left:auto;font-size:.69rem">🔓 Ei kirjautumissuojausta — älä jaa</div>
 </div>
 
+<script>
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('page-' + id).classList.add('on');
+  if (btn) btn.classList.add('on');
+}
+</script>
 </body>
 </html>
