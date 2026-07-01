@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StoreGuard - Checkout Health Monitoring for Shopify Stores</title>
+<meta name="description" content="StoreGuard monitors your Shopify checkout weekly and alerts you the moment cart or checkout becomes unreachable.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111;background:#fff;line-height:1.6}a{color:#4f46e5;text-decoration:none}.staging-banner{background:#fef3c7;border-bottom:2px solid #fcd34d;padding:10px 24px;text-align:center;font-size:13px;color:#92400e;font-weight:600}nav{max-width:960px;margin:0 auto;padding:20px 24px;display:flex;align-items:center;justify-content:space-between}.nav-brand{font-weight:800;font-size:18px}.hero{max-width:720px;margin:0 auto;padding:64px 24px 48px}.badge{display:inline-flex;align-items:center;background:#eff6ff;border:1px solid #bfdbfe;border-radius:20px;padding:4px 14px;font-size:12px;color:#1d4ed8;font-weight:600;margin-bottom:20px}h1{font-size:36px;font-weight:900;line-height:1.15;margin-bottom:16px}h1 span{color:#4f46e5}.hero-promise{font-size:18px;color:#374151;margin-bottom:32px}.cta-block{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px}.section{max-width:720px;margin:0 auto;padding:0 24px 56px}h2{font-size:22px;font-weight:800;margin-bottom:20px}.steps{display:flex;flex-direction:column;gap:16px}.step{display:flex;gap:16px}.step-num{width:32px;height:32px;border-radius:50%;background:#4f46e5;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}.step-text{font-size:15px;color:#374151}.step-title{font-weight:700;color:#111;display:block;margin-bottom:2px}.check-item{display:flex;gap:8px;font-size:14px;color:#374151;padding:6px 0;border-bottom:1px solid #f3f4f6}.report-preview{background:#f9fafb;border:1px solid #e5e7eb;border-radius:16px;padding:28px;margin-bottom:24px}.preview-score{font-size:42px;font-weight:900;color:#16a34a}.value-loop{background:#eff6ff;border-radius:12px;padding:24px;margin-bottom:20px}.pricing-card{background:#fff;border:2px solid #4f46e5;border-radius:16px;padding:32px;max-width:400px;margin-bottom:24px}.price{font-size:36px;font-weight:900;color:#4f46e5;margin-bottom:4px}.limitation-box{background:#fffbeb;border-left:3px solid #f59e0b;padding:16px;border-radius:0 10px 10px 0;margin-top:20px;font-size:13px;color:#92400e}footer{background:#f9fafb;border-top:1px solid #e5e7eb;padding:32px 24px;margin-top:40px}.footer-inner{max-width:720px;margin:0 auto}.footer-operator{font-size:13px;color:#6b7280;margin-bottom:12px}.footer-links{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;margin-bottom:12px}.footer-notice{font-size:12px;color:#9ca3af}hr.divider{border:none;border-top:1px solid #e5e7eb;margin:0 auto 56px;max-width:720px}
+</style>
+</head>
+<body>
+<div class="staging-banner">STAGING PREVIEW - Not for public distribution - Route: qsisto.com/storeguard</div>
+<nav><div class="nav-brand">Qsisto - StoreGuard</div><div style="font-size:13px;color:#6b7280">qsisto.com/storeguard</div></nav>
+<div class="hero">
+<div class="badge">Checkout Health Monitoring</div>
+<h1>Know your store is working<br><span>before your customers notice it is not</span></h1>
+<p class="hero-promise">StoreGuard monitors your Shopify checkout weekly and alerts you the moment cart or checkout becomes unreachable so you catch the problem before it costs you revenue.</p>
+<div class="cta-block"><div style="font-size:13px;color:#6b7280;margin-bottom:6px">Ready to monitor your store?</div><a href="mailto:support@qsisto.com" style="font-size:15px;font-weight:600;color:#4f46e5">Contact support@qsisto.com to get started</a></div>
+</div>
+<hr class="divider">
+<div class="section"><h2>How it works</h2><div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-text"><span class="step-title">You provide your store URL</span>Share your Shopify store URL. No plugins required.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-text"><span class="step-title">Weekly checkout health scan</span>A lightweight read-only HTTP scan checks your homepage, cart path, and checkout signals every week.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-text"><span class="step-title">You receive a health report</span>Score, issues found, and recommended actions delivered to your inbox.</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-text"><span class="step-title">Instant alerts on changes</span>If your cart or checkout signals change, StoreGuard alerts you immediately.</div></div>
+</div></div>
+<hr class="divider">
+<div class="section"><h2>Sample Health Report</h2>
+<div class="report-preview">
+<div style="display:flex;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:11px;color:#6b7280;font-weight:600">QSISTO - STOREGUARD - HEALTH REPORT</div><div style="font-size:12px;color:#9ca3af">yourstore.com - Scanned today</div></div><div style="text-align:right"><div class="preview-score">92</div><div style="font-size:14px;color:#16a34a;font-weight:700">GREEN</div></div></div>
+<div style="font-size:13px;color:#6b7280;margin-bottom:12px">7 checks passed - 1 needs attention - Confidence: high</div>
+<div class="check-item">pass - Homepage reachable - HTTP 200 in 187ms</div>
+<div class="check-item">pass - HTTPS active - SSL confirmed</div>
+<div class="check-item">pass - Platform detected - Shopify</div>
+<div class="check-item">pass - Cart path reachable - HTTP 200</div>
+<div class="check-item">pass - Checkout signals detected in HTML</div>
+<div class="check-item">pass - Trust signals present</div>
+<div class="check-item">pass - Refund and shipping content found</div>
+<div class="check-item" style="color:#d97706">warn - Response time 2800ms - may cause abandonment</div>
+<div style="margin-top:12px;font-size:13px"><strong>Next 10 minutes:</strong> Enable CDN to reduce load time.</div>
+</div>
+<p style="font-size:12px;color:#9ca3af">Sample only. Real results vary based on your store.</p></div>
+<hr class="divider">
+<div class="section"><h2>What StoreGuard monitors weekly</h2>
+<div class="value-loop"><strong style="display:block;margin-bottom:10px;color:#1d4ed8">Your weekly checkout health loop</strong>
+<div style="font-size:14px;color:#1e40af;display:flex;flex-direction:column;gap:8px">
+<div>Weekly lightweight checkout health scan</div>
+<div>Instant alert if cart or checkout path becomes unreachable</div>
+<div>Monthly checkout risk trend report</div>
+<div>Signal drift detection - catch gradual degradation early</div>
+</div></div></div>
+<hr class="divider">
+<div class="section"><h2>What we check and what we do not</h2>
+<div style="margin-bottom:20px"><strong style="display:block;margin-bottom:10px;color:#16a34a">What StoreGuard checks</strong>
+<div class="check-item">pass - Homepage reachability and response time</div>
+<div class="check-item">pass - HTTPS/SSL connection</div>
+<div class="check-item">pass - Platform detection</div>
+<div class="check-item">pass - Cart path HTTP reachability</div>
+<div class="check-item">pass - Checkout signals in page HTML</div>
+<div class="check-item">pass - Payment trust signals</div>
+<div class="check-item">pass - Refund and shipping content</div>
+</div>
+<div><strong style="display:block;margin-bottom:10px;color:#9ca3af">What StoreGuard does not check</strong>
+<div class="check-item">no - Actual checkout completion or payment processing</div>
+<div class="check-item">no - JavaScript-rendered content</div>
+<div class="check-item">no - Login-gated or region-gated pages</div>
+<div class="check-item">no - Real-time inventory or pricing accuracy</div>
+<div class="check-item">no - Mobile vs desktop rendering</div>
+</div>
+<div class="limitation-box"><strong style="display:block;margin-bottom:4px">Scan scope disclosure</strong>StoreGuard uses a lightweight read-only HTTP/HTML scan. No JavaScript is executed. No transactions are initiated. No items are added to cart. No payments are processed. Findings are informational only.</div>
+</div>
+<hr class="divider">
+<div class="section"><h2>Pricing</h2>
+<div class="pricing-card">
+<div class="price">49 EUR</div>
+<div style="font-size:14px;color:#6b7280;margin-bottom:16px">/month per store - Cancel anytime</div>
+<div class="check-item">pass - Weekly checkout health scan</div>
+<div class="check-item">pass - Instant alerts on signal changes</div>
+<div class="check-item">pass - Monthly trend report</div>
+<div class="check-item">pass - Email support via support@qsisto.com</div>
+<div style="font-size:13px;color:#6b7280;margin-top:16px;padding-top:16px;border-top:1px solid #f3f4f6"><strong style="display:block;margin-bottom:4px">Refund and cancellation</strong>Cancel any time. No questions asked. Contact support@qsisto.com. This is a draft pricing hypothesis - final pricing confirmed at onboarding.</div>
+</div>
+<p style="font-size:13px;color:#9ca3af">Pricing is a hypothesis. No payment required to request a scan.</p></div>
+<hr class="divider">
+<div class="section"><h2>Contact and Support</h2>
+<div style="display:flex;flex-direction:column;gap:10px;max-width:480px;font-size:14px">
+<div><strong>Email:</strong> <a href="mailto:support@qsisto.com">support@qsisto.com</a></div>
+<div><strong>Operator:</strong> AB Empire Oy - Y-tunnus 3499735-5</div>
+</div>
+<div style="margin-top:20px;display:flex;gap:16px;font-size:13px">
+<a href="/privacy">[Privacy Policy]</a><a href="/terms">[Terms of Service]</a><a href="/dpa">[Data Processing Agreement]</a>
+</div></div>
+<footer><div class="footer-inner">
+<div class="footer-operator">Operated by Qsisto. Qsisto is operated by AB Empire Oy, Y-tunnus 3499735-5. Contact: support@qsisto.com.</div>
+<div class="footer-links"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a><a href="/dpa">Data Processing Agreement</a><a href="mailto:support@qsisto.com">support@qsisto.com</a></div>
+<div class="footer-notice">No fake testimonials - No fake logos - No guaranteed outcomes - Staging draft</div>
+</div></footer>
+</body></html>
