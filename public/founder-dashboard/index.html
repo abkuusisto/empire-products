@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Qsisto — Perustajapaneeli</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:#07091A;color:#BEC8E4;min-height:100vh;-webkit-font-smoothing:antialiased}
@@ -20,25 +21,66 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091A;color:#BEC8E4;m
   --mono:'JetBrains Mono',monospace;
 }
 
-/* AUTH WARNING */
-.auth-warn{
-  background:linear-gradient(90deg,#1C0D00,#2A1500,#1C0D00);
-  border-bottom:1px solid rgba(245,158,11,.3);
-  padding:8px 1.5rem;display:flex;align-items:center;justify-content:center;
-  gap:.75rem;font-size:.75rem;font-weight:600;color:var(--a);
-  letter-spacing:.03em;flex-wrap:wrap;text-align:center;
+/* LOGIN */
+#login-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;
 }
-.aw-dot{width:6px;height:6px;border-radius:50%;background:var(--a);flex-shrink:0;animation:pulse 1.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.login-card{
+  background:var(--card);border:1px solid var(--b2);border-radius:14px;
+  padding:2.25rem 2.5rem;width:100%;max-width:360px;
+}
+.lc-logo{font-size:1.1rem;font-weight:700;color:#E8EEFF;margin-bottom:.3rem}
+.lc-sub{font-size:.78rem;color:var(--t3);margin-bottom:1.75rem;line-height:1.5}
+.lc-label{display:block;font-size:.73rem;font-weight:500;color:var(--t2);margin-bottom:.4rem;letter-spacing:.04em;text-transform:uppercase}
+.lc-input{
+  width:100%;background:#0B0E1F;border:1px solid var(--b2);border-radius:8px;
+  padding:.65rem .9rem;font-size:.9rem;color:#E8EEFF;outline:none;
+  font-family:'Inter',system-ui,sans-serif;transition:border-color .15s;margin-bottom:1rem;
+}
+.lc-input:focus{border-color:var(--bl)}
+.lc-input::placeholder{color:var(--t3)}
+.lc-btn{
+  width:100%;padding:.7rem;border:none;border-radius:8px;
+  background:var(--bl);color:#fff;font-size:.88rem;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:background .15s;
+}
+.lc-btn:hover{background:#2563EB}
+.lc-btn:disabled{background:#1E3A5F;color:var(--t2);cursor:not-allowed}
+.lc-err{margin-top:.65rem;padding:.5rem .75rem;border-radius:6px;background:var(--ra);border:1px solid var(--rb);font-size:.77rem;color:var(--r);display:none}
+.lc-ok{margin-top:.65rem;padding:.5rem .75rem;border-radius:6px;background:var(--ga);border:1px solid var(--gb);font-size:.77rem;color:var(--g);display:none}
+.lc-divider{display:flex;align-items:center;gap:.65rem;margin:.85rem 0;color:var(--t3);font-size:.74rem}
+.lc-divider::before,.lc-divider::after{content:'';flex:1;height:1px;background:var(--b)}
+.lc-pw-btn{
+  width:100%;padding:.65rem;border:1px solid var(--b2);border-radius:8px;
+  background:transparent;color:var(--t2);font-size:.82rem;font-weight:500;
+  cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.lc-pw-btn:hover{border-color:var(--bl);color:var(--bl)}
+.lc-footer{margin-top:1.5rem;font-size:.69rem;color:var(--t3);text-align:center}
+#pw-section{display:none;margin-top:.5rem}
+
+/* LOADING */
+#loading-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--t3);
+}
+
+/* DASHBOARD */
+#dashboard-screen{display:none}
+
+/* STAGING NOTICE (subtle, inside dashboard) */
+.staging-notice{
+  background:var(--aa);border-bottom:1px solid var(--ab);
+  padding:6px 1.5rem;font-size:.72rem;color:var(--a);
+  display:flex;align-items:center;gap:.6rem;
+}
 
 /* LAYOUT */
-.shell{display:flex;min-height:calc(100vh - 37px)}
-
-/* NAV */
+.shell{display:flex;min-height:calc(100vh - 31px)}
 .nav{
   width:200px;background:rgba(10,13,26,.95);border-right:1px solid var(--b);
-  padding:1.25rem 0;flex-shrink:0;position:sticky;top:37px;
-  height:calc(100vh - 37px);overflow-y:auto;
+  padding:1.25rem 0;flex-shrink:0;position:sticky;top:31px;
+  height:calc(100vh - 31px);overflow-y:auto;
 }
 .nav-logo{padding:.1rem 1.1rem .9rem;border-bottom:1px solid var(--b);margin-bottom:.75rem}
 .nav-logo-name{font-size:.95rem;font-weight:700;color:#E8EEFF}
@@ -53,20 +95,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091A;color:#BEC8E4;m
 }
 .nav-btn:hover,.nav-btn.on{background:rgba(59,130,246,.08);color:#E8EEFF}
 .nav-btn.on{color:var(--bl);font-weight:500}
-.nav-ic{font-size:.85rem;opacity:.7}
+.nav-foot{padding:.85rem 1rem;border-top:1px solid var(--b);margin-top:2rem}
+.nav-user{font-size:.69rem;color:var(--t3);margin-bottom:.5rem;word-break:break-all}
+.nav-logout{font-size:.74rem;color:var(--r);cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.nav-logout:hover{text-decoration:underline}
 
-/* MAIN */
 .main{flex:1;padding:1.65rem;overflow-x:hidden}
-
-/* PAGES */
 .page{display:none}
 .page.on{display:block}
-
-/* SECTION HEADER */
 .pg-title{font-size:1.25rem;font-weight:700;color:#E8EEFF;margin-bottom:.25rem}
 .pg-sub{font-size:.8rem;color:var(--t3);margin-bottom:1.5rem}
 
-/* KPI CARDS */
+/* KPI */
 .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
 .kpi{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:.9rem 1.05rem}
 .kpi-lbl{font-size:.72rem;color:var(--t2);margin-bottom:.3rem}
@@ -77,61 +117,41 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091A;color:#BEC8E4;m
 /* CARDS */
 .card{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:10px}
 .card-title{font-size:.9rem;font-weight:600;color:#E8EEFF;margin-bottom:.85rem}
-.card-row{display:flex;align-items:flex-start;justify-content:space-between;padding:.32rem 0;border-bottom:1px solid rgba(80,105,170,.06);font-size:.82rem;gap:.5rem}
-.card-row:last-child{border-bottom:none}
-.cr-key{color:var(--t2);flex-shrink:0}
-.cr-val{color:#E8EEFF;font-weight:500;text-align:right}
-.cr-val.ok{color:var(--g)}.cr-val.warn{color:var(--a)}.cr-val.bad{color:var(--r)}
 
-/* BADGES */
-.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:100px;font-size:.69rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.badge-g{background:var(--ga);border:1px solid var(--gb);color:var(--g)}
-.badge-a{background:var(--aa);border:1px solid var(--ab);color:var(--a)}
-.badge-r{background:var(--ra);border:1px solid var(--rb);color:var(--r)}
-.badge-b{background:var(--bla);border:1px solid rgba(59,130,246,.22);color:var(--bl)}
-.badge-gr{background:rgba(55,69,103,.15);border:1px solid var(--b2);color:var(--t2)}
-
-/* TWO COL */
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:10px;margin-bottom:10px}
-
-/* ATTENTION CARD */
 .attn{border-radius:9px;padding:.85rem 1rem;margin-bottom:.5rem;border:1px solid;display:flex;gap:.75rem;align-items:flex-start}
 .attn.warn{background:var(--aa);border-color:var(--ab)}
 .attn.ok{background:var(--ga);border-color:var(--gb)}
 .attn.info{background:var(--bla);border-color:rgba(59,130,246,.22)}
-.attn.bad{background:var(--ra);border-color:var(--rb)}
 .attn-ico{font-size:1.1rem;flex-shrink:0;margin-top:1px}
-.attn-body{}
 .attn-title{font-size:.82rem;font-weight:600;margin-bottom:.15rem}
-.attn.warn .attn-title{color:var(--a)}
-.attn.ok .attn-title{color:var(--g)}
-.attn.info .attn-title{color:var(--bl)}
-.attn.bad .attn-title{color:var(--r)}
+.attn.warn .attn-title{color:var(--a)}.attn.ok .attn-title{color:var(--g)}.attn.info .attn-title{color:var(--bl)}
 .attn-desc{font-size:.76rem;color:var(--t3);line-height:1.5}
 
-/* CHECKLIST */
+.badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:100px;font-size:.69rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.badge-a{background:var(--aa);border:1px solid var(--ab);color:var(--a)}
+.badge-g{background:var(--ga);border:1px solid var(--gb);color:var(--g)}
+.badge-gr{background:rgba(55,69,103,.15);border:1px solid var(--b2);color:var(--t2)}
+
+.lb-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.lb-table th{font-size:.67rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);padding:.45rem .6rem;border-bottom:1px solid var(--b);text-align:left}
+.lb-table td{padding:.5rem .6rem;border-bottom:1px solid rgba(80,105,170,.05);color:var(--t2);vertical-align:middle}
+.lb-table tr:last-child td{border-bottom:none}
+.lb-table td:first-child{color:#E8EEFF;font-weight:500}
+
 .cklist{display:flex;flex-direction:column;gap:.38rem}
 .ck{display:flex;align-items:flex-start;gap:.5rem;font-size:.81rem}
 .ck-ico{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:.62rem;font-weight:700}
 .ck-g{background:rgba(34,197,94,.1);color:var(--g);border:1px solid rgba(34,197,94,.2)}
 .ck-a{background:rgba(245,158,11,.1);color:var(--a);border:1px solid rgba(245,158,11,.2)}
-.ck-r{background:rgba(239,68,68,.1);color:var(--r);border:1px solid rgba(239,68,68,.2)}
 .ck-gr{background:rgba(55,69,103,.12);color:var(--t3);border:1px solid var(--b)}
 .ck-txt{color:var(--t2);line-height:1.42}
 .ck-txt b{color:#E8EEFF;font-weight:500}
 
-/* APPROVAL PANEL */
 .approval-panel{border:1px solid var(--ab);border-radius:10px;background:var(--aa);padding:1.1rem 1.25rem}
 .ap-title{font-size:.88rem;font-weight:600;color:var(--a);margin-bottom:.65rem}
 .ap-scope{background:rgba(0,0,0,.2);border-radius:6px;padding:.6rem .8rem;font-size:.77rem;color:var(--t);font-family:var(--mono);line-height:1.75;margin-bottom:.75rem}
-.disabled-btn{
-  display:block;width:100%;padding:.62rem;border-radius:7px;
-  background:rgba(80,105,170,.08);border:1px solid var(--b2);
-  color:var(--t3);font-size:.8rem;font-weight:600;text-align:center;
-  cursor:not-allowed;margin-bottom:.4rem;font-family:inherit;
-}
+.disabled-btn{display:block;width:100%;padding:.62rem;border-radius:7px;background:rgba(80,105,170,.08);border:1px solid var(--b2);color:var(--t3);font-size:.8rem;font-weight:600;text-align:center;cursor:not-allowed;margin-bottom:.4rem;font-family:inherit}
 
-/* EMAIL PREVIEW */
 .email-preview{background:#0C0F1E;border:1px solid var(--b2);border-radius:8px;padding:1rem 1.1rem;font-size:.8rem}
 .ep-field{display:flex;gap:.65rem;margin-bottom:.4rem;font-size:.76rem}
 .ep-key{color:var(--t3);min-width:60px;flex-shrink:0}
@@ -139,68 +159,77 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091A;color:#BEC8E4;m
 .ep-divider{border:none;border-top:1px solid var(--b);margin:.65rem 0}
 .ep-body{color:var(--t2);line-height:1.65;white-space:pre-wrap}
 
-/* LEADERBOARD */
-.lb-table{width:100%;border-collapse:collapse;font-size:.82rem}
-.lb-table th{font-size:.67rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);padding:.45rem .6rem;border-bottom:1px solid var(--b);text-align:left}
-.lb-table td{padding:.5rem .6rem;border-bottom:1px solid rgba(80,105,170,.05);color:var(--t2);vertical-align:middle}
-.lb-table tr:last-child td{border-bottom:none}
-.lb-table td:first-child{color:#E8EEFF;font-weight:500}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:10px;margin-bottom:10px}
 
-/* SYSTEM PAGE */
 .sys-field{font-family:var(--mono);font-size:.75rem;color:var(--t2);background:rgba(0,0,0,.2);border-radius:5px;padding:.35rem .6rem;margin:.2rem 0;display:flex;gap:.5rem}
 .sf-key{color:var(--t3);min-width:160px;flex-shrink:0}
-.sf-val{color:var(--t)}
-.sf-val.ok{color:var(--g)}.sf-val.warn{color:var(--a)}.sf-val.bad{color:var(--r)}
+.sf-val.ok{color:var(--g)}.sf-val.bad{color:var(--r)}.sf-val.warn{color:var(--a)}
 
-/* INTEGRITY */
-.integrity{
-  background:rgba(8,10,22,.96);border-top:1px solid var(--b);
-  padding:.5rem 1.5rem;display:flex;flex-wrap:wrap;gap:1rem;
-  align-items:center;font-size:.72rem;color:var(--t3);
-  position:sticky;bottom:0;z-index:100;
-}
-.int-item{display:flex;align-items:center;gap:.35rem}
-.iv-r{color:var(--r);font-weight:700}.iv-g{color:var(--g);font-weight:700}.iv-a{color:var(--a);font-weight:700}
+.integrity{background:rgba(8,10,22,.96);border-top:1px solid var(--b);padding:.5rem 1.5rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:center;font-size:.72rem;color:var(--t3);position:sticky;bottom:0;z-index:100}
+.iv-r{color:var(--r);font-weight:700}.iv-g{color:var(--g);font-weight:700}
 
-/* DIVIDER */
 hr{border:none;border-top:1px solid var(--b);margin:.75rem 0}
 
-/* RESPONSIVE */
 @media(max-width:800px){.nav{display:none}.main{max-width:100%}.shell{display:block}}
 @media(max-width:560px){.kpi-row{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- AUTH WARNING -->
-<div class="auth-warn">
-  <span class="aw-dot"></span>
-  ⚠ Ei kirjautumissuojausta — kuka tahansa URLin tietävä pääsee tänne &mdash; ÄLÄ jaa tätä linkkiä &mdash; ÄLÄ julkaise qsisto.com/founder
-  <span class="aw-dot"></span>
+<!-- LOADING -->
+<div id="loading-screen">Ladataan...</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none">
+  <div class="login-card">
+    <div class="lc-logo">Qsisto</div>
+    <div class="lc-sub">Perustajapaneeli — vain sisäinen käyttö.<br>Kirjaudu sisään sähköpostillasi.</div>
+
+    <!-- Magic link -->
+    <div id="magic-section">
+      <label class="lc-label" for="email-input">Sähköposti</label>
+      <input type="email" id="email-input" class="lc-input" placeholder="ab.kuusisto@gmail.com" autocomplete="email">
+      <button class="lc-btn" id="magic-btn" onclick="sendMagicLink()">Lähetä kirjautumislinkki</button>
+      <div class="lc-ok" id="magic-ok">Kirjautumislinkki lähetetty! Tarkista sähköpostisi.</div>
+      <div class="lc-err" id="magic-err">Virhe. Tarkista sähköpostiosoite.</div>
+      <div class="lc-divider">tai</div>
+      <button class="lc-pw-btn" onclick="togglePwSection()">Kirjaudu salasanalla</button>
+    </div>
+
+    <!-- Password -->
+    <div id="pw-section">
+      <label class="lc-label" for="pw-input">Salasana</label>
+      <input type="password" id="pw-input" class="lc-input" placeholder="••••••••" autocomplete="current-password">
+      <button class="lc-btn" id="pw-btn" onclick="signInWithPassword()">Kirjaudu sisään</button>
+      <div class="lc-err" id="pw-err">Väärä sähköposti tai salasana.</div>
+      <div style="margin-top:.6rem">
+        <button class="lc-pw-btn" onclick="togglePwSection()">← Takaisin magic linkkiin</button>
+      </div>
+    </div>
+
+    <div class="lc-footer">AB Empire Oy · Business ID 3499735-5 · Ei julkinen</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-screen">
+
+<div class="staging-notice">
+  ⚠ Sisäinen staging — empire-products.vercel.app — Älä jaa URLia — qsisto.com/founder ei julkaistu
 </div>
 
 <div class="shell">
-
-<!-- SIDEBAR NAV -->
 <nav class="nav">
   <div class="nav-logo">
     <div class="nav-logo-name">Qsisto</div>
-    <div class="nav-logo-sub">Perustajapaneeli v4.1</div>
+    <div class="nav-logo-sub">Perustajapaneeli v4.2</div>
   </div>
-
   <div class="nav-grp">
     <span class="nav-lbl">Näkymät</span>
-    <button class="nav-btn on" onclick="showPage('summary',this)">
-      <span class="nav-ic">📊</span> Yhteenveto
-    </button>
-    <button class="nav-btn" onclick="showPage('control',this)">
-      <span class="nav-ic">🎛</span> Toimintakeskus
-    </button>
-    <button class="nav-btn" onclick="showPage('system',this)">
-      <span class="nav-ic">⚙️</span> Järjestelmä
-    </button>
+    <button class="nav-btn on" onclick="showPage('summary',this)">📊 Yhteenveto</button>
+    <button class="nav-btn" onclick="showPage('control',this)">🎛 Toimintakeskus</button>
+    <button class="nav-btn" onclick="showPage('system',this)">⚙️ Järjestelmä</button>
   </div>
-
   <div class="nav-grp" style="margin-top:.5rem">
     <span class="nav-lbl">Bisnekset</span>
     <button class="nav-btn" onclick="showPage('control',this)">
@@ -208,193 +237,87 @@ hr{border:none;border-top:1px solid var(--b);margin:.75rem 0}
       StoreGuard
     </button>
   </div>
-
-  <div style="padding:.85rem 1rem;margin-top:auto;border-top:1px solid var(--b);margin-top:2rem">
-    <div style="font-size:.66rem;color:var(--t3);line-height:1.65">AB Empire Oy<br>Business ID 3499735-5<br>Finland</div>
+  <div class="nav-foot">
+    <div class="nav-user" id="nav-user-email">—</div>
+    <div style="font-size:.66rem;color:var(--t3);margin-bottom:.4rem">AB Empire Oy · 3499735-5</div>
+    <button class="nav-logout" onclick="signOut()">Kirjaudu ulos</button>
   </div>
 </nav>
 
-<!-- MAIN -->
 <main class="main">
 
-<!-- ═══ YHTEENVETO ═══════════════════════════════════════════════ -->
+<!-- YHTEENVETO -->
 <div class="page on" id="page-summary">
   <div class="pg-title">Hei 👋</div>
   <div class="pg-sub">Tässä kaikki oleellinen tänään — 1. heinäkuuta 2026</div>
-
-  <!-- KPI -->
   <div class="kpi-row">
-    <div class="kpi">
-      <div class="kpi-lbl">Kuukausitulot (MRR)</div>
-      <div class="kpi-val dim">€0</div>
-      <div class="kpi-note">Ei vielä maksavia asiakkaita</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-lbl">Asiakkaat</div>
-      <div class="kpi-val dim">0</div>
-      <div class="kpi-note">Odottaa ensimmäistä myyntiä</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-lbl">Bisnekset live</div>
-      <div class="kpi-val">1</div>
-      <div class="kpi-note">StoreGuard</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-lbl">Sähköpostit tänään</div>
-      <div class="kpi-val dim">0</div>
-      <div class="kpi-note">Ei lähetetty vielä</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-lbl">Vastaukset</div>
-      <div class="kpi-val dim">0</div>
-      <div class="kpi-note">Ei lähettyjä viestejä</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-lbl">Odottaa sinua</div>
-      <div class="kpi-val warn">1</div>
-      <div class="kpi-note">Päätös tarvitaan</div>
-    </div>
+    <div class="kpi"><div class="kpi-lbl">Kuukausitulot (MRR)</div><div class="kpi-val dim">€0</div><div class="kpi-note">Ei vielä asiakkaita</div></div>
+    <div class="kpi"><div class="kpi-lbl">Asiakkaat</div><div class="kpi-val dim">0</div><div class="kpi-note">Odottaa ensimmäistä myyntiä</div></div>
+    <div class="kpi"><div class="kpi-lbl">Bisnekset live</div><div class="kpi-val">1</div><div class="kpi-note">StoreGuard</div></div>
+    <div class="kpi"><div class="kpi-lbl">Sähköpostit tänään</div><div class="kpi-val dim">0</div><div class="kpi-note">Ei lähetetty</div></div>
+    <div class="kpi"><div class="kpi-lbl">Vastaukset</div><div class="kpi-val dim">0</div><div class="kpi-note">Ei lähetyksiä</div></div>
+    <div class="kpi"><div class="kpi-lbl">Odottaa sinua</div><div class="kpi-val warn">1</div><div class="kpi-note">Päätös tarvitaan</div></div>
   </div>
-
-  <!-- ATTENTION -->
   <div class="card">
     <div class="card-title">Mitä tarvitsee huomiotasi</div>
-
-    <div class="attn warn">
-      <div class="attn-ico">⚡</div>
-      <div class="attn-body">
-        <div class="attn-title">StoreGuard — Hyväksy tai hylkää testilähetys</div>
-        <div class="attn-desc">7 tarkistettua prospektia odottaa. Yksi sähköpostiviesti, ei jatkotoimenpiteitä, ei laajennus. Pienin mahdollinen testi — ennen kuin voit nähdä toimiiko koko systeemi.</div>
-      </div>
-    </div>
-
-    <div class="attn bad">
-      <div class="attn-ico">🔓</div>
-      <div class="attn-body">
-        <div class="attn-title">Tämä paneeli ei ole suojattu kirjautumisella</div>
-        <div class="attn-desc">Kuka tahansa URLin tietävä pääsee tänne. Älä jaa linkkiä. Cloudflare-tili tarvitaan suojaamiseen.</div>
-      </div>
-    </div>
-
-    <div class="attn info">
-      <div class="attn-ico">📧</div>
-      <div class="attn-body">
-        <div class="attn-title">Tarkista sähköpostiviesti ennen lähetystä</div>
-        <div class="attn-desc">Katso Toimintakeskuksessa miltä viesti näyttää. Muokkaa tarvittaessa ennen hyväksyntää.</div>
-      </div>
-    </div>
-
-    <div class="attn ok">
-      <div class="attn-ico">✅</div>
-      <div class="attn-body">
-        <div class="attn-title">StoreGuard on teknisesti valmis</div>
-        <div class="attn-desc">Sivu toimii, Stripe toimii, lakisivut live, tapahtumaloki kunnossa. Vain sinun hyväksyntäsi puuttuu.</div>
-      </div>
-    </div>
+    <div class="attn warn"><div class="attn-ico">⚡</div><div><div class="attn-title">StoreGuard — Hyväksy tai hylkää testilähetys</div><div class="attn-desc">7 tarkistettua prospektia odottaa. Yksi sähköposti, ei jatkotoimia, ei laajennusta. Katso Toimintakeskuksesta.</div></div></div>
+    <div class="attn info"><div class="attn-ico">📧</div><div><div class="attn-title">Tarkista sähköpostiviesti ennen lähetystä</div><div class="attn-desc">Toimintakeskus → StoreGuard → sähköpostiesikatselu.</div></div></div>
+    <div class="attn ok"><div class="attn-ico">✅</div><div><div class="attn-title">StoreGuard on teknisesti valmis</div><div class="attn-desc">Sivu toimii, Stripe toimii, lakisivut live, tapahtumaloki kunnossa. Vain sinun hyväksyntäsi puuttuu.</div></div></div>
   </div>
-
-  <!-- BISNESLEADERBOARD -->
   <div class="card">
     <div class="card-title">Bisnekset</div>
     <table class="lb-table">
-      <thead>
-        <tr>
-          <th>Bisnes</th>
-          <th>MRR</th>
-          <th>Asiakkaat</th>
-          <th>Tila</th>
-          <th>Seuraava askel</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Bisnes</th><th>MRR</th><th>Asiakkaat</th><th>Tila</th><th>Seuraava askel</th></tr></thead>
       <tbody>
-        <tr>
-          <td>StoreGuard</td>
-          <td style="font-family:var(--mono)">€0</td>
-          <td style="font-family:var(--mono)">0</td>
-          <td><span class="badge badge-a">Valmis pieneeen testiin</span></td>
-          <td style="color:var(--t2);font-size:.77rem">Tarkista sähköposti → hyväksy lähetys</td>
-        </tr>
-        <tr>
-          <td style="color:var(--t3)">Seuraava bisnes</td>
-          <td style="color:var(--t3);font-family:var(--mono)">—</td>
-          <td style="color:var(--t3);font-family:var(--mono)">—</td>
-          <td><span class="badge badge-gr">Ei aloitettu</span></td>
-          <td style="color:var(--t3);font-size:.77rem">Ensimmäinen MRR ensin</td>
-        </tr>
+        <tr><td>StoreGuard</td><td style="font-family:var(--mono)">€0</td><td style="font-family:var(--mono)">0</td><td><span class="badge badge-a">Valmis pieneen testiin</span></td><td style="color:var(--t2);font-size:.77rem">Tarkista viesti → hyväksy</td></tr>
+        <tr><td style="color:var(--t3)">Seuraava bisnes</td><td style="color:var(--t3);font-family:var(--mono)">—</td><td style="color:var(--t3);font-family:var(--mono)">—</td><td><span class="badge badge-gr">Ei aloitettu</span></td><td style="color:var(--t3);font-size:.77rem">Ensimmäinen MRR ensin</td></tr>
       </tbody>
     </table>
   </div>
-
-  <!-- TODAY -->
-  <div class="card">
-    <div class="card-title">Tänään tapahtunut</div>
-    <div class="cklist">
-      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>StoreGuard-sivu</b> live ja toimii — qsisto.com/storeguard</span></div>
-      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Stripe-maksu</b> toimii oikeassa selaimessa</span></div>
-      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Lakisivut</b> live — ehdot, tietosuoja, DPA</span></div>
-      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tapahtumaloki</b> korjattu ja toimii</span></div>
-      <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Perustajapaneeli</b> yksinkertaistettu suomeksi</span></div>
-      <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Kirjautumissuojaus</b> puuttuu — tarvitaan Cloudflare</span></div>
-      <div class="ck"><div class="ck-ico ck-gr">-</div><span class="ck-txt">Yhtään sähköpostia ei lähetetty</span></div>
-    </div>
-  </div>
-
-  <!-- RECOMMENDATION -->
   <div style="background:var(--card2);border:1px solid var(--b2);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:10px">
     <div style="font-size:.75rem;font-weight:600;color:var(--bl);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">Suositus</div>
-    <div style="font-size:.9rem;color:#E8EEFF;line-height:1.6">StoreGuard on valmis pieneeen 7 prospektin testilähetykseen heti kun olet tarkastanut sähköpostiviestin. Älä skaalaa vielä — odota ensimmäinen vastaus tai maksu ensin.</div>
+    <div style="font-size:.9rem;color:#E8EEFF;line-height:1.6">StoreGuard on valmis pieneeen 7 prospektin testilähetykseen. Tarkista sähköpostiviesti Toimintakeskuksessa ja hyväksy kun olet valmis. Älä skaalaa ennen ensimmäistä vastausta.</div>
   </div>
 </div>
 
-<!-- ═══ TOIMINTAKESKUS ═══════════════════════════════════════════ -->
+<!-- TOIMINTAKESKUS -->
 <div class="page" id="page-control">
   <div class="pg-title">Toimintakeskus</div>
-  <div class="pg-sub">Hyväksy, hylkää tai muuta — kaikki toiminnot yhdessä paikassa</div>
-
+  <div class="pg-sub">Hyväksy, hylkää tai muuta</div>
   <div class="two">
-
-    <!-- HYVÄKSYNTÄ -->
     <div>
       <div class="card">
         <div class="card-title">⚡ Odottaa hyväksyntääsi</div>
         <div class="approval-panel">
-          <div class="ap-title">StoreGuard — Ensimmäinen kontrolloitu testilähetys</div>
-          <div class="ap-scope">Bisnes: StoreGuard
-Prospekteja: 7 tarkistettua
+          <div class="ap-title">StoreGuard — Ensimmäinen testilähetys</div>
+          <div class="ap-scope">Prospekteja: 7 tarkistettua
 Jatkotoimenpiteitä: ei
 Lisäprospekteja: ei
 Muita bisneksiä: ei
 Tila: EI LÄHETETTY</div>
           <button class="disabled-btn">🔒 Hyväksy lähetys (vaatii erillisen toiminnon)</button>
           <button class="disabled-btn">🚫 Pidä estettynä</button>
-          <button class="disabled-btn">❌ Peruuta erä</button>
-          <div style="font-size:.73rem;color:var(--t3);margin-top:.5rem;line-height:1.5">Napit vaativat turvallisen hyväksyntävirran — aktivoitavissa erikseen kun olet valmis lähettämään.</div>
+          <div style="font-size:.73rem;color:var(--t3);margin-top:.5rem;line-height:1.5">Napit aktivoitavissa erikseen kun olet valmis lähettämään.</div>
         </div>
       </div>
-
-      <!-- CHECKLIST -->
       <div class="card">
-        <div class="card-title">StoreGuard — Valmiustarkistus</div>
+        <div class="card-title">Valmiustarkistus</div>
         <div class="cklist">
-          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Laskeutumissivu toimii</b> — qsisto.com/storeguard</span></div>
-          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Stripe-maksu toimii</b> — testattu oikealla selaimella</span></div>
-          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Lakisivut live</b> — ehdot, tietosuoja, DPA</span></div>
-          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tuki toimii</b> — support@qsisto.com</span></div>
-          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tapahtumaloki toimii</b> — kirjaukset Supabaseen</span></div>
-          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>7 prospektia valmis</b> — tarkistettu, deduplikoitu</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Laskeutumissivu</b> — qsisto.com/storeguard</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Stripe-maksu</b> — testattu oikealla selaimella</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Lakisivut</b> — ehdot, tietosuoja, DPA</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tuki</b> — support@qsisto.com</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tapahtumaloki</b> — toimii</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>7 prospektia</b> — tarkistettu ja deduplikoitu</span></div>
           <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Peruutuslinkki</b> jokaisessa viestissä</span></div>
-          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Ei vääriä väitteitä</b> — ei testattuja logoja, ei tulostakuita</span></div>
-          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Sähköpostiviesti</b> — tarkista alta ennen hyväksyntää</span></div>
-          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Sinun hyväksyntäsi</b> — puuttuu</span></div>
-          <div class="ck"><div class="ck-ico ck-gr">-</div><span class="ck-txt">Yhtään viestiä ei lähetetty</span></div>
+          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Sähköpostiviesti</b> — tarkista alta</span></div>
+          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Sinun hyväksyntäsi</b> puuttuu</span></div>
         </div>
       </div>
     </div>
-
-    <!-- EMAIL PREVIEW -->
     <div>
       <div class="card">
-        <div class="card-title">📧 Sähköpostiviestin esikatselu</div>
+        <div class="card-title">📧 Sähköpostiesikatselu</div>
         <div class="email-preview">
           <div class="ep-field"><span class="ep-key">Lähettäjä:</span><span class="ep-val">frank@fortuepiphany.com</span></div>
           <div class="ep-field"><span class="ep-key">Vastaa:</span><span class="ep-val">support@qsisto.com</span></div>
@@ -412,106 +335,65 @@ Happy to run a free check first if you want to see what it finds.
 
 — Frank
 
-<span style="color:var(--t3);font-size:.73rem">To unsubscribe, click here: [unsubscribe_link]</span></div>
+<span style="color:var(--t3);font-size:.73rem">Unsubscribe: [link]</span></div>
         </div>
         <div style="margin-top:.75rem">
-          <div style="font-size:.74rem;font-weight:600;color:var(--t2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em">Vaatimustenmukaisuus</div>
           <div class="cklist">
-            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Ei vääreitä väitteitä</span></div>
+            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Ei vääriä väitteitä</span></div>
             <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Ei testattuja logoja tai arvosteluja</span></div>
-            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Ei tulostakuita</span></div>
             <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Peruutuslinkki mukana</span></div>
-            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Inhimillinen, ei myyntirobotti-sävy</span></div>
+            <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt">Inhimillinen sävy</span></div>
           </div>
         </div>
       </div>
-
-      <!-- BISNESNAPIT -->
       <div class="card">
-        <div class="card-title">StoreGuard — Nopeat linkit</div>
+        <div class="card-title">Nopeat linkit</div>
         <div style="display:flex;flex-direction:column;gap:.4rem">
-          <a href="https://qsisto.com/storeguard" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='#3B82F6'" onmouseout="this.style.borderColor=''">
-            🌐 Avaa laskeutumissivu
-          </a>
-          <a href="https://dashboard.stripe.com" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='#3B82F6'" onmouseout="this.style.borderColor=''">
-            💳 Avaa Stripe
-          </a>
-          <a href="https://qsisto.app.n8n.cloud" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='#3B82F6'" onmouseout="this.style.borderColor=''">
-            ⚙️ Avaa n8n
-          </a>
-          <div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--b)">
-            <button class="disabled-btn" style="margin-bottom:.35rem">⏸ Keskeytä StoreGuard</button>
-            <button class="disabled-btn" style="margin-bottom:.35rem">🔧 Merkitse korjattavaksi</button>
-            <button class="disabled-btn">☠️ Lopeta bisnes</button>
-          </div>
+          <a href="https://qsisto.com/storeguard" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none">🌐 Avaa StoreGuard</a>
+          <a href="https://dashboard.stripe.com" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none">💳 Avaa Stripe</a>
+          <a href="https://qsisto.app.n8n.cloud" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none">⚙️ Avaa n8n</a>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ JÄRJESTELMÄ ══════════════════════════════════════════════ -->
+<!-- JÄRJESTELMÄ -->
 <div class="page" id="page-system">
   <div class="pg-title">Järjestelmätiedot</div>
-  <div class="pg-sub">Tekniset yksityiskohdat — ei tarvita normaalissa käytössä</div>
-
+  <div class="pg-sub">Tekniset yksityiskohdat</div>
   <div class="two">
     <div>
       <div class="card">
-        <div class="card-title">StoreGuard — Tekniset tunnisteet</div>
-        <div class="sys-field"><span class="sf-key">product_lock_id</span><span class="sf-val">PL-ST-MR1DWPL0</span></div>
-        <div class="sys-field"><span class="sf-key">campaign_id</span><span class="sf-val">CAMP-ST-AUYT91DG</span></div>
-        <div class="sys-field"><span class="sf-key">batch_id</span><span class="sf-val">BATCH-SG-STARTER-U0GX5Z7N</span></div>
-        <div class="sys-field"><span class="sf-key">pipeline_id</span><span class="sf-val">10c57820</span></div>
-        <div class="sys-field"><span class="sf-key">business_id</span><span class="sf-val">9e52f687</span></div>
-        <div class="sys-field"><span class="sf-key">trust_layer_id</span><span class="sf-val">08d47b26</span></div>
+        <div class="card-title">Tunnisteet</div>
+        <div class="sys-field"><span class="sf-key">product_lock_id</span><span>PL-ST-MR1DWPL0</span></div>
+        <div class="sys-field"><span class="sf-key">campaign_id</span><span>CAMP-ST-AUYT91DG</span></div>
+        <div class="sys-field"><span class="sf-key">batch_id</span><span>BATCH-SG-STARTER-U0GX5Z7N</span></div>
+        <div class="sys-field"><span class="sf-key">business_id</span><span>9e52f687</span></div>
       </div>
-
       <div class="card">
-        <div class="card-title">Lähettäjäkapasiteetti</div>
+        <div class="card-title">Kapasiteetti</div>
         <div class="sys-field"><span class="sf-key">active_senders</span><span class="sf-val ok">15</span></div>
-        <div class="sys-field"><span class="sf-key">safe_daily_capacity</span><span class="sf-val ok">324/day</span></div>
+        <div class="sys-field"><span class="sf-key">safe_daily_cap</span><span class="sf-val ok">324/day</span></div>
         <div class="sys-field"><span class="sf-key">used_today</span><span class="sf-val ok">0</span></div>
-        <div class="sys-field"><span class="sf-key">actual_sent_today</span><span class="sf-val ok">0</span></div>
-        <div class="sys-field"><span class="sf-key">dry_run_reserved</span><span class="sf-val">10</span></div>
-        <div class="sys-field"><span class="sf-key">available_now</span><span class="sf-val ok">314</span></div>
-        <div class="sys-field"><span class="sf-key">main_domain_protected</span><span class="sf-val ok">true</span></div>
-        <div class="sys-field"><span class="sf-key">qsisto.com_in_pool</span><span class="sf-val ok">false</span></div>
+        <div class="sys-field"><span class="sf-key">qsisto.com_protected</span><span class="sf-val ok">true</span></div>
       </div>
     </div>
-
     <div>
       <div class="card">
-        <div class="card-title">Eheyden valvonta</div>
+        <div class="card-title">Eheysvalvonta</div>
         <div class="sys-field"><span class="sf-key">real_send_allowed</span><span class="sf-val bad">false</span></div>
         <div class="sys-field"><span class="sf-key">outreach_sent</span><span class="sf-val bad">false</span></div>
         <div class="sys-field"><span class="sf-key">sender_provider_called</span><span class="sf-val bad">false</span></div>
-        <div class="sys-field"><span class="sf-key">secrets_logged</span><span class="sf-val ok">false</span></div>
-        <div class="sys-field"><span class="sf-key">frozen_components_modified</span><span class="sf-val ok">false</span></div>
         <div class="sys-field"><span class="sf-key">event_log_health</span><span class="sf-val ok">GREEN</span></div>
-        <div class="sys-field"><span class="sf-key">event_id (healthcheck)</span><span class="sf-val">e25a7893</span></div>
+        <div class="sys-field"><span class="sf-key">event_id</span><span>e25a7893</span></div>
       </div>
-
       <div class="card">
-        <div class="card-title">n8n Workflowit</div>
-        <div class="sys-field"><span class="sf-key">Checkout Session v2</span><span class="sf-val ok">0Pk2wKhHqC2I6UbX ✓</span></div>
-        <div class="sys-field"><span class="sf-key">Stripe Webhook</span><span class="sf-val ok">gpV1JZk2YQc8h3bz ✓</span></div>
-        <div class="sys-field"><span class="sf-key">Deploy workflow</span><span class="sf-val">carWOQx7tD9REdyr</span></div>
-        <div class="sys-field"><span class="sf-key">Event Logger v1</span><span class="sf-val ok">MVcSc24JSEYqYpIP ✓</span></div>
-        <div class="sys-field"><span class="sf-key">Unsubscribe v2</span><span class="sf-val ok">XXchd8RFYDZSWg3W ✓</span></div>
-        <div class="sys-field"><span class="sf-key">Batch Final Check</span><span class="sf-val">ZheYF61PPfR4N9KO</span></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Auth-tila</div>
-        <div class="sys-field"><span class="sf-key">auth_method</span><span class="sf-val bad">none</span></div>
-        <div class="sys-field"><span class="sf-key">cloudflare_account</span><span class="sf-val bad">not_set_up</span></div>
-        <div class="sys-field"><span class="sf-key">qsisto_com_founder</span><span class="sf-val bad">NOT_PUBLISHED</span></div>
-        <div class="sys-field"><span class="sf-key">staging_url</span><span class="sf-val">empire-products.vercel.app/...</span></div>
-        <div class="sys-field"><span class="sf-key">noindex</span><span class="sf-val ok">true</span></div>
-        <div style="margin-top:.65rem;padding:.55rem .7rem;border-radius:6px;background:var(--ra);border:1px solid var(--rb);font-size:.75rem;color:var(--r)">
-          ⚠ Tämä paneeli ei ole suojattu. Älä jaa URLia.
-        </div>
+        <div class="card-title">Auth</div>
+        <div class="sys-field"><span class="sf-key">auth_method</span><span class="sf-val ok">Supabase Auth</span></div>
+        <div class="sys-field"><span class="sf-key">auth_provider</span><span class="sf-val ok">magic_link + password</span></div>
+        <div class="sys-field"><span class="sf-key">allowed_user</span><span>ab.kuusisto@gmail.com</span></div>
+        <div class="sys-field"><span class="sf-key">qsisto.com/founder</span><span class="sf-val warn">NOT_PUBLISHED</span></div>
       </div>
     </div>
   </div>
@@ -520,23 +402,124 @@ Happy to run a free check first if you want to see what it finds.
 </main>
 </div>
 
-<!-- INTEGRITY BAR -->
 <div class="integrity">
-  <div class="int-item">Lähetys <span class="iv-r">lukittu</span></div>
-  <div class="int-item">Sähköposteja lähetetty <span class="iv-g">0</span></div>
-  <div class="int-item">MRR <span class="iv-g">€0</span></div>
-  <div class="int-item">Tapahtumaloki <span class="iv-g">toimii</span></div>
-  <div class="int-item">Auth <span class="iv-r">puuttuu</span></div>
-  <div class="int-item" style="margin-left:auto;font-size:.69rem">🔓 Ei kirjautumissuojausta — älä jaa</div>
+  <div class="iv">Lähetys <span class="iv-r">lukittu</span></div>
+  <div class="iv">Sähköposteja <span class="iv-g">0</span></div>
+  <div class="iv">MRR <span class="iv-g">€0</span></div>
+  <div class="iv">Loki <span class="iv-g">toimii</span></div>
+  <div class="iv">Auth <span class="iv-g">Supabase ✓</span></div>
+  <div style="margin-left:auto;font-size:.69rem;color:var(--t3)">v4.2 · Kirjautunut: <span id="footer-email">—</span></div>
 </div>
 
+</div><!-- /dashboard-screen -->
+
 <script>
+const SUPA_URL = 'https://jmhzzzefiyvplwxvuuxo.supabase.co';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptaHp6emVmaXl2cGx3eHZ1dXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NTA2NjMsImV4cCI6MjA5ODEyNjY2M30.fhq7OJXOgGp2YWfs3uW_WrZU9I-6_d7uHUcEMTdS_Kc';
+
+// Init Supabase client
+const { createClient } = supabase;
+const sb = createClient(SUPA_URL, ANON_KEY);
+
+// ── Auth state ─────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    showDashboard(session.user.email);
+  } else {
+    showLogin();
+  }
+  // Listen for auth changes
+  sb.auth.onAuthStateChange((_event, session) => {
+    if (session) { showDashboard(session.user.email); }
+    else { showLogin(); }
+  });
+}
+
+function showLogin() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('dashboard-screen').style.display = 'none';
+}
+
+function showDashboard(email) {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard-screen').style.display = 'block';
+  document.getElementById('nav-user-email').textContent = email || '—';
+  document.getElementById('footer-email').textContent = email || '—';
+}
+
+// ── Magic link ─────────────────────────────────────────
+async function sendMagicLink() {
+  const email = document.getElementById('email-input').value.trim();
+  if (!email) { document.getElementById('email-input').focus(); return; }
+  const btn = document.getElementById('magic-btn');
+  btn.disabled = true; btn.textContent = 'Lähetetään…';
+  document.getElementById('magic-ok').style.display = 'none';
+  document.getElementById('magic-err').style.display = 'none';
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
+  if (error) {
+    document.getElementById('magic-err').style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Lähetä kirjautumislinkki';
+  } else {
+    document.getElementById('magic-ok').style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Lähetä kirjautumislinkki';
+  }
+}
+
+// ── Password ────────────────────────────────────────────
+async function signInWithPassword() {
+  const email = document.getElementById('email-input').value.trim() || 'ab.kuusisto@gmail.com';
+  const pw = document.getElementById('pw-input').value;
+  if (!pw) { document.getElementById('pw-input').focus(); return; }
+  const btn = document.getElementById('pw-btn');
+  btn.disabled = true; btn.textContent = 'Kirjaudutaan…';
+  document.getElementById('pw-err').style.display = 'none';
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+  if (error) {
+    document.getElementById('pw-err').style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Kirjaudu sisään';
+  }
+}
+
+function togglePwSection() {
+  const pw = document.getElementById('pw-section');
+  const magic = document.getElementById('magic-section');
+  if (pw.style.display === 'none' || !pw.style.display) {
+    pw.style.display = 'block'; magic.style.display = 'none';
+    document.getElementById('pw-input').focus();
+  } else {
+    pw.style.display = 'none'; magic.style.display = 'block';
+  }
+}
+
+// ── Sign out ────────────────────────────────────────────
+async function signOut() {
+  await sb.auth.signOut();
+}
+
+// ── Enter key ────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('pw-section').style.display === 'block') signInWithPassword();
+    else sendMagicLink();
+  }
+});
+
+// ── Page nav ─────────────────────────────────────────────
 function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
   document.getElementById('page-' + id).classList.add('on');
   if (btn) btn.classList.add('on');
 }
+
+// Start
+init();
 </script>
 </body>
 </html>
