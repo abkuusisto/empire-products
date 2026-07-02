@@ -1,320 +1,591 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Qsisto · Founder Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<title>Qsisto — Perustajapaneeli</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#07091A;color:#E8EEFF;font-family:Inter,system-ui,sans-serif;min-height:100vh}
-a{color:inherit;text-decoration:none}
-.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:1.25rem}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.card{background:#0F1526;border:1px solid rgba(80,105,170,.2);border-radius:14px;padding:1.375rem}
-.label{font-size:.68rem;color:#7585AA;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem}
-.val-lg{font-size:2rem;font-weight:700}
-.val-md{font-size:.9rem;color:#E8EEFF}
-.muted{color:#7585AA}
-.tiny{font-size:.7rem;color:#374567}
-.badge{display:inline-block;font-size:.65rem;border-radius:4px;padding:.12rem .45rem;border:1px solid}
-.badge-green{color:#22C55E;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
-.badge-red{color:#EF4444;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
-.badge-yellow{color:#F59E0B;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
-.badge-blue{color:#3B82F6;border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08)}
-.badge-gray{color:#7585AA;border-color:rgba(80,105,170,.3);background:rgba(80,105,170,.08)}
-.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.dot-green{background:#22C55E}
-.dot-red{background:#EF4444}
-.dot-yellow{background:#F59E0B}
-.dot-gray{background:#374567}
-.sep{border:none;border-top:1px solid rgba(80,105,170,.15);margin:1rem 0}
-.btn-sm{background:transparent;border:1px solid rgba(80,105,170,.25);border-radius:8px;padding:.35rem .85rem;color:#7585AA;font-size:.75rem;cursor:pointer;font-family:inherit}
-.btn-sm:hover{border-color:rgba(80,105,170,.5);color:#E8EEFF}
-.input{width:100%;background:#0B0E1F;border:1px solid rgba(80,105,170,.2);border-radius:8px;padding:.65rem .9rem;font-size:.9rem;color:#E8EEFF;outline:none;font-family:inherit;box-sizing:border-box}
-.btn-primary{width:100%;padding:.7rem;border:none;border-radius:8px;background:#3B82F6;color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit}
-.btn-primary:hover{background:#2563EB}
-.btn-primary:disabled{background:#1E3A5F;cursor:not-allowed}
-.quick-link{display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;background:rgba(80,105,170,.06);border:1px solid rgba(80,105,170,.12);border-radius:8px;color:#E8EEFF;font-size:.8rem;transition:border-color .15s}
-.quick-link:hover{border-color:rgba(80,105,170,.3)}
-.missing{display:flex;align-items:center;gap:.5rem;font-size:.78rem;margin-bottom:.35rem}
-.event-row{padding:.625rem;background:rgba(80,105,170,.05);border:1px solid rgba(80,105,170,.1);border-radius:8px;margin-bottom:.5rem}
-@media(max-width:900px){.grid-2{grid-template-columns:1fr}.grid-4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:500px){.grid-4{grid-template-columns:1fr}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#07091A;color:#BEC8E4;min-height:100vh;-webkit-font-smoothing:antialiased}
+:root{
+  --bg:#07091A;--card:#0F1526;--card2:#141D32;
+  --b:rgba(80,105,170,.14);--b2:rgba(80,105,170,.26);
+  --t:#BEC8E4;--t2:#7585AA;--t3:#374567;
+  --g:#22C55E;--ga:rgba(34,197,94,.09);--gb:rgba(34,197,94,.24);
+  --a:#F59E0B;--aa:rgba(245,158,11,.09);--ab:rgba(245,158,11,.24);
+  --r:#EF4444;--ra:rgba(239,68,68,.09);--rb:rgba(239,68,68,.24);
+  --bl:#3B82F6;--bla:rgba(59,130,246,.09);
+  --mono:'JetBrains Mono',monospace;
+}
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-card{background:var(--card);border:1px solid var(--b2);border-radius:14px;padding:2.25rem 2.5rem;width:100%;max-width:360px}
+.lc-logo{font-size:1.1rem;font-weight:700;color:#E8EEFF;margin-bottom:.3rem}
+.lc-sub{font-size:.78rem;color:var(--t3);margin-bottom:1.75rem;line-height:1.5}
+.lc-label{display:block;font-size:.73rem;font-weight:500;color:var(--t2);margin-bottom:.4rem;letter-spacing:.04em;text-transform:uppercase}
+.lc-input{width:100%;background:#0B0E1F;border:1px solid var(--b2);border-radius:8px;padding:.65rem .9rem;font-size:.9rem;color:#E8EEFF;outline:none;font-family:'Inter',system-ui,sans-serif;transition:border-color .15s;margin-bottom:1rem}
+.lc-input:focus{border-color:var(--bl)}
+.lc-btn{width:100%;padding:.7rem;border:none;border-radius:8px;background:var(--bl);color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s}
+.lc-btn:hover{background:#2563EB}
+.lc-ok{margin-top:.65rem;padding:.5rem .75rem;border-radius:6px;background:var(--ga);border:1px solid var(--gb);font-size:.77rem;color:var(--g);display:none}
+.lc-err{margin-top:.65rem;padding:.5rem .75rem;border-radius:6px;background:var(--ra);border:1px solid var(--rb);font-size:.77rem;color:var(--r);display:none}
+.lc-footer{margin-top:1.5rem;font-size:.69rem;color:var(--t3);text-align:center}
+/* LOADING */
+#loading-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--t3)}
+/* DASHBOARD */
+#dashboard-screen{display:none}
+.staging-notice{background:var(--aa);border-bottom:1px solid var(--ab);padding:6px 1.5rem;font-size:.72rem;color:var(--a);display:flex;align-items:center;gap:.6rem}
+.shell{display:flex;min-height:calc(100vh - 31px)}
+.nav{width:200px;background:rgba(10,13,26,.95);border-right:1px solid var(--b);padding:1.25rem 0;flex-shrink:0;position:sticky;top:31px;height:calc(100vh - 31px);overflow-y:auto}
+.nav-logo{padding:.1rem 1.1rem .9rem;border-bottom:1px solid var(--b);margin-bottom:.75rem}
+.nav-logo-name{font-size:.95rem;font-weight:700;color:#E8EEFF}
+.nav-logo-sub{font-size:.65rem;color:var(--t3);margin-top:2px}
+.nav-grp{padding:0 .65rem;margin-bottom:.15rem}
+.nav-lbl{font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);padding:.4rem .4rem .25rem;display:block}
+.nav-btn{display:flex;align-items:center;gap:.5rem;width:100%;padding:.4rem .5rem;border-radius:6px;font-size:.8rem;color:var(--t2);cursor:pointer;border:none;background:none;font-family:inherit;text-align:left;transition:all .15s}
+.nav-btn:hover,.nav-btn.on{background:rgba(59,130,246,.08);color:#E8EEFF}
+.nav-btn.on{color:var(--bl);font-weight:500}
+.nav-foot{padding:.85rem 1rem;border-top:1px solid var(--b);margin-top:2rem}
+.nav-user{font-size:.69rem;color:var(--t3);margin-bottom:.5rem;word-break:break-all}
+.nav-logout{font-size:.74rem;color:var(--r);cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.nav-logout:hover{text-decoration:underline}
+.main{flex:1;padding:1.65rem;overflow-x:hidden}
+.page{display:none}
+.page.on{display:block}
+.pg-title{font-size:1.25rem;font-weight:700;color:#E8EEFF;margin-bottom:.25rem}
+.pg-sub{font-size:.8rem;color:var(--t3);margin-bottom:1.5rem}
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:.9rem 1.05rem}
+.kpi-lbl{font-size:.72rem;color:var(--t2);margin-bottom:.3rem}
+.kpi-val{font-size:1.65rem;font-weight:700;color:#E8EEFF;line-height:1;font-family:var(--mono)}
+.kpi-note{font-size:.69rem;color:var(--t3);margin-top:.25rem}
+.kpi-val.ok{color:var(--g)}.kpi-val.warn{color:var(--a)}.kpi-val.dim{color:var(--t3)}.kpi-val.red{color:var(--r)}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:10px}
+.card-title{font-size:.9rem;font-weight:600;color:#E8EEFF;margin-bottom:.85rem}
+.attn{border-radius:9px;padding:.85rem 1rem;margin-bottom:.5rem;border:1px solid;display:flex;gap:.75rem;align-items:flex-start}
+.attn.warn{background:var(--aa);border-color:var(--ab)}
+.attn.ok{background:var(--ga);border-color:var(--gb)}
+.attn.info{background:var(--bla);border-color:rgba(59,130,246,.22)}
+.attn-ico{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.attn-title{font-size:.82rem;font-weight:600;margin-bottom:.15rem}
+.attn.warn .attn-title{color:var(--a)}.attn.ok .attn-title{color:var(--g)}.attn.info .attn-title{color:var(--bl)}
+.attn-desc{font-size:.76rem;color:var(--t3);line-height:1.5}
+.badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:100px;font-size:.69rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.badge-a{background:var(--aa);border:1px solid var(--ab);color:var(--a)}
+.badge-g{background:var(--ga);border:1px solid var(--gb);color:var(--g)}
+.badge-r{background:var(--ra);border:1px solid var(--rb);color:var(--r)}
+.badge-gr{background:rgba(55,69,103,.15);border:1px solid var(--b2);color:var(--t2)}
+.lb-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.lb-table th{font-size:.67rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);padding:.45rem .6rem;border-bottom:1px solid var(--b);text-align:left}
+.lb-table td{padding:.5rem .6rem;border-bottom:1px solid rgba(80,105,170,.05);color:var(--t2);vertical-align:middle}
+.lb-table tr:last-child td{border-bottom:none}
+.lb-table td:first-child{color:#E8EEFF;font-weight:500}
+.ck{display:flex;align-items:flex-start;gap:.5rem;font-size:.81rem}
+.ck-ico{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:.62rem;font-weight:700}
+.ck-g{background:rgba(34,197,94,.1);color:var(--g);border:1px solid rgba(34,197,94,.2)}
+.ck-a{background:rgba(245,158,11,.1);color:var(--a);border:1px solid rgba(245,158,11,.2)}
+.ck-r{background:rgba(239,68,68,.1);color:var(--r);border:1px solid rgba(239,68,68,.2)}
+.ck-txt{color:var(--t2);line-height:1.42}
+.ck-txt b{color:#E8EEFF;font-weight:500}
+.cklist{display:flex;flex-direction:column;gap:.38rem}
+.sys-field{font-family:var(--mono);font-size:.75rem;color:var(--t2);background:rgba(0,0,0,.2);border-radius:5px;padding:.35rem .6rem;margin:.2rem 0;display:flex;gap:.5rem}
+.sf-key{color:var(--t3);min-width:160px;flex-shrink:0}
+.sf-val.ok{color:var(--g)}.sf-val.bad{color:var(--r)}.sf-val.warn{color:var(--a)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:10px;margin-bottom:10px}
+.integrity{background:rgba(8,10,22,.96);border-top:1px solid var(--b);padding:.5rem 1.5rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:center;font-size:.72rem;color:var(--t3);position:sticky;bottom:0;z-index:100}
+.iv-r{color:var(--r);font-weight:700}.iv-g{color:var(--g);font-weight:700}
+hr{border:none;border-top:1px solid var(--b);margin:.75rem 0}
+/* SECTION HEADER */
+.sec-hdr{font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--bl);margin:1.25rem 0 .65rem;display:flex;align-items:center;gap:.5rem}
+.sec-hdr::after{content:'';flex:1;height:1px;background:var(--b)}
+@media(max-width:800px){.nav{display:none}.main{max-width:100%}.shell{display:block}}
+@media(max-width:560px){.kpi-row{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div id="root"><div style="text-align:center;padding:4rem;color:#7585AA">Initialising...</div></div>
-<script>
-const SUPABASE_URL='https://jmhzzzefiyvplwxvuuxo.supabase.co'
-const ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptaHp6emVmaXl2cGx3eHZ1dXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NTA2NjMsImV4cCI6MjA5ODEyNjY2M30.fhq7OJXOgGp2YWfs3uW_WrZU9I-6_d7uHUcEMTdS_Kc'
-const sb=supabase.createClient(SUPABASE_URL,ANON_KEY)
-const root=document.getElementById('root')
+<div id="loading-screen">Ladataan...</div>
 
-function fmt(d){if(!d)return'—';const dt=new Date(d);return dt.toLocaleDateString('en-GB')+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
-function scoreColor(s){return s>=80?'#22C55E':s>=60?'#F59E0B':'#EF4444'}
-function scoreClass(s){return s>=80?'badge-green':s>=60?'badge-yellow':'badge-red'}
-
-async function init(){
-  if(window.location.hash.includes('access_token')){
-    await sb.auth.getSession()
-    history.replaceState(null,'',window.location.pathname)
-  }
-  const {data:{session}}=await sb.auth.getSession()
-  if(!session){renderLogin();return}
-  sb.auth.onAuthStateChange((ev,sess)=>{
-    if(ev==='SIGNED_IN')renderDashboard()
-    if(ev==='SIGNED_OUT')renderLogin()
-  })
-  renderDashboard()
-}
-
-function renderLogin(){
-  root.innerHTML=`
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem">
-  <div class="card" style="width:100%;max-width:360px">
-    <div style="font-size:1.1rem;font-weight:700;color:#E8EEFF;margin-bottom:.25rem">Qsisto</div>
-    <div class="muted" style="font-size:.78rem;margin-bottom:1.75rem">Founder Dashboard</div>
-    <div id="ls">
-      <div class="label" style="margin-bottom:.4rem">Email</div>
-      <input id="em" class="input" type="email" placeholder="your@email.com" style="margin-bottom:1rem" onkeydown="if(event.key==='Enter')doLogin()">
-      <div id="le" style="display:none;margin-bottom:.65rem;padding:.5rem .75rem;border-radius:6px;background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.22);font-size:.77rem;color:#EF4444"></div>
-      <button class="btn-primary" onclick="doLogin()">Send login link</button>
-    </div>
-    <div id="ss" style="display:none;padding:.75rem;border-radius:8px;background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.22);font-size:.82rem;color:#22C55E;text-align:center">✓ Check your email</div>
-    <div class="tiny" style="text-align:center;margin-top:1.5rem">AB Empire Oy · Business ID 3499735-5</div>
+<div id="login-screen" style="display:none">
+  <div class="login-card">
+    <div class="lc-logo">Qsisto</div>
+    <div class="lc-sub">Perustajapaneeli · vain sisäinen käyttö</div>
+    <label class="lc-label" for="email-input">Sähköposti</label>
+    <input type="email" id="email-input" class="lc-input" placeholder="ab.kuusisto@gmail.com" autocomplete="email">
+    <button class="lc-btn" id="magic-btn" onclick="sendMagicLink()">Lähetä kirjautumislinkki</button>
+    <div class="lc-ok" id="magic-ok">Kirjautumislinkki lähetetty! Tarkista sähköpostisi.</div>
+    <div class="lc-err" id="magic-err">Virhe. Tarkista sähköpostiosoite.</div>
+    <div class="lc-footer">AB Empire Oy · Business ID 3499735-5 · Ei julkinen</div>
   </div>
-</div>`
-}
-
-async function doLogin(){
-  const em=document.getElementById('em')?.value?.trim()
-  if(!em)return
-  const btn=document.querySelector('#ls .btn-primary')
-  btn.disabled=true;btn.textContent='Sending...'
-  const{error}=await sb.auth.signInWithOtp({email:em,options:{emailRedirectTo:window.location.href}})
-  if(error){
-    const el=document.getElementById('le')
-    el.style.display='block';el.textContent=error.message
-    btn.disabled=false;btn.textContent='Send login link'
-  }else{
-    document.getElementById('ls').style.display='none'
-    document.getElementById('ss').style.display='block'
-  }
-}
-
-async function logout(){await sb.auth.signOut();renderLogin()}
-
-async function renderDashboard(){
-  root.innerHTML='<div style="text-align:center;padding:4rem;color:#7585AA">Loading data...</div>'
-  try{
-    const[cR,sR,rR,eR]=await Promise.all([
-      sb.from('customers').select('*').order('created_at',{ascending:false}),
-      sb.from('subscriptions').select('*').order('created_at',{ascending:false}),
-      sb.from('product_runs').select('*').order('created_at',{ascending:false}).limit(10),
-      sb.from('usage_events').select('*').order('created_at',{ascending:false}).limit(50)
-    ])
-    if(cR.error)throw cR.error
-    const customers=cR.data||[]
-    const subs=sR.data||[]
-    const runs=rR.data||[]
-    const events=eR.data||[]
-    const activeSubs=subs.filter(s=>s.status==='active'||s.status==='trialing')
-    const mrr=activeSubs.reduce((a,s)=>a+(parseFloat(s.price_eur)||0),0)
-    const latestC=customers[0]
-    const latestS=activeSubs[0]
-    const latestR=runs[0]
-    const fulfillEvents=events.filter(e=>
-      e.event_source==='storeguard_scan_v1'||
-      e.event_source==='stripe_webhook_runtime'||
-      ['first_value_delivered','payment_processed','storeguard_scan_completed'].includes(e.event_type)
-    ).slice(0,8)
-
-    root.innerHTML=`
-<nav style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.5rem;background:rgba(7,9,26,.95);border-bottom:1px solid rgba(80,105,170,.15);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)">
-  <div style="display:flex;align-items:center;gap:.6rem">
-    <span style="font-size:.95rem;font-weight:700">Qsisto</span>
-    <span class="badge badge-red">INTERNAL</span>
-  </div>
-  <div style="display:flex;align-items:center;gap:.75rem">
-    <span class="tiny">${latestC?latestC.email:''}</span>
-    <button class="btn-sm" onclick="logout()">Sign out</button>
-  </div>
-</nav>
-
-<div style="max-width:1200px;margin:0 auto;padding:1.5rem">
-
-  <div class="grid-4" style="margin-bottom:1.25rem">
-    <div class="card">
-      <div class="label">MRR</div>
-      <div class="val-lg" style="color:${mrr>0?'#22C55E':'#7585AA'}">€${mrr>0?mrr.toFixed(0):'0'}</div>
-      <div class="tiny" style="margin-top:.3rem">${mrr>0?activeSubs.length+' active plan'+(activeSubs.length>1?'s':''):'No active plans'}</div>
-    </div>
-    <div class="card">
-      <div class="label">Customers</div>
-      <div class="val-lg">${customers.length}</div>
-      <div class="tiny" style="margin-top:.3rem">${customers.length>0?'Latest: '+fmt(latestC?.created_at):'Waiting for first'}</div>
-    </div>
-    <div class="card">
-      <div class="label">Scans run</div>
-      <div class="val-lg">${runs.length}</div>
-      <div class="tiny" style="margin-top:.3rem">${latestR?'Last: '+fmt(latestR.created_at):'—'}</div>
-    </div>
-    <div class="card">
-      <div class="label">5M target</div>
-      <div class="val-lg" style="font-size:1.4rem;color:#7585AA">€5M</div>
-      <div class="tiny" style="margin-top:.3rem">${mrr>0?Math.round(5000000/mrr).toLocaleString()+' more customers':'~102,041 more'}</div>
-    </div>
-  </div>
-
-  <div class="grid-2">
-    <div style="display:flex;flex-direction:column;gap:1.25rem">
-
-      <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
-          <span style="font-weight:700">StoreGuard · Runtime</span>
-          <span class="badge ${runs.length>0?'badge-green':'badge-gray'}">${runs.length>0?'LIVE':'AWAITING'}</span>
-        </div>
-
-        ${latestC?`
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
-          <div>
-            <div class="label">Customer</div>
-            <div class="val-md">${latestC.email||'—'}</div>
-            <div class="tiny">${fmt(latestC.created_at)}</div>
-          </div>
-          <div>
-            <div class="label">Plan</div>
-            <div class="val-md">${latestS?(latestS.plan_key||'starter')+' · €'+(latestS.price_eur||49)+'/mo':'—'}</div>
-            <div class="tiny" style="color:${activeSubs.length>0?'#22C55E':'#7585AA'}">${activeSubs.length>0?'● Active':'○ No active plan'}</div>
-          </div>
-        </div>
-        `:`<div class="muted" style="font-size:.85rem;margin-bottom:1rem">No customers yet — waiting for first payment</div>`}
-
-        <hr class="sep">
-
-        ${latestR?`
-        <div class="label" style="margin-bottom:.75rem">Latest scan</div>
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.75rem">
-          <div style="font-size:2.5rem;font-weight:700;color:${scoreColor(latestR.score||0)}">${latestR.score||0}</div>
-          <div>
-            <span class="badge ${scoreClass(latestR.score||0)}">${latestR.score>=80?'GREEN':latestR.score>=60?'YELLOW':'RED'}</span>
-            <div class="val-md" style="margin-top:.25rem">${latestR.store_url||'—'}</div>
-            <div class="tiny">${fmt(latestR.created_at)}</div>
-          </div>
-        </div>
-        ${latestR.email_sent?
-          `<div style="font-size:.78rem;color:#22C55E">✓ Report emailed to ${latestR.email_address||'customer'}</div>`:
-          `<div style="font-size:.78rem;color:#F59E0B">⚠ Email delivery unconfirmed</div>`
-        }
-        `:`<div class="muted" style="font-size:.85rem">No scans yet</div>`}
-
-        <hr class="sep">
-        <div class="label" style="margin-bottom:.75rem">Missing before scale</div>
-        <div class="missing"><span style="color:#EF4444">✗</span><span>Weekly recurring scan (cron job)</span></div>
-        <div class="missing"><span style="color:#EF4444">✗</span><span>Customer dashboard at app.qsisto.com/dashboard</span></div>
-        <div class="missing"><span style="color:#EF4444">✗</span><span>Cancel / refund flow for paying customer</span></div>
-        <div class="missing"><span style="color:#F59E0B">⚠</span><span>Outreach — 7 prospects ready</span><span class="badge badge-gray" style="margin-left:.25rem">LOCKED</span></div>
-      </div>
-
-      <div class="card">
-        <div style="font-weight:700;margin-bottom:1.25rem">Recent Fulfillment Events</div>
-        ${fulfillEvents.length>0?
-          fulfillEvents.map(e=>{
-            const d=e.event_data||{}
-            const score=d.score!=null?' · '+d.score+'/100':''
-            const url=d.store_url||d.url||''
-            const type=(e.event_type||'').replace(/_/g,' ')
-            return`<div class="event-row">
-              <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem">
-                <span class="dot dot-green"></span>
-                <span style="font-size:.8rem">${type}${score}</span>
-              </div>
-              ${url?`<div class="tiny" style="padding-left:1.1rem">${url}</div>`:''}
-              <div class="tiny" style="padding-left:1.1rem">${fmt(e.created_at)} · ${e.event_source||''}</div>
-            </div>`
-          }).join(''):
-          '<div class="muted" style="font-size:.85rem">No fulfillment events yet</div>'
-        }
-      </div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:1.25rem">
-
-      <div class="card">
-        <div style="font-weight:700;margin-bottom:1.25rem">System Status</div>
-        <div style="display:flex;flex-direction:column;gap:.8rem">
-          ${st('Stripe webhook','green','qsisto-saas-runtime/api/webhook')}
-          ${st('Vercel runtime','green','app.qsisto.com')}
-          ${st('StoreGuard scanner','green','Edge Function')}
-          ${st('n8n fulfillment','green','Izmb4qDAPnXLpiF6')}
-          ${st('Founder dashboard','green','This page')}
-          ${st('Weekly cron','red','Not built yet')}
-          ${st('Outreach','yellow','Locked — approval required')}
-          ${st('Customer dashboard','red','app.qsisto.com/dashboard not built')}
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="font-weight:700;margin-bottom:1.25rem">Quick Links</div>
-        <div style="display:flex;flex-direction:column;gap:.45rem">
-          ${ql('StoreGuard','https://qsisto.com/storeguard')}
-          ${ql('Customer app','https://app.qsisto.com/login')}
-          ${ql('Stripe','https://dashboard.stripe.com')}
-          ${ql('Supabase','https://supabase.com/dashboard/project/jmhzzzefiyvplwxvuuxo')}
-          ${ql('n8n','https://qsisto.app.n8n.cloud')}
-          ${ql('Vercel','https://vercel.com/qsisto/qsisto-saas-runtime')}
-        </div>
-      </div>
-
-      <div style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(99,102,241,.1));border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:1.375rem">
-        <div class="label">MRR progress</div>
-        <div style="font-size:1.75rem;font-weight:700;color:#E8EEFF;margin-bottom:.75rem">€${mrr>0?mrr.toFixed(0):'0'} <span class="muted" style="font-size:.85rem">/ €5,000,000</span></div>
-        <div style="height:6px;background:rgba(80,105,170,.2);border-radius:3px;overflow:hidden;margin-bottom:.75rem">
-          <div style="height:100%;background:linear-gradient(90deg,#3B82F6,#6366F1);border-radius:3px;width:${Math.min(mrr/50000,100).toFixed(4)}%"></div>
-        </div>
-        <div class="tiny">Next milestone: €1,000 MRR (~21 customers)</div>
-      </div>
-
-    </div>
-  </div>
-
 </div>
-<div style="text-align:center;padding:2rem;font-size:.7rem;color:#374567;border-top:1px solid rgba(80,105,170,.1);margin-top:1rem">
-  Internal staging · noindex · AB Empire Oy · Business ID 3499735-5
-</div>`
 
-  }catch(err){
-    const msg=err?.message||err?.hint||JSON.stringify(err)
-    root.innerHTML=`
-<nav style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.5rem;background:rgba(7,9,26,.95);border-bottom:1px solid rgba(80,105,170,.15)">
-  <span style="font-weight:700">Qsisto</span>
-  <button class="btn-sm" onclick="logout()">Sign out</button>
-</nav>
-<div style="max-width:900px;margin:2rem auto;padding:1.5rem">
-  <div style="background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.22);border-radius:12px;padding:1.25rem">
-    <div style="font-weight:600;color:#EF4444;margin-bottom:.5rem">Data load error</div>
-    <div style="font-size:.85rem;color:#E8EEFF;margin-bottom:.75rem">${msg}</div>
-    <div style="font-size:.78rem;color:#7585AA">If this is a permissions error, run the SQL policies file in Supabase → SQL Editor.</div>
+<div id="dashboard-screen">
+<div class="staging-notice">⚡ Sisäinen staging · empire-products.vercel.app · Älä jaa URL:ia</div>
+
+<div class="shell">
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-name">Qsisto</div>
+    <div class="nav-logo-sub">Perustajapaneeli v6</div>
   </div>
-</div>`
+  <div class="nav-grp">
+    <span class="nav-lbl">Näkymät</span>
+    <button class="nav-btn on" onclick="showPage('summary',this)">📊 Yhteenveto</button>
+    <button class="nav-btn" onclick="showPage('recurring',this)">🔄 Recurring Engine</button>
+    <button class="nav-btn" onclick="showPage('control',this)">🛡️ Toimintakeskus</button>
+    <button class="nav-btn" onclick="showPage('system',this)">⚙️ Järjestelmä</button>
+  </div>
+  <div class="nav-grp" style="margin-top:.5rem">
+    <span class="nav-lbl">Bisnes</span>
+    <button class="nav-btn" onclick="showPage('recurring',this)">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--a);display:inline-block;flex-shrink:0"></span>StoreGuard
+    </button>
+  </div>
+  <div class="nav-foot">
+    <div class="nav-user" id="nav-user-email">—</div>
+    <div style="font-size:.66rem;color:var(--t3);margin-bottom:.4rem">AB Empire Oy · 3499735-5</div>
+    <button class="nav-logout" onclick="signOut()">Kirjaudu ulos</button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- YHTEENVETO -->
+<div class="page on" id="page-summary">
+  <div class="pg-title">Hei 👋</div>
+  <div class="pg-sub" id="summary-date">Tässä kaikki oleellinen tänään</div>
+
+  <div class="kpi-row" id="kpi-main">
+    <div class="kpi"><div class="kpi-lbl">MRR</div><div class="kpi-val dim" id="k-mrr">€0</div><div class="kpi-note" id="k-mrr-note">Ei asiakkaita</div></div>
+    <div class="kpi"><div class="kpi-lbl">Asiakkaat</div><div class="kpi-val dim" id="k-cust">0</div><div class="kpi-note" id="k-cust-note">Odottaa ensimmäistä myyntiä</div></div>
+    <div class="kpi"><div class="kpi-lbl">Recurring jobs</div><div class="kpi-val dim" id="k-jobs">0</div><div class="kpi-note" id="k-jobs-note">Aktiiviset</div></div>
+    <div class="kpi"><div class="kpi-lbl">Scans run</div><div class="kpi-val dim" id="k-scans">0</div><div class="kpi-note" id="k-scans-note">Viimeisin: —</div></div>
+    <div class="kpi"><div class="kpi-lbl">Toimitettu/viikko</div><div class="kpi-val dim" id="k-delivered">0</div><div class="kpi-note">Raportit tällä viikolla</div></div>
+    <div class="kpi"><div class="kpi-lbl">€5M target</div><div class="kpi-val dim" id="k-target">—</div><div class="kpi-note" id="k-target-note">Tarvitaan asiakkaita</div></div>
+  </div>
+
+  <div class="sec-hdr">Recurring Value Engine</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-lbl">Aktiiviset jobit</div><div class="kpi-val dim" id="k-rj-active">0</div><div class="kpi-note">status = active</div></div>
+    <div class="kpi"><div class="kpi-lbl">Due tänään</div><div class="kpi-val dim" id="k-rj-due">0</div><div class="kpi-note">next_run_at ≤ nyt</div></div>
+    <div class="kpi"><div class="kpi-lbl">Epäonnistuneet</div><div class="kpi-val dim" id="k-rj-failed">0</div><div class="kpi-note">failure_count ≥ 1</div></div>
+    <div class="kpi"><div class="kpi-lbl">Viim. scan</div><div class="kpi-val dim" id="k-last-scan">—</div><div class="kpi-note" id="k-last-scan-store">—</div></div>
+  </div>
+
+  <div class="two">
+    <div>
+      <div class="card">
+        <div class="card-title">Mitä tarvitsee huomiotasi</div>
+        <div id="attention-items"><div class="attn info"><div class="attn-ico">⏳</div><div><div class="attn-title">Ladataan...</div></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Bisnesет</div>
+        <table class="lb-table">
+          <thead><tr><th>Bisnes</th><th>MRR</th><th>Asiakkaat</th><th>Recurring jobs</th><th>Tila</th></tr></thead>
+          <tbody>
+            <tr><td>StoreGuard</td><td style="font-family:var(--mono)" id="sg-mrr">€0</td><td style="font-family:var(--mono)" id="sg-cust">0</td><td style="font-family:var(--mono)" id="sg-jobs">0</td><td><span class="badge badge-a">Beta</span></td></tr>
+            <tr><td style="color:var(--t3)">Seuraava bisnes</td><td style="color:var(--t3);font-family:var(--mono)">—</td><td style="color:var(--t3);font-family:var(--mono)">—</td><td style="color:var(--t3);font-family:var(--mono)">—</td><td><span class="badge badge-gr">Ei aloitettu</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">Nopeat linkit</div>
+        <div style="display:flex;flex-direction:column;gap:.4rem">
+          <a href="https://qsisto.com/storeguard" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none">🌐 Avaa StoreGuard</a>
+          <a href="https://app.qsisto.com/dashboard" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none">👤 Customer Dashboard</a>
+          <a href="https://dashboard.stripe.com" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none">💳 Avaa Stripe</a>
+          <a href="https://qsisto.app.n8n.cloud" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none">⚙️ Avaa n8n</a>
+          <a href="https://supabase.com/dashboard/project/jmhzzzefiyvplwxvuuxo" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:6px;background:var(--card2);border:1px solid var(--b);color:var(--t);font-size:.8rem;text-decoration:none">🗄️ Avaa Supabase</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">MRR Progress</div>
+        <div style="font-size:1.65rem;font-weight:700;color:#E8EEFF;font-family:var(--mono)" id="mrr-prog-val">€0</div>
+        <div style="font-size:.72rem;color:var(--t3);margin:.25rem 0 .75rem" id="mrr-prog-note">/ €5,000,000</div>
+        <div style="background:var(--b);border-radius:4px;height:6px;overflow:hidden"><div id="mrr-bar" style="height:100%;background:var(--bl);border-radius:4px;width:0%;transition:width .5s"></div></div>
+        <div style="font-size:.69rem;color:var(--t3);margin-top:.5rem" id="mrr-milestone">Seuraava milestone: €1,000 MRR (n.20 asiakasta)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECURRING ENGINE -->
+<div class="page" id="page-recurring">
+  <div class="pg-title">🔄 Recurring Value Engine</div>
+  <div class="pg-sub">Universal scheduler — StoreGuard on ensimmäinen moduuli</div>
+
+  <div class="sec-hdr">StoreGuard · Recurring Status</div>
+  <div class="two">
+    <div>
+      <div class="card">
+        <div class="card-title">Aktiiviset recurring jobit</div>
+        <div id="recurring-jobs-list"><div style="color:var(--t3);font-size:.82rem">Ladataan...</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">Engine Status</div>
+        <div class="cklist" id="engine-checklist">
+          <div class="ck"><div class="ck-ico ck-a">?</div><span class="ck-txt">Ladataan...</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-hdr">Customer Fulfillment History</div>
+  <div class="card">
+    <div class="card-title">Viimeisimmät toimitukset</div>
+    <table class="lb-table">
+      <thead><tr><th>Asiakas</th><th>Bisnes</th><th>Plan</th><th>Recurring job</th><th>Next run</th><th>Last run</th><th>Status</th></tr></thead>
+      <tbody id="fulfillment-table"><tr><td colspan="7" style="color:var(--t3)">Ladataan...</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="sec-hdr">Viimeisimmät product_runit</div>
+  <div class="card">
+    <div class="card-title">Scan historia</div>
+    <table class="lb-table">
+      <thead><tr><th>Kauppa</th><th>Score</th><th>Tila</th><th>Email</th><th>Aika</th></tr></thead>
+      <tbody id="product-runs-table"><tr><td colspan="5" style="color:var(--t3)">Ladataan...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TOIMINTAKESKUS -->
+<div class="page" id="page-control">
+  <div class="pg-title">Toimintakeskus</div>
+  <div class="pg-sub">Hyväksy, hylkää tai muuta</div>
+  <div class="two">
+    <div>
+      <div class="card">
+        <div class="card-title">⚠️ Odottaa hyväksynnästä</div>
+        <div style="background:var(--aa);border:1px solid var(--ab);border-radius:10px;padding:1.1rem 1.25rem">
+          <div style="font-size:.88rem;font-weight:600;color:var(--a);margin-bottom:.65rem">StoreGuard — Ensimmäinen testilähetys</div>
+          <div style="background:rgba(0,0,0,.2);border-radius:6px;padding:.6rem .8rem;font-size:.77rem;color:var(--t);font-family:var(--mono);line-height:1.75;margin-bottom:.75rem">Prospekteja: 7 tarkistettua
+Jatkotoimenpiteitä: ei
+Lisäprospekteja: ei
+Muita bisneksiä: ei
+Tila: EI LÄHETETTY</div>
+          <button class="disabled-btn">📧 Hyväksy lähetys (vaatii erillisen toiminnon)</button>
+          <button class="disabled-btn">🚫 Pidä estettynä</button>
+          <div style="font-size:.73rem;color:var(--t3);margin-top:.5rem;line-height:1.5">Napit aktivoitavissa erikseen kun olet valmis lähettämään.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Valmiustarkistus</div>
+        <div class="cklist">
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Laskeutumissivu</b> — qsisto.com/storeguard</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Stripe-maksu</b> — testattu oikealla selaimella</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Lakisivut</b> — ehdot, tietosuoja, DPA</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Tuki</b> — support@qsisto.com</span></div>
+          <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Recurring Engine</b> — scheduler rakennettu</span></div>
+          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>E2E Recurring Test</b> — vaatii vahvistuksen</span></div>
+          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Customer dashboard</b> — placeholder valmis</span></div>
+          <div class="ck"><div class="ck-ico ck-a">!</div><span class="ck-txt"><b>Sinun hyväksynnästi</b> puuttuu</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">📧 Sähköpostiesikatselu</div>
+        <div style="background:#0C0F1E;border:1px solid var(--b2);border-radius:8px;padding:1rem 1.1rem;font-size:.8rem">
+          <div style="display:flex;gap:.65rem;margin-bottom:.4rem;font-size:.76rem"><span style="color:var(--t3);min-width:60px;flex-shrink:0">Lähettäjä:</span><span>frank@fortuepiphany.com</span></div>
+          <div style="display:flex;gap:.65rem;margin-bottom:.4rem;font-size:.76rem"><span style="color:var(--t3);min-width:60px;flex-shrink:0">Vastaa:</span><span>support@qsisto.com</span></div>
+          <div style="display:flex;gap:.65rem;margin-bottom:.4rem;font-size:.76rem"><span style="color:var(--t3);min-width:60px;flex-shrink:0">Aihe:</span><span>Quick question about your Shopify checkout</span></div>
+          <hr>
+          <div style="color:var(--t2);line-height:1.65;white-space:pre-wrap">Hi [First Name],
+
+I built a small tool called StoreGuard that does a weekly read-only health check on Shopify stores — it checks if checkout signals, trust badges, and cart paths are still working.
+
+It's helped catch issues before customers notice them.
+
+Would a quick weekly health report be useful for your store?
+
+Happy to run a free check first if you want to see what it finds.
+
+— Frank
+
+<span style="color:var(--t3);font-size:.73rem">Unsubscribe: [link]</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JÄRJESTELMÄ -->
+<div class="page" id="page-system">
+  <div class="pg-title">Järjestelmätiedot</div>
+  <div class="pg-sub">Tekniset yksityiskohdat</div>
+  <div class="two">
+    <div>
+      <div class="card">
+        <div class="card-title">Tunnisteet</div>
+        <div class="sys-field"><span class="sf-key">product_lock_id</span><span>PL-ST-MR1DWPL0</span></div>
+        <div class="sys-field"><span class="sf-key">campaign_id</span><span>CAMP-ST-AUYT91DG</span></div>
+        <div class="sys-field"><span class="sf-key">batch_id</span><span>BATCH-SG-STARTER-U0GX5Z7N</span></div>
+        <div class="sys-field"><span class="sf-key">business_id</span><span>9e52f687</span></div>
+        <div class="sys-field"><span class="sf-key">recurring_runner_id</span><span>U2abQpktaRtOMho3</span></div>
+        <div class="sys-field"><span class="sf-key">scheduler_edge_fn</span><span>recurring-value-scheduler</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Kapasiteetti</div>
+        <div class="sys-field"><span class="sf-key">active_senders</span><span class="sf-val ok">15</span></div>
+        <div class="sys-field"><span class="sf-key">safe_daily_cap</span><span class="sf-val ok">324/day</span></div>
+        <div class="sys-field"><span class="sf-key">qsisto.com_protected</span><span class="sf-val ok">true</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">Eheysvahvonta</div>
+        <div class="sys-field"><span class="sf-key">real_send_allowed</span><span class="sf-val bad">false</span></div>
+        <div class="sys-field"><span class="sf-key">outreach_sent</span><span class="sf-val bad">false</span></div>
+        <div class="sys-field"><span class="sf-key">event_log_health</span><span class="sf-val ok">GREEN</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Järjestelmän tila</div>
+        <div class="sys-field"><span class="sf-key">stripe_webhook</span><span class="sf-val ok">qsisto-saas-runtime/webhook</span></div>
+        <div class="sys-field"><span class="sf-key">vercel_runtime</span><span class="sf-val ok">app.qsisto.com</span></div>
+        <div class="sys-field"><span class="sf-key">storeguard_scanner</span><span class="sf-val ok">Edge function</span></div>
+        <div class="sys-field"><span class="sf-key">n8n_fulfillment</span><span class="sf-val ok">Izmb4qDAPnXLpiF6</span></div>
+        <div class="sys-field"><span class="sf-key">recurring_runner</span><span class="sf-val ok">U2abQpktaRtOMho3 · Weekdays 8am</span></div>
+        <div class="sys-field"><span class="sf-key">founder_dashboard</span><span class="sf-val ok">This page</span></div>
+        <div class="sys-field"><span class="sf-key">customer_dashboard</span><span class="sf-val warn">app.qsisto.com/dashboard</span></div>
+        <div class="sys-field"><span class="sf-key">cancel_path</span><span class="sf-val ok">support@qsisto.com</span></div>
+        <div class="sys-field"><span class="sf-key">weekly_cron</span><span class="sf-val ok">Mon-Fri 8am Helsinki</span></div>
+        <div class="sys-field"><span class="sf-key">outreach</span><span class="sf-val warn">locked — approve required</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<div class="integrity">
+  <div class="iv">Lähetys <span class="iv-r">lukittu</span></div>
+  <div class="iv">Recurring <span class="iv-g" id="int-recurring">—</span></div>
+  <div class="iv">MRR <span class="iv-g" id="int-mrr">€0</span></div>
+  <div class="iv">Loki <span class="iv-g">toimii</span></div>
+  <div class="iv">Auth <span class="iv-g">Supabase ✓</span></div>
+  <div style="margin-left:auto;font-size:.69rem;color:var(--t3)">v6 · Kirjautunut: <span id="footer-email">—</span></div>
+</div>
+</div><!-- /dashboard-screen -->
+
+<script>
+const SUPA_URL = 'https://jmhzzzefiyvplwxvuuxo.supabase.co';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptaHp6emVmaXl2cGx3eHZ1dXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NTA2NjMsImV4cCI6MjA5ODEyNjY2M30.fhq7OJXOgGp2YWfs3uW_WrZU9I-6_d7uHUcEMTdS_Kc';
+const { createClient } = supabase;
+const sb = createClient(SUPA_URL, ANON_KEY);
+
+function fmt(d){if(!d)return'—';return new Date(d).toLocaleDateString('fi',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+new Date(d).toLocaleTimeString('fi',{hour:'2-digit',minute:'2-digit'});}
+function el(id){return document.getElementById(id);}
+function set(id,v){const e=el(id);if(e)e.textContent=v;}
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) showDashboard(session.user.email);
+  else showLogin();
+  sb.auth.onAuthStateChange((_ev, session) => {
+    if (session) showDashboard(session.user.email);
+    else showLogin();
+  });
+}
+
+function showLogin() {
+  el('loading-screen').style.display='none';
+  el('login-screen').style.display='flex';
+  el('dashboard-screen').style.display='none';
+}
+
+function showDashboard(email) {
+  el('loading-screen').style.display='none';
+  el('login-screen').style.display='none';
+  el('dashboard-screen').style.display='block';
+  set('nav-user-email', email||'—');
+  set('footer-email', email||'—');
+  const d=new Date();
+  set('summary-date', 'Tässä kaikki oleellinen — '+d.toLocaleDateString('fi',{weekday:'long',day:'numeric',month:'numeric',year:'numeric'}));
+  loadAllData();
+}
+
+async function loadAllData() {
+  const [custRes, subRes, runRes, evtRes, jobRes] = await Promise.all([
+    sb.from('customers').select('customer_id,email,created_at'),
+    sb.from('subscriptions').select('*').eq('status','active'),
+    sb.from('product_runs').select('*').order('created_at',{ascending:false}).limit(10),
+    sb.from('usage_events').select('event_id,event_type,event_data,created_at').order('created_at',{ascending:false}).limit(20),
+    sb.from('recurring_jobs').select('*,customers(email)').order('created_at',{ascending:false}).limit(20),
+  ]);
+
+  const customers = custRes.data||[];
+  const subs = subRes.data||[];
+  const runs = runRes.data||[];
+  const evts = evtRes.data||[];
+  const jobs = jobRes.data||[];
+
+  // ── KPI ─────────────────────────────────────────────────────────────────────
+  const mrr = subs.reduce((s,x)=>s+(Number(x.price_eur)||0),0);
+  const custCount = customers.length;
+  const activeJobs = jobs.filter(j=>j.status==='active').length;
+  const dueJobs = jobs.filter(j=>j.status==='active'&&new Date(j.next_run_at)<=new Date()).length;
+  const failedJobs = jobs.filter(j=>j.failure_count>0).length;
+  const latestRun = runs[0]||null;
+  const deliveredWeek = evts.filter(e=>e.event_type==='weekly_storeguard_scan_completed'&&new Date(e.created_at)>new Date(Date.now()-7*24*60*60*1000)).length;
+
+  set('k-mrr','€'+mrr);
+  el('k-mrr').className='kpi-val '+(mrr>0?'ok':'dim');
+  set('k-mrr-note', mrr>0?subs.length+' aktiivista tilausta':'Ei asiakkaita');
+  set('k-cust', custCount);
+  el('k-cust').className='kpi-val '+(custCount>0?'ok':'dim');
+  set('k-cust-note', custCount>0?'Active':'Odottaa ensimmäistä myyntiä');
+  set('k-jobs', activeJobs);
+  el('k-jobs').className='kpi-val '+(activeJobs>0?'ok':'dim');
+  set('k-jobs-note', activeJobs>0?'Recurring schedulerissa':'Ei aktiivisia');
+  set('k-scans', runs.length);
+  el('k-scans').className='kpi-val '+(runs.length>0?'ok':'dim');
+  set('k-scans-note', latestRun?'Viimeisin: '+fmt(latestRun.created_at):'Ei skannauksia');
+  set('k-delivered', deliveredWeek);
+  el('k-delivered').className='kpi-val '+(deliveredWeek>0?'ok':'dim');
+
+  const needed = mrr>0?Math.ceil((5000000-mrr)/(mrr/custCount)):102041;
+  const tgt = mrr>0?'+'+needed+' asiakasta':'102,041 asiakasta';
+  set('k-target', tgt);
+  el('k-target').className='kpi-val dim';
+  set('k-target-note', 'Nykyinen: €'+mrr+' MRR');
+
+  // Recurring KPIs
+  set('k-rj-active', activeJobs);
+  el('k-rj-active').className='kpi-val '+(activeJobs>0?'ok':'dim');
+  set('k-rj-due', dueJobs);
+  el('k-rj-due').className='kpi-val '+(dueJobs>0?'warn':'dim');
+  set('k-rj-failed', failedJobs);
+  el('k-rj-failed').className='kpi-val '+(failedJobs>0?'red':'dim');
+  if(latestRun){set('k-last-scan',latestRun.score+'/100');el('k-last-scan').className='kpi-val '+(latestRun.score>=80?'ok':latestRun.score>=60?'warn':'red');}
+  set('k-last-scan-store',latestRun?(latestRun.store_url||'—'):'—');
+
+  // Integrity bar
+  set('int-mrr','€'+mrr);
+  set('int-recurring', activeJobs>0?activeJobs+' active':'0');
+
+  // Business row
+  set('sg-mrr','€'+mrr);
+  set('sg-cust', custCount);
+  set('sg-jobs', activeJobs);
+
+  // MRR bar
+  set('mrr-prog-val','€'+mrr);
+  const pct = Math.min((mrr/5000000)*100,100);
+  el('mrr-bar').style.width=Math.max(pct,.2)+'%';
+  const next = mrr<1000?'€1,000 MRR (~20 asiakasta)':mrr<5000?'€5,000 MRR (~102 asiakasta)':'€10,000 MRR';
+  set('mrr-milestone','Seuraava milestone: '+next);
+
+  // ── Attention items ──────────────────────────────────────────────────────────
+  let attnHtml='';
+  if(dueJobs>0) attnHtml+=`<div class="attn warn"><div class="attn-ico">⏰</div><div><div class="attn-title">Recurring runner — ${dueJobs} jobi due nyt</div><div class="attn-desc">Recurring runner ajaa automaattisesti arkisin klo 8. Voit ajaa sen manuaalisesti n8n:stä.</div></div></div>`;
+  if(failedJobs>0) attnHtml+=`<div class="attn warn"><div class="attn-ico">⚠️</div><div><div class="attn-title">${failedJobs} recurring jobi — epäonnistuneita skannauksia</div><div class="attn-desc">Tarkista Recurring Engine -näkymästä.</div></div></div>`;
+  if(activeJobs===0&&custCount===0) attnHtml+=`<div class="attn warn"><div class="attn-ico">⚠️</div><div><div class="attn-title">StoreGuard — Hyväksy tai hylkää testilähetys</div><div class="attn-desc">7 tarkistettua prospektia odottaa. Yksi sähköposti, ei jatkotoimia, ei laajennusta. Katso Toimintakeskuksesta.</div></div></div>`;
+  attnHtml+=`<div class="attn info"><div class="attn-ico">📋</div><div><div class="attn-title">Tarkista sähköpostiviesti ennen lähetystä</div><div class="attn-desc">Toimintakeskus → Sähköpostiesikatselu.</div></div></div>`;
+  attnHtml+=`<div class="attn ok"><div class="attn-ico">✅</div><div><div class="attn-title">Recurring Value Engine v1 — rakennettu</div><div class="attn-desc">Scheduler, Edge Function, n8n runner — kaikki valmiina. Aja E2E-testi vahvistukseksi.</div></div></div>`;
+  el('attention-items').innerHTML=attnHtml;
+
+  // ── Recurring jobs detail ─────────────────────────────────────────────────────
+  if(jobs.length===0){
+    el('recurring-jobs-list').innerHTML='<div style="color:var(--t3);font-size:.82rem">Ei recurring jobeja. Uusi tilaus luo automaattisesti recurring jobin.</div>';
+  } else {
+    el('recurring-jobs-list').innerHTML=jobs.slice(0,5).map(j=>{
+      const inp=typeof j.input_json==='string'?JSON.parse(j.input_json):(j.input_json||{});
+      const sc=j.status==='active'?'badge-g':j.status==='failed'?'badge-r':'badge-gr';
+      return `<div style="background:var(--card2);border:1px solid var(--b);border-radius:8px;padding:.75rem;margin-bottom:.5rem">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem">
+          <span class="badge ${sc}">${j.status}</span>
+          <span style="font-size:.8rem;color:#E8EEFF">${j.business_slug||'—'} · ${j.recurring_value_action||'—'}</span>
+        </div>
+        <div class="sys-field"><span class="sf-key">store_url</span><span>${inp.store_url||'—'}</span></div>
+        <div class="sys-field"><span class="sf-key">customer</span><span>${j.customers?.email||'—'}</span></div>
+        <div class="sys-field"><span class="sf-key">next_run_at</span><span>${fmt(j.next_run_at)}</span></div>
+        <div class="sys-field"><span class="sf-key">last_run_at</span><span>${fmt(j.last_run_at)}</span></div>
+        ${j.failure_count>0?`<div class="sys-field"><span class="sf-key">failure_count</span><span class="sf-val warn">${j.failure_count}</span></div>`:''}
+        ${j.last_error?`<div class="sys-field"><span class="sf-key">last_error</span><span class="sf-val bad">${j.last_error}</span></div>`:''}
+      </div>`;
+    }).join('');
+  }
+
+  // Engine checklist
+  el('engine-checklist').innerHTML=`
+    <div class="ck"><div class="ck-ico ${activeJobs>0?'ck-g':'ck-a'}">${activeJobs>0?'✓':'!'}</div><span class="ck-txt"><b>Aktiiviset jobit:</b> ${activeJobs}</span></div>
+    <div class="ck"><div class="ck-ico ${dueJobs>0?'ck-a':'ck-g'}">${dueJobs>0?'!':'✓'}</div><span class="ck-txt"><b>Due nyt:</b> ${dueJobs}</span></div>
+    <div class="ck"><div class="ck-ico ${failedJobs>0?'ck-a':'ck-g'}">${failedJobs>0?'!':'✓'}</div><span class="ck-txt"><b>Epäonnistuneet:</b> ${failedJobs}</span></div>
+    <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>n8n Runner:</b> U2abQpktaRtOMho3</span></div>
+    <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Cron:</b> Arkisin 8:00 Helsinki</span></div>
+    <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>SMTP:</b> Gmail SMTP - Qsisto Support</span></div>
+    <div class="ck"><div class="ck-ico ck-g">✓</div><span class="ck-txt"><b>Cancel path:</b> Webhook + scheduler pause</span></div>
+  `;
+
+  // Fulfillment table
+  if(jobs.length===0){
+    el('fulfillment-table').innerHTML='<tr><td colspan="7" style="color:var(--t3)">Ei dataa</td></tr>';
+  } else {
+    el('fulfillment-table').innerHTML=jobs.slice(0,10).map(j=>{
+      const inp=typeof j.input_json==='string'?JSON.parse(j.input_json):(j.input_json||{});
+      const sc=j.status==='active'?'badge-g':j.status==='paused'?'badge-a':j.status==='failed'?'badge-r':'badge-gr';
+      const firstEvt=evts.find(e=>e.event_data?.customer_id===j.customer_id&&e.event_type==='first_value_delivered');
+      return `<tr>
+        <td>${j.customers?.email||'—'}</td>
+        <td>${j.business_slug||'—'}</td>
+        <td>${j.plan_key||'starter'}</td>
+        <td><span class="badge ${sc}">${j.recurring_value_action||'—'}</span></td>
+        <td style="font-family:var(--mono);font-size:.75rem">${fmt(j.next_run_at)}</td>
+        <td style="font-family:var(--mono);font-size:.75rem">${fmt(j.last_run_at)}</td>
+        <td><span class="badge ${sc}">${j.status}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Product runs table
+  if(runs.length===0){
+    el('product-runs-table').innerHTML='<tr><td colspan="5" style="color:var(--t3)">Ei skannauksia</td></tr>';
+  } else {
+    el('product-runs-table').innerHTML=runs.slice(0,10).map(r=>{
+      const sc=r.score>=80?'badge-g':r.score>=60?'badge-a':'badge-r';
+      return `<tr>
+        <td>${r.store_url||'—'}</td>
+        <td><span class="badge ${sc}">${r.score||0}/100</span></td>
+        <td>${r.status||'—'}</td>
+        <td>${r.email_sent?'✓ Lähetetty':'⏳ Odottaa'}</td>
+        <td style="font-size:.75rem;font-family:var(--mono)">${fmt(r.created_at)}</td>
+      </tr>`;
+    }).join('');
   }
 }
 
-function st(name,color,detail){
-  const dot=`<span class="dot dot-${color}"></span>`
-  return`<div style="display:flex;align-items:center;justify-content:space-between">
-    <div style="display:flex;align-items:center;gap:.5rem">${dot}<span style="font-size:.82rem">${name}</span></div>
-    <span class="tiny">${detail}</span>
-  </div>`
+async function sendMagicLink() {
+  const email = el('email-input').value.trim();
+  if(!email){el('email-input').focus();return;}
+  const btn=el('magic-btn');
+  btn.disabled=true;btn.textContent='Lähetetään…';
+  el('magic-ok').style.display='none';el('magic-err').style.display='none';
+  const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.href}});
+  if(error){el('magic-err').style.display='block';btn.disabled=false;btn.textContent='Lähetä kirjautumislinkki';}
+  else{el('magic-ok').style.display='block';btn.disabled=false;btn.textContent='Lähetä kirjautumislinkki';}
 }
 
-function ql(label,url){
-  return`<a href="${url}" target="_blank" class="quick-link"><span>${label}</span><span class="muted">↗</span></a>`
+async function signOut(){await sb.auth.signOut();}
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  el('page-'+id).classList.add('on');
+  if(btn)btn.classList.add('on');
 }
 
-init()
+document.addEventListener('keydown',e=>{if(e.key==='Enter')sendMagicLink();});
+init();
 </script>
 </body>
 </html>
